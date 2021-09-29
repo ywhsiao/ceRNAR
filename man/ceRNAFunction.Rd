@@ -29,7 +29,6 @@ Gene Ontology (GO; http://geneontology.org/) and Kyoto Encyclopedia of
 Genes and Genomes (KEGG; https://www.genome.jp/kegg/).
 }
 \examples{
-load('data/ExampleData.Rdata')
 ceRNAFunction(
 project_name = 'demo',
 disease_name = 'DLBC',
