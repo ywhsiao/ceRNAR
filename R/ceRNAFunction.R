@@ -17,7 +17,6 @@
 #' (default: 0.85)
 #'
 #' @examples
-#' load('data/ExampleData.Rdata')
 #' ceRNAFunction(
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
