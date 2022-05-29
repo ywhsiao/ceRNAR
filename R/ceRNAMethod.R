@@ -341,11 +341,11 @@ ceRNAMethod <- function(path_prefix=NULL,
     message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
   }
 
-  SegmentClusteringPlusPeakMerging(project_name,
+  potential_ceRNA <- SegmentClusteringPlusPeakMerging(project_name,
                                    disease_name,
                                    cor_threshold_peak,
                                    window_size)
-
+  return(potential_ceRNA)
   # stop a cluster
   # future:::ClusterRegistry("stop")
   parallel::topImplicitCluster()
