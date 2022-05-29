@@ -8,7 +8,8 @@
 #'
 #' @format A R data frame with 78 rows and 45 variables
 #' \describe{
-#'   \item{survival data}{Numeric survival matrix with two columns, including status and time, and each row as a different individual.
+#'   \item{survival data}{Numeric survival matrix with two columns,
+#'   including status and time, and each row as a different individual.}
 #' }
 #' @source <https://www.github.com/ywhsiao/ceRNAR>
 #'

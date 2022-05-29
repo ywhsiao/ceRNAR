@@ -10,7 +10,7 @@
 #' @param disease_name the abbreviation of disease that users are interested in
 #'
 #' @examples
-#' ceRNAIntergate(
+#' ceRNAIntegrate(
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' )
