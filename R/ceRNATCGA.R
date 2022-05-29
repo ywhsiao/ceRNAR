@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' ceRNATCGA(
-#' project_name = 'demo',
+#' project_name = 'TCGA',
 #' disease_name = 'DLBC',
 #' )
 #'
@@ -97,10 +97,10 @@ ceRNATCGA <- function(path_prefix = NULL,
   # id in names()
   htseq_fpkm <- htseq_fpkm[,names(htseq_fpkm) %in% union_sampleID]
   htseq_fpkm <- htseq_fpkm[ , order(names(htseq_fpkm))]
-  htseq_fpkm <- scale(log(htseq_fpkm+1,2), center = T, scale = T)
+  htseq_fpkm <- as.data.frame(scale(log(htseq_fpkm+1,2), center = T, scale = T))
   mirna <- mirna[,names(mirna) %in% union_sampleID]
   mirna <- mirna[ , order(names(mirna))]
-  mirna <- scale(log(mirna+1,2), center = T, scale = T)
+  mirna <- as.data.frame(scale(log(mirna+1,2), center = T, scale = T))
 
   # mRNA:log2(fpkm+1)，miRNA:log2(RPM+1)
   # mirna <- (2^mirna-1)*1000  #RPKM: X1000
@@ -109,6 +109,7 @@ ceRNATCGA <- function(path_prefix = NULL,
   # focus on protein coding RNA because downloaded mRNA expression matrix includes both codingRNA and lncRNA
   gtf_df <- ceRNAR:::gencode_v22_annot
   ensem2symbol <- gtf_df[gtf_df$type == 'gene',c('gene_id', 'gene_type', 'gene_name')]
+
   rownames(ensem2symbol) <- ensem2symbol$gene_id
   cdRNA <- htseq_fpkm[rownames(htseq_fpkm) %in% ensem2symbol$gene_id[ensem2symbol$gene_type=="protein_coding"],]
   annot_cdRNA <- merge(ensem2symbol, cdRNA, by = 'row.names')

@@ -26,7 +26,7 @@ A function to retrieve TCGA data from GDC Xena Hub
 }
 \examples{
 ceRNATCGA(
-project_name = 'demo',
+project_name = 'TCGA',
 disease_name = 'DLBC',
 )
 
