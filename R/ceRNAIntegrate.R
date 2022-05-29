@@ -57,8 +57,8 @@ ceRNAIntegrate <- function(path_prefix = NULL,
 
   # SPONGE
   doParallel::registerDoParallel(cores=4)
-  mir_expr <- as.data.frame(t(mirna))
-  gene_expr <- as.data.frame(t(mrna))
+  mir_expr <- t(mirna)
+  gene_expr <- t(mrna)
   genes_miRNA_candidates <- SPONGE::sponge_gene_miRNA_interaction_filter(
     gene_expr = gene_expr,
     mir_expr = mir_expr,
