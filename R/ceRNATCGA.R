@@ -63,7 +63,7 @@ ceRNATCGA <- function(path_prefix = NULL,
   # match sample id
   temp <-  list.files(pattern="*.tsv")
   temp_name <- gsub(".*\\.","",gsub(".tsv", "", temp))
-  for (i in 1:length(temp)) assign(temp_name[i], data.frame(data.table::fread(temp[i], sep = '\t',header = TRUE, dec = ".", fill = TRUE), row.names = 1))
+  for (i in 1:length(temp)) assign(temp_name[i], data.frame(fread(temp[i], sep = '\t',header = TRUE, dec = ".", fill = TRUE), row.names = 1))
   # id in a column
   GDC_phenotype <- as.data.frame(dplyr::filter(GDC_phenotype, grepl("01A", row.names(GDC_phenotype))))
   row.names(GDC_phenotype) <- gsub('-01A','',row.names(GDC_phenotype))
@@ -125,10 +125,10 @@ ceRNATCGA <- function(path_prefix = NULL,
   miRNA_with_precurer <- miRNA_with_precurer[,-1]
 
   # store processed data
-  data.table::fwrite(annot_cdRNA_unique,paste0(project_name,'-', disease_name,'_mrna.csv'), row.names = T)
-  data.table::fwrite(miRNA_with_precurer,paste0(project_name,'-', disease_name,'_mirna.csv'), row.names = T)
-  data.table::fwrite(GDC_phenotype,paste0(project_name,'-', disease_name,'_phenotype.csv'), row.names = T)
-  data.table::fwrite(survival, paste0(project_name,'-', disease_name,'_survival.csv'), row.names = T)
+  fwrite(as.data.frame(annot_cdRNA_unique),paste0(project_name,'-', disease_name,'_mrna.csv'), row.names = T)
+  fwrite(as.data.frame(miRNA_with_precurer),paste0(project_name,'-', disease_name,'_mirna.csv'), row.names = T)
+  fwrite(as.data.frame(GDC_phenotype),paste0(project_name,'-', disease_name,'_phenotype.csv'), row.names = T)
+  fwrite(as.data.frame(survival0, paste0(project_name,'-', disease_name,'_survival.csv'), row.names = T)
   message('(\u2714) All files have been preprocessed!')
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
