@@ -101,8 +101,8 @@ ceRNATCGA <- function(path_prefix = NULL,
   mirna <- scale(log(mirna+1,2), center = T, scale = T)
 
   # mRNA:log2(fpkm+1)，miRNA:log2(RPM+1)
-  #mirna <- (2^mirna-1)*1000  #RPKM: X1000
-  #htseq_fpkm <- 2^htseq_fpkm -1
+  # mirna <- (2^mirna-1)*1000  #RPKM: X1000
+  # htseq_fpkm <- 2^htseq_fpkm -1
 
   # focus on protein coding RNA because downloaded mRNA expression matrix includes both codingRNA and lncRNA
   gtf_df <- ceRNAR:::gencode_v22_annot
