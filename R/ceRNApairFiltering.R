@@ -4,6 +4,8 @@
 #' @description A function to conduct one of three steps in algorithm,
 #' that is, pairs filtering
 #'
+#' @import foreach
+#'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in

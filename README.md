@@ -55,7 +55,6 @@ ceRNAputativePairs(project_name = 'demo', disease_name = 'DLBC', filtering = 'le
 -   through `ceRNAMethod()`
 
 ``` r
-library(foreach)
 ceRNAMethod(project_name = 'demo', disease_name = "DLBC", window_size = 45/5)
 ```
 

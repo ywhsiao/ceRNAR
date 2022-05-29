@@ -4,6 +4,8 @@
 #' @description A function to conduct three steps in algorithm, including pairs
 #' filtering, segment clustering and peak merging
 #'
+#' @import foreach
+#'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in

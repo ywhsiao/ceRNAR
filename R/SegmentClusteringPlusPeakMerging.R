@@ -3,6 +3,8 @@
 #' @title two of three steps in main ceRNAR algorithm
 #' @description A function to conduct two of three steps in algorithm, that is, segment clustering and peak merging
 #'
+#' @import foreach
+#'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
