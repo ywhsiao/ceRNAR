@@ -78,6 +78,9 @@ ceRNALocation(project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101
 ceRNAModule(project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 5, 
             column_sum = 1)
 ceRNASurvival(project_name = 'demo', disease_name = 'DLBC', mirnas = 'hsa-miR-101-3p')
+ceRNAValidate(project_name = 'demo', disease_name = 'DLBC')
+ceRNAIntegrate(project_name = 'demo', disease_name = 'DLBC')
+
 ```
 
 #### II. (Alternative) retrieving TCGA data from GDC Xena Hub
