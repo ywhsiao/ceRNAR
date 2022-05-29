@@ -57,19 +57,19 @@ ceRNAIntegrate <- function(path_prefix = NULL,
 
   # SPONGE
   doParallel::registerDoParallel(cores=4)
-  mir_expr <- t(mirna)
-  gene_expr <- t(mrna)
+  mir_exp <- t(mirna)
+  gene_exp <- t(mrna)
   genes_miRNA_candidates <- SPONGE::sponge_gene_miRNA_interaction_filter(
-    gene_expr = gene_expr,
-    mir_expr = mir_expr,
+    gene_expr = gene_exp,
+    mir_expr = mir_exp,
     mir_predicted_targets = as.matrix(d))
-  ceRNA_interactions <- SPONGE::sponge(gene_expr = gene_expr,
-                                       mir_expr = mir_expr,
+  ceRNA_interactions <- SPONGE::sponge(gene_expr = gene_exp,
+                                       mir_expr = mir_exp,
                                        mir_interactions = genes_miRNA_candidates)
-
+  num_of_smp <- dim(gene_exp)[1]
   precomputed_cov_matrices <- SPONGE::precomputed_cov_matrices
   mscor_null_model <- SPONGE::sponge_build_null_model(number_of_datasets = 100,
-                                                      number_of_samples = dim(gene_expr)[1])
+                                                      number_of_samples = num_of_smp)
   sponge_result <- SPONGE::sponge_compute_p_values(sponge_result = ceRNA_interactions,
                                                    null_model = mscor_null_model)
   sponge_result_sig <- sponge_result[sponge_result$p.adj<=0.05,]
