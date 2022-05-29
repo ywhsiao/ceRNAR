@@ -77,8 +77,8 @@ ceRNAIntegrate <- function(path_prefix = NULL,
   sponge_result_sig$genepairs_2 <- paste0(sponge_result_sig$geneB,'|',sponge_result_sig$geneA)
 
   #JAMI
-  mir_exp <- mirna
-  gene_exp <- mrna
+  mir_expr <- mirna
+  gene_expr <- mrna
   df_lst <- list()
   for (i in 1:dim(dict)[1]){
     #i=1
@@ -93,8 +93,8 @@ ceRNAIntegrate <- function(path_prefix = NULL,
   RJAMI::jami_settings(pvalueCutOff = 0.05)
   RJAMI::jami_settings(tripleFormat = FALSE)
   result <- RJAMI::jami(gene_miRNA_interactions = gene_mir_interactions_triplets,
-                        gene_expr = gene_exp,
-                        mir_expr = mir_exp)
+                        gene_expr = gene_expr,
+                        mir_expr = mir_expr)
   rjami_result <- result$result[,1:5]
   rjami_result_sig <- rjami_result[rjami_result$p.value <=0.05,]
   rjami_result_sig$triplets <- paste0(rjami_result_sig$miRNA,'|',rjami_result_sig$Source, '|', rjami_result_sig$Target)
