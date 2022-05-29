@@ -69,7 +69,7 @@ ceRNAIntegrate <- function(path_prefix = NULL,
 
   precomputed_cov_matrices <- SPONGE::precomputed_cov_matrices
   mscor_null_model <- SPONGE::sponge_build_null_model(number_of_datasets = 100,
-                                                      number_of_samples = nrow(gene_expr))
+                                                      number_of_samples = dim(gene_expr)[1])
   sponge_result <- SPONGE::sponge_compute_p_values(sponge_result = ceRNA_interactions,
                                                    null_model = mscor_null_model)
   sponge_result_sig <- sponge_result[sponge_result$p.adj<=0.05,]
