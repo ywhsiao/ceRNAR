@@ -11,11 +11,11 @@
 #'
 #' @examples
 #' ceRNATCGA(
+#' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' )
 #'
 #' @export
-
 
 ceRNATCGA <- function(path_prefix = NULL,
                       project_name = 'TCGA',
@@ -95,8 +95,10 @@ ceRNATCGA <- function(path_prefix = NULL,
   # id in names()
   htseq_fpkm <- htseq_fpkm[,names(htseq_fpkm) %in% union_sampleID]
   htseq_fpkm <- htseq_fpkm[ , order(names(htseq_fpkm))]
+  htseq_fpkm <- scale(log(htseq_fpkm+1,2), center = T, scale = T)
   mirna <- mirna[,names(mirna) %in% union_sampleID]
   mirna <- mirna[ , order(names(mirna))]
+  mirna <- scale(log(mirna+1,2), center = T, scale = T)
 
   # mRNA:log2(fpkm+1)，miRNA:log2(RPM+1)
   #mirna <- (2^mirna-1)*1000  #RPKM: X1000
