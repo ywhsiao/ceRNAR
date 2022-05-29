@@ -5,8 +5,6 @@
 #' by ceRNAR algorithm with those from other tools, such as SPONGE (List et al.,
 #' 2019) and RJAMI (Hornakova et al.,)2018.
 #'
-#' @importFrom gRbase combn_prim
-#' @importFrom SPONGE sponge_build_null_model sponge_compute_p_values
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
