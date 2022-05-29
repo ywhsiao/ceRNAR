@@ -347,7 +347,8 @@ ceRNAMethod <- function(path_prefix=NULL,
                                    window_size)
 
   # stop a cluster
-  future:::ClusterRegistry("stop")
+  # future:::ClusterRegistry("stop")
+  parallel::topImplicitCluster()
   # parallel::stopCluster(cl)
 }
 
