@@ -345,7 +345,7 @@ ceRNAIntegrate <- function(path_prefix = NULL,
     # rm(gene_expr)
     # rm(mir_expr)
 
-    num_of_samples <- nrow(gene_expr)
+    num_of_samples <- dim(gene_expr)[1]
     num_of_tasks <- min(max(1, ceiling(nrow(gene.combinations) / 1000)),
                         parallel.chunks)
 
