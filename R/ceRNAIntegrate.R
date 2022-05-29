@@ -68,7 +68,7 @@ ceRNAIntegrate <- function(path_prefix = NULL,
                                        mir_interactions = genes_miRNA_candidates)
   precomputed_cov_matrices <- SPONGE::precomputed_cov_matrices
   mscor_null_model <- SPONGE::sponge_build_null_model(number_of_datasets = 100,
-                                                      number_of_samples = nrow(gene_expr))
+                                                      number_of_samples = dim(gene_expr)[1])
   sponge_result <- SPONGE::sponge_compute_p_values(sponge_result = ceRNA_interactions,
                                                    null_model = mscor_null_model)
   sponge_result_sig <- sponge_result[sponge_result$p.adj<=0.05,]
@@ -76,8 +76,8 @@ ceRNAIntegrate <- function(path_prefix = NULL,
   sponge_result_sig$genepairs_2 <- paste0(sponge_result_sig$geneB,'|',sponge_result_sig$geneA)
 
   #JAMI
-  mir_expr <- mirna
-  gene_expr <- mrna
+  mir_exp <- mirna
+  gene_exp <- mrna
   df_lst <- list()
   for (i in 1:dim(dict)[1]){
     #i=1
@@ -92,8 +92,8 @@ ceRNAIntegrate <- function(path_prefix = NULL,
   RJAMI::jami_settings(pvalueCutOff = 0.05)
   RJAMI::jami_settings(tripleFormat = FALSE)
   result <- RJAMI::jami(gene_miRNA_interactions = gene_mir_interactions_triplets,
-                        gene_expr = gene_expr,
-                        mir_expr = mir_expr)
+                        gene_expr = gene_exp,
+                        mir_expr = mir_exp)
   rjami_result <- result$result[,1:5]
   rjami_result_sig <- rjami_result[rjami_result$p.value <=0.05,]
   rjami_result_sig$triplets <- paste0(rjami_result_sig$miRNA,'|',rjami_result_sig$Source, '|', rjami_result_sig$Target)
