@@ -5,6 +5,7 @@
 #' filtering, segment clustering and peak merging
 #'
 #' @import foreach
+#' @import doSNOW
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign

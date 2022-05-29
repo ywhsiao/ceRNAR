@@ -135,6 +135,7 @@ ceRNATCGA <- function(path_prefix = NULL,
   message('(\u2714) All files have been preprocessed!')
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
+  setwd('../../')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' minutes.'))
   message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
 }
