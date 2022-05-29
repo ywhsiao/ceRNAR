@@ -13,7 +13,6 @@
 #' @param surv_data location of survival data
 #'
 #' @examples
-#' load('data/ExampleData.Rdata')
 #' ceRNACustomize(
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
@@ -89,6 +88,7 @@ ceRNACustomize <- function(path_prefix = NULL,
     message('(\u2714) All the mature miRNA names are matched!')
   }
 
+
   # check survival data
   if (sum(colnames(surv) %in% c('OS','OS.time')) == 0){
     stop("Survival data did not contain 'OS' and 'OS.time' columns!")
@@ -112,8 +112,8 @@ ceRNACustomize <- function(path_prefix = NULL,
   if (dir.exists(paste0(project_name,'-',disease_name,'/01_rawdata')) == FALSE){
     dir.create(paste0(project_name,'-',disease_name,'/01_rawdata'))
   }
-  fwrite(exp,paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mrna.csv'), row.names = T)
-  fwrite(mirna,paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mirna.csv'), row.names = T)
+  fwrite(as.data.frame(exp),paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mrna.csv'), row.names = T)
+  fwrite(as.data.frame(mirna),paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mirna.csv'), row.names = T)
   fwrite(surv, paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_survival.csv'), row.names = T)
 
   CatchupPause <- function(Secs){
