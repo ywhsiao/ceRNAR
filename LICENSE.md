@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2022 ceRNAR
+Copyright (c) 2022 Yi-Wen Hsiao, Lin Wang and Tzu-Pin Lu
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
