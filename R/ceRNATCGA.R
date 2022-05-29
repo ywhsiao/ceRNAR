@@ -4,6 +4,8 @@
 #' @description A function to retrieve TCGA data from GDC Xena Hub
 #' (https://xenabrowser.net/datapages/)
 #'
+#' @import data.table
+#'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
@@ -128,7 +130,7 @@ ceRNATCGA <- function(path_prefix = NULL,
   fwrite(as.data.frame(annot_cdRNA_unique),paste0(project_name,'-', disease_name,'_mrna.csv'), row.names = T)
   fwrite(as.data.frame(miRNA_with_precurer),paste0(project_name,'-', disease_name,'_mirna.csv'), row.names = T)
   fwrite(as.data.frame(GDC_phenotype),paste0(project_name,'-', disease_name,'_phenotype.csv'), row.names = T)
-  fwrite(as.data.frame(survival0, paste0(project_name,'-', disease_name,'_survival.csv'), row.names = T)
+  fwrite(as.data.frame(survival), paste0(project_name,'-', disease_name,'_survival.csv'), row.names = T)
   message('(\u2714) All files have been preprocessed!')
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')

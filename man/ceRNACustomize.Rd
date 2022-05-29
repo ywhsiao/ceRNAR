@@ -30,7 +30,6 @@ ceRNACustomize(
 A function to allow users to upload their own data
 }
 \examples{
-load('data/ExampleData.Rdata')
 ceRNACustomize(
 project_name = 'demo',
 disease_name = 'DLBC',
