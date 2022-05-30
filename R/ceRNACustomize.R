@@ -116,11 +116,7 @@ ceRNACustomize <- function(path_prefix = NULL,
   fwrite(as.data.frame(mirna),paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mirna.csv'), row.names = T)
   fwrite(surv, paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_survival.csv'), row.names = T)
 
-  CatchupPause <- function(Secs){
-    Sys.sleep(Secs) #pause to let connection work
-    closeAllConnections()
-  }
-  CatchupPause(3)
+  closeAllConnections()
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
