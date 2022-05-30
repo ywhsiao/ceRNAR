@@ -347,6 +347,13 @@ ceRNAMethod <- function(path_prefix=NULL,
                                    cor_threshold_peak,
                                    window_size)
   return(potential_ceRNA)
+
+  CatchupPause <- function(Secs){
+    Sys.sleep(Secs) #pause to let connection work
+    closeAllConnections()
+  }
+  CatchupPause(3)
+
   # stop a cluster
   # future:::ClusterRegistry("stop")
   parallel::topImplicitCluster()
