@@ -69,19 +69,23 @@ ceRNATCGA <- function(path_prefix = NULL,
   # id in a column
   GDC_phenotype <- GDC_phenotype[substring(row.names(GDC_phenotype),16)=='A',]
   GDC_phenotype <- GDC_phenotype[!(substring(row.names(GDC_phenotype),14,15) %in% seq(10,29,1)),]
+  GDC_phenotype <- GDC_phenotype[!duplicated(GDC_phenotype$submitter_id),]
   row.names(GDC_phenotype) <-substring(row.names(GDC_phenotype),1,12)
   survival <- survival[substring(row.names(survival),16)=='A',]
   survival <- survival[!(substring(row.names(survival),14,15) %in% seq(10,29,1)),]
   survival <- survival[,colnames(survival)%in%c('OS', 'OS.time')]
+  survival <- survival[!duplicated(substring(row.names(survival),1,12)),]
   row.names(survival) <-substring(row.names(survival),1,12)
   # id in names()
   names(htseq_fpkm) <- gsub("\\.","-", names(htseq_fpkm))
   htseq_fpkm <- htseq_fpkm[,substring(names(htseq_fpkm),16)=='A']
   htseq_fpkm <- htseq_fpkm[,!(substring(names(htseq_fpkm),14,15) %in% seq(10,29,1))]
+  htseq_fpkm <- htseq_fpkm[,!duplicated(substring(names(htseq_fpkm),1,12))]
   names(htseq_fpkm) <-substring(names(htseq_fpkm),1,12)
   names(mirna) <- gsub("\\.","-", names(mirna))
   mirna <- mirna[,substring(names(mirna),16)=='A']
   mirna <- mirna[,!(substring(names(mirna),14,15) %in% seq(10,29,1))]
+  mirna <- mirna[,!duplicated(substring(names(mirna),1,12))]
   names(mirna) <-substring(names(mirna),1,12)
   # get union sampleID
   g1 <- list(names(mirna), names(htseq_fpkm), row.names(GDC_phenotype), row.names(survival))
