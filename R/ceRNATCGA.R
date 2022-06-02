@@ -67,18 +67,22 @@ ceRNATCGA <- function(path_prefix = NULL,
   temp_name <- gsub(".*\\.","",gsub(".tsv", "", temp))
   for (i in 1:length(temp)) assign(temp_name[i], data.frame(fread(temp[i], sep = '\t',header = TRUE, dec = ".", fill = TRUE), row.names = 1))
   # id in a column
-  GDC_phenotype <- as.data.frame(dplyr::filter(GDC_phenotype, grepl("01A", row.names(GDC_phenotype))))
-  row.names(GDC_phenotype) <- gsub('-01A','',row.names(GDC_phenotype))
-  survival <- as.data.frame(dplyr::filter(survival, grepl("01A", row.names(survival))))
-  row.names(survival) <- gsub('-01A','',row.names(survival))
+  GDC_phenotype <- GDC_phenotype[substring(row.names(GDC_phenotype),16)=='A',]
+  GDC_phenotype <- GDC_phenotype[!(substring(row.names(GDC_phenotype),14,15) %in% seq(10,29,1)),]
+  row.names(GDC_phenotype) <-substring(row.names(GDC_phenotype),1,12)
+  survival <- survival[substring(row.names(survival),16)=='A',]
+  survival <- survival[!(substring(row.names(survival),14,15) %in% seq(10,29,1)),]
   survival <- survival[,colnames(survival)%in%c('OS', 'OS.time')]
+  row.names(survival) <-substring(row.names(survival),1,12)
   # id in names()
-  htseq_fpkm <- dplyr::select(as.data.frame(htseq_fpkm), ends_with('01A'))
   names(htseq_fpkm) <- gsub("\\.","-", names(htseq_fpkm))
-  names(htseq_fpkm) <- gsub('-01A','', names(htseq_fpkm))
-  mirna <- dplyr::select(as.data.frame(mirna), ends_with('01A'))
+  htseq_fpkm <- htseq_fpkm[,substring(names(htseq_fpkm),16)=='A']
+  htseq_fpkm <- htseq_fpkm[,!(substring(names(htseq_fpkm),14,15) %in% seq(10,29,1))]
+  names(htseq_fpkm) <-substring(names(htseq_fpkm),1,12)
   names(mirna) <- gsub("\\.","-", names(mirna))
-  names(mirna) <- gsub('-01A','', names(mirna))
+  mirna <- mirna[,substring(names(mirna),16)=='A']
+  mirna <- mirna[,!(substring(names(mirna),14,15) %in% seq(10,29,1))]
+  names(mirna) <-substring(names(mirna),1,12)
   # get union sampleID
   g1 <- list(names(mirna), names(htseq_fpkm), row.names(GDC_phenotype), row.names(survival))
   union_sampleID <- sort(Reduce(intersect, g1))
