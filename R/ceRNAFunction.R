@@ -9,12 +9,7 @@
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
-#' @param window_size the number of samples for each window and usually about
-#' one third of total samples
-#' @param cor_method selection of correlation methods, including pearson and
-#' spearman (default: pearson)
-#' @param cor_threshold_peak peak threshold of correlation value between 0 and 1
-#' (default: 0.85)
+#' @param pairs_cutoff at least the number of ceRNA pairs that a mirna must have
 #'
 #' @importfrom SPONGE sponge_gene_miRNA_interaction_filter
 #' @examples
@@ -145,8 +140,6 @@ ceRNAFunction <- function(path_prefix = NULL,
   ggplot2::ggsave(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_babble.png'), height = 10, width = 20,dpi = 300)
   gg_bar <- cowplot::plot_grid(kk_bar, go_bar, labels = c('A', 'B'), label_size = 12, ncol = 2)
   ggplot2::ggsave(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_bar.png'), height = 8, width = 20,dpi = 300)
-
-  closeAllConnections()
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')

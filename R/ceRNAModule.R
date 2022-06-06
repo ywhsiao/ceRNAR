@@ -7,8 +7,6 @@
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
-#' @param window_size the number of samples for each window and usually about
-#' one third of total samples
 #' @param pairs_cutoff at least the number of ceRNA pairs that a mirna must have
 #' @param column_sum the number of ceRNAs
 #'
