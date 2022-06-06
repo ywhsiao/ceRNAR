@@ -5,6 +5,7 @@
 #' by ceRNAR algorithm with those from other tools, such as SPONGE (List et al.,
 #' 2019) and RJAMI (Hornakova et al.,)2018.
 #'
+#' @importfrom SPONGE sponge_gene_miRNA_interaction_filter
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
