@@ -79,9 +79,13 @@ ceRNAFunction <- function(path_prefix = NULL,
   each_gene <- Reduce(rbind,stringr::str_split(genes[,1], " "))
   each_gene <- unique(c(each_gene[,1], each_gene[,2]))
   message('\u2605 Data preprocessing ...')
-  gene.df <- clusterProfiler::bitr(each_gene, fromType = "SYMBOL",
-                                   toType = c("ENSEMBL", "ENTREZID"),
-                                   OrgDb = 'org.Hs.eg.db')
+
+  # prematch to OrgDb
+  db <- GOSemSim::load_OrgDb(OrgDb = "org.Hs.eg.db")
+  gene.df <- suppressWarnings(AnnotationDbi::select(db,
+                                                keys = each_gene,
+                                                keytype = "SYMBOL",
+                                                columns=c("SYMBOL", "ENSEMBL", "ENTREZID")))
 
   # kegg ora
   message('\u2605 Running KEGG ORA analysis ...')
@@ -141,11 +145,7 @@ ceRNAFunction <- function(path_prefix = NULL,
   gg_bar <- cowplot::plot_grid(kk_bar, go_bar, labels = c('A', 'B'), label_size = 12, ncol = 2)
   ggplot2::ggsave(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_bar.png'), height = 8, width = 20,dpi = 300)
 
-  CatchupPause <- function(Secs){
-    Sys.sleep(Secs) #pause to let connection work
-    closeAllConnections()
-  }
-  CatchupPause(3)
+  closeAllConnections()
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
@@ -153,3 +153,10 @@ ceRNAFunction <- function(path_prefix = NULL,
 
   message('\u2605\u2605\u2605 All analyses has completed! \u2605\u2605\u2605')
 }
+
+
+ceRNAFunction(
+  project_name = 'demo',
+  disease_name = 'DLBC',
+  pairs_cutoff = 1
+  )
