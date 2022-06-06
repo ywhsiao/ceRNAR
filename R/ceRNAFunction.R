@@ -16,7 +16,7 @@
 #' @param cor_threshold_peak peak threshold of correlation value between 0 and 1
 #' (default: 0.85)
 #'
-#' @import SPONGE
+#' @importfrom SPONGE sponge_gene_miRNA_interaction_filter
 #' @examples
 #' ceRNAFunction(
 #' project_name = 'demo',
