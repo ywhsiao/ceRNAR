@@ -242,11 +242,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
   testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),cor_threshold_peak,window_size)
 
-  # close a cluster
-  #closeAllConnections()
-  unloadNamespace("doParallel")
-  closeAllConnections()
-
   FinalResult <- purrr::compact(testfunction)
   if (dir.exists(paste0(project_name, '-', disease_name,'/03_identifiedPairs')) == FALSE){
     dir.create(paste0(project_name, '-', disease_name,'/03_identifiedPairs'))
@@ -260,12 +255,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
   # close a cluster
   #closeAllConnections()
-  CatchupPause <- function(Secs){
-    Sys.sleep(Secs) #pause to let connection work
-    future:::ClusterRegistry("stop")
-  }
-  CatchupPause(120)
-  #parallel::stopCluster(cl)
+  unloadNamespace("doParallel")
+  closeAllConnections()
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')

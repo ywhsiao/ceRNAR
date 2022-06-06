@@ -110,14 +110,12 @@ ceRNAMethod <- function(path_prefix=NULL,
       parallel_d
     }
     Realdata <- slidingWindow(window_size,mirna_total, 'pearson')
-
+    saveRDS(Realdata,paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
     # close a cluster
     #closeAllConnections()
     unloadNamespace("doParallel")
     closeAllConnections()
 
-
-    saveRDS(Realdata,paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
     time2 <- Sys.time()
     diftime <- difftime(time2, time1, units = 'min')
     message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' minutes.'))
@@ -337,10 +335,6 @@ ceRNAMethod <- function(path_prefix=NULL,
 
     testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),0.85,105)
 
-    # close a cluster
-    unloadNamespace("doParallel")
-    closeAllConnections()
-
     FinalResult <- purrr::compact(testfunction)
     if (dir.exists(paste0(project_name,'-',disease_name,'/03_identifiedPairs')) == FALSE){
       dir.create(paste0(project_name,'-',disease_name,'/03_identifiedPairs'))
@@ -351,6 +345,10 @@ ceRNAMethod <- function(path_prefix=NULL,
     final_df <- cbind(final_df,Reduce(rbind,final_df$location))
     final_df <- final_df[,c(1,2,5,6,4)]
     data.table::fwrite(final_df, paste0(project_name,'-',disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = F)
+
+    # close a cluster
+    unloadNamespace("doParallel")
+    closeAllConnections()
 
     time2 <- Sys.time()
     diftime <- difftime(time2, time1, units = 'min')
