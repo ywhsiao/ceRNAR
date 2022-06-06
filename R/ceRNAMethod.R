@@ -26,7 +26,6 @@
 #' @export
 
 
-library(foreach)
 ceRNAMethod <- function(path_prefix=NULL,
                         project_name,
                         disease_name,
@@ -43,11 +42,7 @@ ceRNAMethod <- function(path_prefix=NULL,
     message('Your current directory: ', getwd())
   }
 
-  # create a cluster
-  n <- parallel::detectCores()
-  message('\u2605 Number of computational cores: ',n-2,'/',n, '.')
-  cl <- parallel::makeCluster(n-3, outfile="", error=recover)
-  doSNOW::registerDoSNOW(cl)
+
   # ceRNApairfiltering
   ceRNApairFilering <- function(project_name,
                                 disease_name,
@@ -62,6 +57,10 @@ ceRNAMethod <- function(path_prefix=NULL,
     mrna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
     mirna_total <- unlist(dict[,1])
     message(paste0('\u2605 total miRNA: ', length(mirna_total)))
+    # create a cluster
+    message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
+    doParallel::registerDoParallel(parallel::detectCores()-3)
+
     slidingWindow <- function(window_size, mirna_total, cor_method){
       parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
         mir = mirna_total[mir]
@@ -111,8 +110,14 @@ ceRNAMethod <- function(path_prefix=NULL,
       }
       parallel_d
     }
-
     Realdata <- slidingWindow(window_size,mirna_total, 'pearson')
+
+    # close a cluster
+    #closeAllConnections()
+    unloadNamespace("doParallel")
+    closeAllConnections()
+
+
     saveRDS(Realdata,paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
     time2 <- Sys.time()
     diftime <- difftime(time2, time1, units = 'min')
@@ -125,7 +130,6 @@ ceRNAMethod <- function(path_prefix=NULL,
                     disease_name,
                     window_size,
                     cor_method)
-
 
   # SegmentClustering + PeakMerging
   SegmentClusteringPlusPeakMerging <- function(project_name,
@@ -140,6 +144,10 @@ ceRNAMethod <- function(path_prefix=NULL,
     mrna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
     mirna_total <- unlist(dict[,1])
     d <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
+
+    # create a cluster
+    message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
+    doParallel::registerDoParallel(parallel::detectCores()-3)
 
     sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
       w <- window_size
@@ -300,6 +308,11 @@ ceRNAMethod <- function(path_prefix=NULL,
           N1 <- result$output[max_seg,"num.mark"]
           N2 <- result$output[min_seg,"num.mark"]
           Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
+
+          if (length(Test)!=1){
+            Test=mean(Test)
+          }
+
           # generate final output
           if(Test < 0.05){
             if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
@@ -325,6 +338,10 @@ ceRNAMethod <- function(path_prefix=NULL,
 
     testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),0.85,105)
 
+    # close a cluster
+    unloadNamespace("doParallel")
+    closeAllConnections()
+
     FinalResult <- purrr::compact(testfunction)
     if (dir.exists(paste0(project_name,'-',disease_name,'/03_identifiedPairs')) == FALSE){
       dir.create(paste0(project_name,'-',disease_name,'/03_identifiedPairs'))
@@ -342,23 +359,11 @@ ceRNAMethod <- function(path_prefix=NULL,
     message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
   }
 
-  potential_ceRNA <- SegmentClusteringPlusPeakMerging(project_name,
+  SegmentClusteringPlusPeakMerging(project_name,
                                    disease_name,
                                    cor_threshold_peak,
                                    window_size)
-  return(potential_ceRNA)
 
-  CatchupPause <- function(Secs){
-    Sys.sleep(Secs) #pause to let connection work
-    closeAllConnections()
-  }
-  CatchupPause(3)
-
-  # stop a cluster
-  # future:::ClusterRegistry("stop")
-  parallel::topImplicitCluster()
-  # parallel::stopCluster(cl)
 }
-
 
 

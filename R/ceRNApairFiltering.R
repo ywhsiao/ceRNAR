@@ -5,7 +5,6 @@
 #' that is, pairs filtering
 #'
 #' @import foreach
-#' @import doSNOW
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
@@ -41,11 +40,7 @@ ceRNApairFilering <- function(path_prefix = NULL,
   time1 <- Sys.time()
   message('\u25CF Step3: Filtering putative mRNA-miRNA pairs using sliding window approach')
 
-  # create a cluster
-  n <- parallel::detectCores()
-  message('\u2605 Number of cores: ', n-2, '/', n, '.')
-  cl <- parallel::makeCluster(n-3, outfile="")
-  doSNOW::registerDoSNOW(cl)
+
 
   # setwd(paste0(project_name,'-',disease_name))
   # import example data & putative pairs
@@ -54,6 +49,11 @@ ceRNApairFilering <- function(path_prefix = NULL,
   mrna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
   mirna_total <- unlist(dict[,1])
   message(paste0('\u2605 total miRNA: ', length(mirna_total)))
+
+  # create a cluster
+  message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
+  doParallel::registerDoParallel(parallel::detectCores()-3)
+
   slidingWindow <- function(window_size, mirna_total, cor_method){
       parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
       #mir = 50
@@ -106,18 +106,14 @@ ceRNApairFilering <- function(path_prefix = NULL,
     }
     parallel_d
   }
-
   Realdata <- slidingWindow(window_size,mirna_total, 'pearson')
-  saveRDS(Realdata,paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
 
   # close a cluster
   #closeAllConnections()
-  CatchupPause <- function(Secs){
-    Sys.sleep(Secs) #pause to let connection work
-    future:::ClusterRegistry("stop")
-  }
-  CatchupPause(3)
-  #parallel::stopCluster(cl)
+  unloadNamespace("doParallel")
+  closeAllConnections()
+
+  saveRDS(Realdata,paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')

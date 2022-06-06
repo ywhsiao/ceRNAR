@@ -4,7 +4,6 @@
 #' @description A function to conduct two of three steps in algorithm, that is, segment clustering and peak merging
 #'
 #' @import foreach
-#' @import doSNOW
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
@@ -41,12 +40,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
   message('\u25CF Step4: Clustering segments using CBS algorithm plus Mearging peaks')
 
-  # create a cluster
-  n <- parallel::detectCores()
-  message('\u2605 Number of cores: ', n-2, '/', n, '.')
-  cl <- parallel::makeCluster(n-4, outfile="")
-  doSNOW::registerDoSNOW(cl)
-
   #setwd(paste0(project_name,'-',disease_name))
   dict <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
   mirna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv')),row.names = 1)
@@ -54,8 +47,13 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   mirna_total <- unlist(dict[,1])
   d <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
 
+  ## create a cluster
+  message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
+  doParallel::registerDoParallel(parallel::detectCores()-3)
+
   sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
       w <- window_size
+      #index=1
       mir = mirna_total[index]
       gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
       gene <- intersect(gene,rownames(mrna))
@@ -67,7 +65,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
       tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
           lst <- list()
           #for (p in 1:total_pairs){ # test foreach
-          #p=1
+          #p=2
           print(p)
           cand.ceRNA=c()
           location=list()
@@ -214,6 +212,9 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             N1 <- result$output[max_seg,"num.mark"]
             N2 <- result$output[min_seg,"num.mark"]
             Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
+            if (length(Test)!=1){
+              Test=mean(Test)
+            }
             # generate final output
             if(Test < 0.05){
               if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
@@ -239,7 +240,12 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
       #},error=function(e){e})
     }
 
-  testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),0.85,105)
+  testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),cor_threshold_peak,window_size)
+
+  # close a cluster
+  #closeAllConnections()
+  unloadNamespace("doParallel")
+  closeAllConnections()
 
   FinalResult <- purrr::compact(testfunction)
   if (dir.exists(paste0(project_name, '-', disease_name,'/03_identifiedPairs')) == FALSE){
@@ -258,7 +264,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     Sys.sleep(Secs) #pause to let connection work
     future:::ClusterRegistry("stop")
   }
-  CatchupPause(4)
+  CatchupPause(120)
   #parallel::stopCluster(cl)
 
   time2 <- Sys.time()
@@ -268,7 +274,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
 
 }
-
 
 
 
