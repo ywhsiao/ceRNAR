@@ -77,6 +77,7 @@ ceRNAModule(project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 5,
             column_sum = 1)
 ceRNASurvival(project_name = 'demo', disease_name = 'DLBC', mirnas = 'hsa-miR-101-3p')
 ceRNAValidate(project_name = 'demo', disease_name = 'DLBC')
+library(SPONGE)
 ceRNAIntegrate(project_name = 'demo', disease_name = 'DLBC')
 
 ```
