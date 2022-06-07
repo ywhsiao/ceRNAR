@@ -36,9 +36,12 @@ ceRNAMethod <- function(path_prefix=NULL,
     path_prefix <- getwd()
     setwd(path_prefix)
     message('Your current directory: ', getwd())
-  }else{
+  }else if (!is.null(path_prefix)){
     setwd(path_prefix)
     message('Your current directory: ', getwd())
+  }else {
+    message('Incorrect directory!')
+    stop()
   }
 
 

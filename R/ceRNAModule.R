@@ -30,10 +30,14 @@ ceRNAModule <- function(path_prefix=NULL,
     path_prefix <- getwd()
     setwd(path_prefix)
     message('Your current directory: ', getwd())
-  }else{
+  }else if (!is.null(path_prefix)){
     setwd(path_prefix)
     message('Your current directory: ', getwd())
+  }else {
+    message('Incorrect directory!')
+    stop()
   }
+
   time1 <- Sys.time()
   # setwd(paste0(project_name,'-',disease_name))
   if(!dir.exists(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
