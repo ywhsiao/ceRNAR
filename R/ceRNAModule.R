@@ -116,7 +116,7 @@ ceRNAModule <- function(path_prefix=NULL,
 
     g <- 1:length(node)
 
-    ggnet::ggnet(m, label = ifelse(colSums(m)>=column_sum, colnames(m), NA), alpha = 1, color="black",
+    GGally::ggnet(m, label = ifelse(colSums(m)>=column_sum, colnames(m), NA), alpha = 1, color="black",
           node.group = g, node.color =rep('orange',length(node)),  segment.color = "grey50",
           legend.position="none",  weight = colSums(m) ,mode="circle") # columnsum to tune
   }
