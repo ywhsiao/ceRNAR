@@ -110,11 +110,7 @@ ceRNApairFilering <- function(path_prefix = NULL,
     parallel_d
   }
   Realdata <- slidingWindow(window_size,mirna_total, 'pearson')
-  saveRDS(Realdata,paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
-  # close a cluster
-  #closeAllConnections()
-  unloadNamespace("doParallel")
-  closeAllConnections()
+  saveRDS(Realdata,paste0(path_prefix,'/',project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
