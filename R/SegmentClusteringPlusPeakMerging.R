@@ -43,6 +43,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
   message('\u25CF Step4: Clustering segments using CBS algorithm plus Mearging peaks')
 
+
   #setwd(paste0(project_name,'-',disease_name))
   dict <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
   mirna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv')),row.names = 1)
