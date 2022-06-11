@@ -256,11 +256,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   final_df <- final_df[,c(1,2,5,6,4)]
   data.table::fwrite(final_df, paste0(project_name,'-', disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = F)
 
-  # close a cluster
-  #closeAllConnections()
-  unloadNamespace("doParallel")
-  closeAllConnections()
-
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
 
