@@ -64,21 +64,16 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
       gene_pair <- combn(gene,2)
       total_pairs <- choose(length(gene),2)
-      tmp <- NULL
-      #tmp <- tryCatch({
-      lst <- list()
-      #tmp <- foreach(p=1:as.numeric(total_pairs), .combine = "rbind")  %dopar%  {
-      for (p in 1:total_pairs){ # test foreach
-          #p=2
-          print(paste0('which miRNA: ',index, ';which pairs: ', p))
-          cand.ceRNA=c()
-          location=list()
-          r=gene_pair[1,p]
-          s=gene_pair[2,p]
-          triplet <- d[[index]][,c(1,p+1)]
-          names(triplet) <- c("miRNA","corr")
+      tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
+        print(paste0('which miRNA: ',index, ';which pairs: ', p))
+        cand.ceRNA=c()
+        location=list()
+        r=gene_pair[1,p]
+        s=gene_pair[2,p]
+        triplet <- d[[index]][,c(1,p+1)]
+        names(triplet) <- c("miRNA","corr")
 
-          if(sum(is.na(triplet$corr)) ==0){
+        if(sum(is.na(triplet$corr)) ==0){
             # 01. SegmentClustering method: using CBS ("DNAcopy")
             SegmentClustering <- function(triplet){
               CNA.object <- DNAcopy::CNA(triplet$corr,rep(1,dim(triplet)[1]),triplet$miRNA)
@@ -144,19 +139,16 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             no_merg_loc <- c()
             no_merg_count <- 1
             if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >=2){ ### para 0.5
-              for(i in 1:num_peakloc){
+              for(i in 1:(length(peak.loc)-1)){
                 if(sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"]) > w){
                   no_merg_loc[no_merg_count] <- peak.loc[i]
                 }
               }
-              #tryCatch({
               peak.loc <- peak.loc[-which(peak.loc==no_merg_loc)]
-              #},error=function(e){})
-              num_peakloc <- as.numeric(length(peak.loc)-1)
               while(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >=2){  ### para 0.5
                 num.mark <- c(0,cumsum(result$output$num.mark),data.table::last(cumsum(result$output$num.mark)))
                 TestPeak.pval <- c()
-                for(i in 1:num_peakloc){
+                for(i in 1:(length(peak.loc)-1)){
                   z1 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],na.rm=T))
                   z2 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]],na.rm=T))
                   N1 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]])
@@ -168,7 +160,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                   mergp.loc <- which(TestPeak.pval%in%TestPeak.p)
                   #peak_min <- which(TestPeak.p==max(TestPeak.p))
                   distance <- c()
-                  for(i in 1:num_peakloc){
+                  for(i in 1:(length(peak.loc)-1)){
                     distance[i] <- sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"])
                   }
                   peak_min <- mergp.loc[distance[mergp.loc]==min(distance[mergp.loc])]
@@ -218,37 +210,27 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             N2 <- result$output[min_seg,"num.mark"]
             Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
             # generate final output
-            if(Test < 0.05){
+            if(!is.na(Test) && Test[1] < 0.05){
               if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
                 cand.ceRNA=paste(r,s)
 
-                #tryCatch({
                 peak.loc=sort(c(peak.loc,no_merg_loc)) #put back the peak that can't be merged
-                #},error=function(e){})
 
                 True_peak <- peak.loc[cand.corr[peak.loc+1] > cor_threshold_peak]
                 location=result$output[True_peak,c("loc.start","loc.end")]
 
                 if(!is.null(cand.ceRNA)){
-                  lst[[p]] <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
-                  #lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
-                  #lst
-
+                  lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+                  lst
                 }
-
               }
             }
-
           }
       }
-
-
-        #}
-      #},error=function(e){e})
-      tmp <- do.call(rbind, lst)
+      tmp
     }
 
-  testfunction <- purrr::map(1:as.numeric(length(mirna_total)), sigCernaPeak,d,cor_threshold_peak,window_size)
+  testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,d,cor_threshold_peak,window_size)
 
   FinalResult <- purrr::compact(testfunction)
   if (dir.exists(paste0(project_name, '-', disease_name,'/03_identifiedPairs')) == FALSE){
