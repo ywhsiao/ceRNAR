@@ -57,7 +57,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   sigCernaPeak <- function(index, d, cor_threshold_peak, window_size){
       w <- window_size
       #index=2
-
       mir = mirna_total[index]
       gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
       gene <- intersect(gene,rownames(mrna))
@@ -66,7 +65,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
       total_pairs <- choose(length(gene),2)
       tmp <- NULL
       #tmp <- tryCatch({
-      lst <- list()
+      #lst <- list()
       tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
           #for (p in 1:total_pairs){ # test foreach
           #p=2
@@ -232,7 +231,9 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                 location=result$output[True_peak,c("loc.start","loc.end")]
 
                 if(!is.null(cand.ceRNA)){
-                  lst[[p]] <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+                  #lst[[p]] <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+                  lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+                  lst
 
                 }
 
@@ -242,6 +243,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
         }
         #}
       #},error=function(e){e})
+      tmp
     }
 
   testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),cor_threshold_peak,window_size)
