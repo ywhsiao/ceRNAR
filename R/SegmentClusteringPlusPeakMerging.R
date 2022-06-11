@@ -208,20 +208,22 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             z2 <- psych::fisherz(result$output$seg.mean[min_seg])
             N1 <- result$output[max_seg,"num.mark"]
             N2 <- result$output[min_seg,"num.mark"]
-            Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
+            Test <- as.numeric(2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE))
             # generate final output
-            if(!is.na(Test) && Test[1] < 0.05){
-              if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
-                cand.ceRNA=paste(r,s)
+            if(!is.na(Test[1])){
+              if(Test[1] < 0.05){
+                if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
+                  cand.ceRNA=paste(r,s)
 
-                peak.loc=sort(c(peak.loc,no_merg_loc)) #put back the peak that can't be merged
+                  peak.loc=sort(c(peak.loc,no_merg_loc)) #put back the peak that can't be merged
 
-                True_peak <- peak.loc[cand.corr[peak.loc+1] > cor_threshold_peak]
-                location=result$output[True_peak,c("loc.start","loc.end")]
+                  True_peak <- peak.loc[cand.corr[peak.loc+1] > cor_threshold_peak]
+                  location=result$output[True_peak,c("loc.start","loc.end")]
 
-                if(!is.null(cand.ceRNA)){
-                  lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
-                  lst
+                  if(!is.null(cand.ceRNA)){
+                    lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+                    lst
+                  }
                 }
               }
             }
