@@ -104,7 +104,7 @@ ceRNAFunction <- function(path_prefix = NULL,
   runGOora <- function(go_level){
     #go_level <- go_level[1]
     ego <- clusterProfiler::enrichGO(gene          = gene.df[,3],
-                                     OrgDb         = org.Hs.eg.db::org.Hs.eg.db,
+                                     OrgDb         = db,
                                      ont           = go_level,
                                      pAdjustMethod = "BH",
                                      pvalueCutoff  = 0.01,

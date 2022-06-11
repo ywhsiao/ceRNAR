@@ -216,7 +216,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             N2 <- result$output[min_seg,"num.mark"]
             Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
             if (length(Test)!=1){
-              Test=mean(Test)
+              Test=Test[1]
             }
             # generate final output
             if(Test < 0.05){

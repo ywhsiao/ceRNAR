@@ -39,7 +39,7 @@ ceRNAValidate <- function(path_prefix = NULL,
     dir.create(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/'))
   }
 
-  message('\u25CF Step5: Dowstream Analyses - Externl validation')
+  message('\u25CF Step5: Dowstream Analyses - External validation')
 
   datapreparing <- function(file){
     candidate_ceRNA <- as.data.frame(read.csv(file))

@@ -1,9 +1,0 @@
-citHeader("To cite lubridate in publications use:")
-citEntry(title = "RNASeqR: an R package for automated two-group RNA-Seq analysis workflow",
-         author = personList( as.person("Yi-Wen Hsiao†"),
-                              as.person("Lin Wang†"),
-                              as.person("Tzu-Pin Lu"),
-	       year = "2021",
-         textVersion =
-         paste("Hsiao, Y.W.†, Lin, W.†, Lu, T.P.",
-                "RNASeqR: an R package for automated two-group RNA-Seq analysis workflow"))
