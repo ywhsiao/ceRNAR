@@ -144,7 +144,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             no_merg_loc <- c()
             no_merg_count <- 1
             if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >=2){ ### para 0.5
-              for(i in 1:(length(peak.loc)-1)){
+              for(i in 1:num_peakloc){
                 if(sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"]) > w){
                   no_merg_loc[no_merg_count] <- peak.loc[i]
                 }
@@ -152,10 +152,11 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
               #tryCatch({
               peak.loc <- peak.loc[-which(peak.loc==no_merg_loc)]
               #},error=function(e){})
+              num_peakloc <- as.numeric(length(peak.loc)-1)
               while(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >=2){  ### para 0.5
                 num.mark <- c(0,cumsum(result$output$num.mark),data.table::last(cumsum(result$output$num.mark)))
                 TestPeak.pval <- c()
-                for(i in 1:(length(peak.loc)-1)){
+                for(i in 1:num_peakloc){
                   z1 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],na.rm=T))
                   z2 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]],na.rm=T))
                   N1 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]])
@@ -167,7 +168,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                   mergp.loc <- which(TestPeak.pval%in%TestPeak.p)
                   #peak_min <- which(TestPeak.p==max(TestPeak.p))
                   distance <- c()
-                  for(i in 1:(length(peak.loc)-1)){
+                  for(i in 1:num_peakloc){
                     distance[i] <- sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"])
                   }
                   peak_min <- mergp.loc[distance[mergp.loc]==min(distance[mergp.loc])]
