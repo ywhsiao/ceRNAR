@@ -54,7 +54,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
   doParallel::registerDoParallel(parallel::detectCores()-3)
   #doParallel::registerDoParallel(1)
-  sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
+  sigCernaPeak <- function(index, d, cor_threshold_peak, window_size){
       w <- window_size
       #index=2
 
@@ -67,7 +67,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
       tmp <- NULL
       #tmp <- tryCatch({
       tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
-          #lst <- list()
+          lst <- list()
           #for (p in 1:total_pairs){ # test foreach
           #p=2
           print(paste0('which miRNA: ',index, ';which pairs: ', p))
@@ -220,7 +220,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
               Test=Test[1]
             }
             # generate final output
-            if(Test < 0.05){
+            if(!is.na(Test) && Test < 0.05){
               if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
                 cand.ceRNA=paste(r,s)
 
