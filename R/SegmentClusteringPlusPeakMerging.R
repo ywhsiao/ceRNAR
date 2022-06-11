@@ -67,7 +67,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
       tmp <- NULL
       #tmp <- tryCatch({
       #lst <- list()
-      tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
+      tmp <- foreach(p=1:as.numeric(total_pairs), .combine = "rbind")  %dopar%  {
           #for (p in 1:total_pairs){ # test foreach
           #p=2
           print(paste0('which miRNA: ',index, ';which pairs: ', p))
@@ -244,7 +244,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
       tmp
     }
 
-  testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),cor_threshold_peak,window_size)
+  testfunction <- purrr::map(1:as.numeric(length(mirna_total)), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),cor_threshold_peak,window_size)
 
   FinalResult <- purrr::compact(testfunction)
   if (dir.exists(paste0(project_name, '-', disease_name,'/03_identifiedPairs')) == FALSE){
