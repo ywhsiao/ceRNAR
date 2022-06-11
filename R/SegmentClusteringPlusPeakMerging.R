@@ -66,9 +66,9 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
       total_pairs <- choose(length(gene),2)
       tmp <- NULL
       #tmp <- tryCatch({
-      #lst <- list()
-      tmp <- foreach(p=1:as.numeric(total_pairs), .combine = "rbind")  %dopar%  {
-          #for (p in 1:total_pairs){ # test foreach
+      lst <- list()
+      #tmp <- foreach(p=1:as.numeric(total_pairs), .combine = "rbind")  %dopar%  {
+      for (p in 1:total_pairs){ # test foreach
           #p=2
           print(paste0('which miRNA: ',index, ';which pairs: ', p))
           cand.ceRNA=c()
@@ -230,19 +230,22 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                 location=result$output[True_peak,c("loc.start","loc.end")]
 
                 if(!is.null(cand.ceRNA)){
-                  #lst[[p]] <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
-                  lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
-                  lst
+                  lst[[p]] <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+                  #lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+                  #lst
 
                 }
 
               }
             }
+
           }
-        }
+      }
+
+
         #}
       #},error=function(e){e})
-      tmp
+      tmp <- do.call(rbind, lst)
     }
 
   testfunction <- purrr::map(1:as.numeric(length(mirna_total)), sigCernaPeak,d,cor_threshold_peak,window_size)
