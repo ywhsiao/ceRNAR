@@ -57,7 +57,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   #doParallel::registerDoParallel(1)
   sigCernaPeak <- function(index, d, cor_threshold_peak, window_size){
       w <- window_size
-      index=2
+      #index=2
       mir = mirna_total[index]
       gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
       gene <- intersect(gene,rownames(mrna))
