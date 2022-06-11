@@ -52,12 +52,12 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
   ## create a cluster
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
-  doParallel::registerDoParallel(parallel::detectCores()-3)
-
+  #doParallel::registerDoParallel(parallel::detectCores()-3)
+  doParallel::registerDoParallel(1)
   sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
       w <- window_size
       #index=1
-      print(index)
+      print(paste0('which miRNA: ',index))
       mir = mirna_total[index]
       gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
       gene <- intersect(gene,rownames(mrna))
