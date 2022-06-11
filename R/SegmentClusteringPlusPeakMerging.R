@@ -67,7 +67,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
       tmp <- NULL
       #tmp <- tryCatch({
       tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
-          lst <- list()
+          #lst <- list()
           #for (p in 1:total_pairs){ # test foreach
           #p=2
           print(paste0('which miRNA: ',index, ';which pairs: ', p))
@@ -237,7 +237,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                 }
 
               }
-            }else{next}
+            }
           }
         }
         #}
