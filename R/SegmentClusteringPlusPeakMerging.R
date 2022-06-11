@@ -57,7 +57,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   #doParallel::registerDoParallel(1)
   sigCernaPeak <- function(index, d, cor_threshold_peak, window_size){
       w <- window_size
-      #index=2
+      index=2
       mir = mirna_total[index]
       gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
       gene <- intersect(gene,rownames(mrna))
@@ -216,11 +216,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             N1 <- result$output[max_seg,"num.mark"]
             N2 <- result$output[min_seg,"num.mark"]
             Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
-            if (length(Test)!=1){
-              Test=Test[1]
-            }
             # generate final output
-            if(!is.na(Test) && Test < 0.05){
+            if(Test < 0.05){
               if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
                 cand.ceRNA=paste(r,s)
 

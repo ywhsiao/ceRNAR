@@ -58,7 +58,7 @@ ceRNApairFilering <- function(path_prefix = NULL,
   doParallel::registerDoParallel(parallel::detectCores()-3)
 
   slidingWindow <- function(window_size, mirna_total, cor_method){
-      parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
+    parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
       #mir = 50
       mir = mirna_total[mir]
       gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
