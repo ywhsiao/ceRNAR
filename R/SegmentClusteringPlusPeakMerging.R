@@ -63,7 +63,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
     gene_pair <- combn(gene,2)
     total_pairs <- choose(length(gene),2)
-    #tmp <- NULL
+    tmp <- NULL
     #tmp <- tryCatch({
     tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
     #lst <- list()
@@ -114,7 +114,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
           if(length(tooshort)>=1){
             cc=1
             lag=c()
-            for(t in 1:length(tooshort)){
+            for(t in seq_along(tooshort)){
               long_seg <- which(result$output$num.mark>3)
               diff=abs(tooshort[t]-long_seg)
               closest_seg <- long_seg[which(diff==min(diff))]
