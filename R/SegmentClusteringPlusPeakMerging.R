@@ -53,7 +53,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
   ## create a cluster
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
-  doParallel::registerDoParallel(parallel::detectCores()-3)
   #doParallel::registerDoParallel(1)
   sigCernaPeak <- function(index, d, cor_threshold_peak, window_size){
       w <- window_size
@@ -64,7 +63,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
       gene_pair <- combn(gene,2)
       total_pairs <- choose(length(gene),2)
-      print(paste0('which miRNA: ',index, ';total pairs: ', p))
+      print(paste0('which miRNA: ',index, ';total pairs: ', length(total_pairs)))
+      doParallel::registerDoParallel(parallel::detectCores()-3)
       tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
         cand.ceRNA=c()
         location=list()
