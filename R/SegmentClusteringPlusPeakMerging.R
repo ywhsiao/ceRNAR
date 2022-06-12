@@ -54,7 +54,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   ## create a cluster
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
   #doParallel::registerDoParallel(1)
-  #doParallel::registerDoParallel(parallel::detectCores()-3)
+  doParallel::registerDoParallel(parallel::detectCores()-3)
   sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
     w <- window_size
     mir = mirna_total[index]
@@ -63,7 +63,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
     gene_pair <- combn(gene,2)
     total_pairs <- choose(length(gene),2)
-    tmp <- NULL
+    #tmp <- NULL
     #tmp <- tryCatch({
     tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
     #lst <- list()
@@ -241,8 +241,9 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     #tmp <- do.call(rbind,lst)
     tmp
   }
-  future::plan("multicore", workers=parallel::detectCores()-3,seed=TRUE)
-  testfunction <- furrr::future_map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),0.85,105)
+  # seed=NULL
+  # future::plan("future::cluster", workers=parallel::detectCores()-3)
+  testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),0.85,105)
 
 
   FinalResult <- purrr::compact(testfunction)
