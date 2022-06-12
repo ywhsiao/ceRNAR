@@ -65,9 +65,9 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     total_pairs <- choose(length(gene),2)
     tmp <- NULL
     #tmp <- tryCatch({
-    tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
-    #lst <- list()
-    #for (p in 1:total_pairs){ # test foreach
+    #tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
+    lst <- list()
+    for (p in 1:total_pairs){ # test foreach
       #p=1
       print(p)
       cand.ceRNA=c()
@@ -228,8 +228,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             location=result$output[True_peak,c("loc.start","loc.end")]
 
             if(!is.null(cand.ceRNA)){
-              lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
-              lst
+              lst[[p]] <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
             }
 
           }
@@ -238,7 +237,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     }
     #}
     #},error=function(e){e})
-    #tmp <- do.call(rbind,lst)
+    tmp <- do.call(rbind,lst)
     tmp
   }
   # seed=NULL
