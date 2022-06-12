@@ -55,9 +55,10 @@ ceRNApairFilering <- function(path_prefix = NULL,
 
   # create a cluster
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
-  doParallel::registerDoParallel(parallel::detectCores()-3)
+
 
   slidingWindow <- function(window_size, mirna_total, cor_method){
+    doParallel::registerDoParallel(parallel::detectCores()-3)
     parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
       #mir = 50
       mir = mirna_total[mir]
