@@ -241,7 +241,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     #tmp <- do.call(rbind,lst)
     tmp
   }
-  furrr::plan(multiprocess, workers=parallel::detectCores()-3)
+  future::plan("multicore", workers=parallel::detectCores()-3)
   testfunction <- furrr::future_map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),0.85,105)
 
 
