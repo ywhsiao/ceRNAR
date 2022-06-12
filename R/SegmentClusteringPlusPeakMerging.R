@@ -43,8 +43,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
   message('\u25CF Step4: Clustering segments using CBS algorithm plus Mearging peaks')
 
-
-  #setwd(paste0(project_name,'-',disease_name))
+  # setwd(paste0(project_name,'-',disease_name))
   dict <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
   mirna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv')),row.names = 1)
   mrna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
@@ -65,9 +64,9 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     total_pairs <- choose(length(gene),2)
     tmp <- NULL
     #tmp <- tryCatch({
-    #tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
-    lst <- list()
-    for (p in 1:total_pairs){ # test foreach
+    tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
+    #lst <- list()
+    #for (p in 1:total_pairs){ # test foreach
       #p=1
       print(p)
       cand.ceRNA=c()
@@ -216,7 +215,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
         N2 <- result$output[min_seg,"num.mark"]
         Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
         # generate final output
-        if(Test[1] < 0.05){
+        if(Test < 0.05){
           if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
             cand.ceRNA=paste(r,s)
 
@@ -228,7 +227,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             location=result$output[True_peak,c("loc.start","loc.end")]
 
             if(!is.null(cand.ceRNA)){
-              lst[[p]] <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+              lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+              lst
             }
 
           }
@@ -237,7 +237,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     }
     #}
     #},error=function(e){e})
-    tmp <- do.call(rbind,lst)
+    #tmp <- do.call(rbind,lst)
     tmp
   }
   # seed=NULL
