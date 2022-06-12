@@ -63,9 +63,10 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
       gene_pair <- combn(gene,2)
       total_pairs <- choose(length(gene),2)
-      print(paste0('which miRNA: ',index, ';total pairs: ', length(total_pairs)))
+
       doParallel::registerDoParallel(parallel::detectCores()-3)
       tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
+        print(paste0('which miRNA: ',index, ';total pairs: ', p)
         cand.ceRNA=c()
         location=list()
         r=gene_pair[1,p]
@@ -208,7 +209,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             z2 <- psych::fisherz(result$output$seg.mean[min_seg])
             N1 <- result$output[max_seg,"num.mark"]
             N2 <- result$output[min_seg,"num.mark"]
-            Test <- as.numeric(2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE))
+            Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
             # generate final output
             if(Test < 0.05){
               if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
