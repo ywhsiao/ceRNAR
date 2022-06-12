@@ -62,11 +62,11 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
     gene_pair <- combn(gene,2)
     total_pairs <- choose(length(gene),2)
-    tmp <- NULL
+    #tmp <- NULL
     #tmp <- tryCatch({
-    tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
-    #lst <- list()
-    #for (p in 1:total_pairs){ # test foreach
+    #tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
+    lst <- list()
+    for (p in 1:total_pairs){ # test foreach
       #p=1
       print(p)
       cand.ceRNA=c()
@@ -215,7 +215,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
         N2 <- result$output[min_seg,"num.mark"]
         Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
         # generate final output
-        if(Test < 0.05){
+        if(!is.na(Test) && Test < 0.05){
           if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
             cand.ceRNA=paste(r,s)
 
@@ -227,8 +227,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             location=result$output[True_peak,c("loc.start","loc.end")]
 
             if(!is.null(cand.ceRNA)){
-              lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
-              lst
+              lst[[p]] <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+              #lst
             }
 
           }
@@ -237,8 +237,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     }
     #}
     #},error=function(e){e})
-    #tmp <- do.call(rbind,lst)
-    tmp
+    tmp <- do.call(rbind,lst)
+    #tmp
   }
   # seed=NULL
   future::plan("future::cluster", workers=parallel::detectCores()-3)
