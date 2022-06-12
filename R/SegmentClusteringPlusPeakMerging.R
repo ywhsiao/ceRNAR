@@ -66,7 +66,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
       doParallel::registerDoParallel(parallel::detectCores()-3)
       tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
-        print(paste0('which miRNA: ',index, ';total pairs: ', p)
+        print(paste0('which miRNA: ',index, ';total pairs: ', p))
         cand.ceRNA=c()
         location=list()
         r=gene_pair[1,p]
