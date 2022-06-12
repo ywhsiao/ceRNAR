@@ -76,10 +76,12 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
         if(sum(is.na(triplet$corr)) ==0){
             # 01. SegmentClustering method: using CBS ("DNAcopy")
             SegmentClustering <- function(triplet){
+              sink("/dev/null")
               CNA.object <- DNAcopy::CNA(triplet$corr,rep(1,dim(triplet)[1]),triplet$miRNA)
               names(CNA.object) <- c("chrom","maploc",paste("gene",r,"and",s))  ### gene name
               result <- DNAcopy::segment(CNA.object)
               result
+              sink()
             }
             result <- SegmentClustering(triplet)
 
@@ -225,7 +227,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                 }
               }
             }
-          }
+          }else{stop()}
       }
       tmp
     }
