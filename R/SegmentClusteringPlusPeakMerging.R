@@ -54,7 +54,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   ## create a cluster
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
   #doParallel::registerDoParallel(1)
-  doParallel::registerDoParallel(parallel::detectCores()-3)
+  #doParallel::registerDoParallel(parallel::detectCores()-3)
   sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
     w <- window_size
     mir = mirna_total[index]
@@ -65,9 +65,9 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     total_pairs <- choose(length(gene),2)
     tmp <- NULL
     #tmp <- tryCatch({
-    # tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
-    lst <- list()
-    for (p in 1:total_pairs){ # test foreach
+    tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
+    #lst <- list()
+    #for (p in 1:total_pairs){ # test foreach
       #p=1
       print(p)
       cand.ceRNA=c()
@@ -215,6 +215,9 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
         N1 <- result$output[max_seg,"num.mark"]
         N2 <- result$output[min_seg,"num.mark"]
         Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
+        if (length(Test)!=1){
+          Test=mean(Test)
+        }
         # generate final output
         if(Test < 0.05){
           if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
@@ -228,7 +231,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             location=result$output[True_peak,c("loc.start","loc.end")]
 
             if(!is.null(cand.ceRNA)){
-              lst[[p]] <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+              lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+              lst
             }
 
           }
@@ -240,8 +244,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     tmp <- do.call(rbind,lst)
     tmp
   }
-
-  testfunction <- purrr::map(1:as.numeric(length(mirna_total)), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),0.85,105)
+  furrr::plan(multiprocess, workers=parallel::detectCores()-3)
+  testfunction <- furrr::future_map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),0.85,105)
 
 
   FinalResult <- purrr::compact(testfunction)
