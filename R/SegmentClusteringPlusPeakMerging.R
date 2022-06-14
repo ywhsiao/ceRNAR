@@ -192,7 +192,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                   no_merg_loc[no_merg_count] <- peak.loc.new[i]
                 }
               }
-              peak.loc.new <- peak.loc.new[-no_merg_loc]
+              peak.loc.new <- peak.loc.new[order(-no_merg_loc)]
               #},error=function(e){})
 
               if(length(peak.loc.new)==length(peak.loc)) break
