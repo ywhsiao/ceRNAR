@@ -25,7 +25,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                                              project_name,
                                              disease_name,
                                              cor_threshold_peak = 0.85,
-                                             window_size){
+                                             window_size=10){
 
   if (is.null(path_prefix)){
     path_prefix <- getwd()
@@ -49,12 +49,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   mrna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
   mirna_total <- unlist(dict[,1])
   d <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
-
-  if (project_name == 'TCGA'){
-    window_size=dim(mrna)%/%10
-  }else{
-    window_size=window_size
-  }
 
   ## create a cluster
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')

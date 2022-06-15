@@ -26,7 +26,7 @@
 ceRNApairFilering <- function(path_prefix = NULL,
                               project_name,
                               disease_name,
-                              window_size,
+                              window_size=10,
                               cor_method='pearson'){
   if (is.null(path_prefix)){
     path_prefix <- getwd()
@@ -51,12 +51,6 @@ ceRNApairFilering <- function(path_prefix = NULL,
   dict <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
   mirna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv')),row.names = 1)
   mrna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
-
-  if (project_name == 'TCGA'){
-    window_size=dim(mrna)%/%10
-  }else{
-    window_size=window_size
-  }
 
   mirna_total <- unlist(dict[,1])
   message(paste0('\u2605 total miRNA: ', length(mirna_total)))
