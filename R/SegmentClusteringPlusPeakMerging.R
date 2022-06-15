@@ -9,13 +9,13 @@
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
 #' @param cor_threshold_peak peak threshold of correlation value between 0 and 1 (default: 0.85)
-#' @param window_size the number of samples for each window
+#' @param window_size the number of samples for each window (default:10)
 #'
 #' @examples
 #' SegmentClusteringPlusPeakMerging(
 #' project_name = 'demo',
 #' disease_name="DLBC",
-#' window_size = 45/5
+#' window_size = 10
 #' )
 #'
 #' @export
@@ -49,6 +49,12 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   mrna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
   mirna_total <- unlist(dict[,1])
   d <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
+
+  if (project_name == 'TCGA'){
+    window_size=dim(mrna)%/%10
+  }else{
+    window_size=window_size
+  }
 
   ## create a cluster
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
@@ -184,16 +190,16 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
               cand.corr.new <- c(-1,result$output$seg.mean,-1)  #add 0 to detect peaks happened at head and tail
               peak.loc.new <- quantmod::findPeaks(cand.corr.new)-2
 
-              #tryCatch({
-              no_merg_loc <- c()
-              no_merg_count <- 1
-              for(i in 1:(length(peak.loc.new)-1)){
-                if(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"])> w){
-                  no_merg_loc[no_merg_count] <- peak.loc.new[i]
+              tryCatch({
+                no_merg_loc <- c()
+                no_merg_count <- 1
+                for(i in 1:(length(peak.loc.new)-1)){
+                  if(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"])> w){
+                    no_merg_loc[no_merg_count] <- peak.loc.new[i]
+                  }
                 }
-              }
-              peak.loc.new <- peak.loc.new[order(-no_merg_loc)]
-              #},error=function(e){})
+                peak.loc.new <- peak.loc.new[order(-no_merg_loc)]
+              },error=function(e){})
 
               if(length(peak.loc.new)==length(peak.loc)) break
               peak.loc <- peak.loc.new

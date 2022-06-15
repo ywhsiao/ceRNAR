@@ -9,7 +9,7 @@
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
-#' @param window_size the number of samples for each window
+#' @param window_size the number of samples for each window (default:10)
 #' @param cor_method selection of correlation methods, including pearson and
 #' spearman (default: pearson)
 #'
@@ -17,7 +17,7 @@
 #' ceRNApairFilering(
 #' project_name = 'demo',
 #' disease_name= 'DLBC',
-#' window_size = 45/5
+#' window_size = 10
 #' )
 #'
 #' @export
@@ -40,6 +40,7 @@ ceRNApairFilering <- function(path_prefix = NULL,
     stop()
   }
 
+
   time1 <- Sys.time()
   message('\u25CF Step3: Filtering putative mRNA-miRNA pairs using sliding window approach')
 
@@ -50,6 +51,13 @@ ceRNApairFilering <- function(path_prefix = NULL,
   dict <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
   mirna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv')),row.names = 1)
   mrna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
+
+  if (project_name == 'TCGA'){
+    window_size=dim(mrna)%/%10
+  }else{
+    window_size=window_size
+  }
+
   mirna_total <- unlist(dict[,1])
   message(paste0('\u2605 total miRNA: ', length(mirna_total)))
 
