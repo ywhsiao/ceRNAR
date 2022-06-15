@@ -4,6 +4,7 @@
 #' @description A function to conduct two of three steps in algorithm, that is, segment clustering and peak merging
 #'
 #' @import foreach
+#' @import magrittr
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
@@ -53,8 +54,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   ## create a cluster
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
   #doParallel::registerDoParallel(1)
-  #doParallel::registerDoParallel(parallel::detectCores()-3)
   sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
+    #index=1
     w <- window_size
     mir = mirna_total[index]
     gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
@@ -62,11 +63,12 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
     gene_pair <- combn(gene,2)
     total_pairs <- choose(length(gene),2)
-    #tmp <- NULL
+    tmp <- NULL
+    doParallel::registerDoParallel(parallel::detectCores()-3)
     #tmp <- tryCatch({
-    #tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
-    lst <- list()
-    for (p in 1:total_pairs){ # test foreach
+    tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
+    #lst <- list()
+    #for (p in 1:total_pairs){ # test foreach
       #p=1
       print(p)
       cand.ceRNA=c()
@@ -184,16 +186,16 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
               cand.corr.new <- c(-1,result$output$seg.mean,-1)  #add 0 to detect peaks happened at head and tail
               peak.loc.new <- quantmod::findPeaks(cand.corr.new)-2
 
-              tryCatch({
-                no_merg_loc <- c()
-                no_merg_count <- 1
-                for(i in 1:(length(peak.loc.new)-1)){
-                  if(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"])> w){
-                    no_merg_loc[no_merg_count] <- peak.loc.new[i]
-                  }
+              #tryCatch({
+              no_merg_loc <- c()
+              no_merg_count <- 1
+              for(i in 1:(length(peak.loc.new)-1)){
+                if(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"])> w){
+                  no_merg_loc[no_merg_count] <- peak.loc.new[i]
                 }
-                peak.loc.new <- peak.loc.new[order(-no_merg_loc)]
-              },error=function(e){})
+              }
+              peak.loc.new <- peak.loc.new[order(-no_merg_loc)]
+              #},error=function(e){})
 
               if(length(peak.loc.new)==length(peak.loc)) break
               peak.loc <- peak.loc.new
@@ -227,8 +229,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
             location=result$output[True_peak,c("loc.start","loc.end")]
 
             if(!is.null(cand.ceRNA)){
-              lst[[p]] <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
-              #lst
+              lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+              lst
             }
 
           }
@@ -237,24 +239,31 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     }
     #}
     #},error=function(e){e})
-    tmp <- do.call(rbind,lst)
-    #tmp
+    #tmp <- do.call(rbind,lst)
+    tmp
   }
   # seed=NULL
-  future::plan("future::cluster", workers=parallel::detectCores()-3)
-  testfunction <- furrr::future_map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),0.85,105)
+  # txt=list()
+  # for (i in 1:length(mirna_total)){
+  #   print(i)
+  #   txt[[i]] <- sigCernaPeak(i,d, cor_threshold_peak, window_size)
+  # }
+  # txt_final <- do.call(rbind, txt)
 
-
+  #future::plan("future::cluster", workers=parallel::detectCores()-3)
+  testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),cor_threshold_peak,window_size)
   FinalResult <- purrr::compact(testfunction)
+
   if (dir.exists(paste0(project_name, '-', disease_name,'/03_identifiedPairs')) == FALSE){
     dir.create(paste0(project_name, '-', disease_name,'/03_identifiedPairs'))
   }
   saveRDS(FinalResult,paste0(project_name,'-',disease_name,'/03_identifiedPairs/',project_name,'-',disease_name,'_finalpairs.rds'))
 
   final_df <- as.data.frame(Reduce(rbind, FinalResult))
-  final_df <- cbind(final_df,Reduce(rbind,final_df$location))
-  final_df <- final_df[,c(1,2,5,6,4)]
-  data.table::fwrite(final_df, paste0(project_name,'-', disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = F)
+  flat_df <-  final_df %>%
+    tidyr::unnest(location, .drop = FALSE) %>%
+    tidyr::unnest(numOfseg, .drop = FALSE)
+  data.table::fwrite(flat_df, paste0(project_name,'-', disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = F)
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
