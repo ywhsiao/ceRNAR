@@ -211,6 +211,14 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
         max_seg <- which(result$output$seg.mean==max(result$output$seg.mean))
         min_seg <- which(result$output$seg.mean==min(result$output$seg.mean))
 
+        if (length(max_seg)!=1){
+          max_seg <- max_seg[2]
+        }
+        print(paste0('min_len:',length(max_seg)))
+        if (length(min_seg)!=1){
+          min_seg <- min_seg[1]
+        }
+
         z1 <- psych::fisherz(result$output$seg.mean[max_seg])
         z2 <- psych::fisherz(result$output$seg.mean[min_seg])
         N1 <- result$output[max_seg,"num.mark"]
