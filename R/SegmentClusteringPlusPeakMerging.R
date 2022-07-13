@@ -121,7 +121,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
               closest_seg <- long_seg[which(diff==min(diff))]
               if(length(closest_seg)>=2){
                 b <- abs(result$output$seg.mean[closest_seg]-result$output$seg.mean[tooshort[t]])
-                closest_seg <- closest_seg[b==min(b)]
+                closest_seg <- closest_seg[b==min(b)][1]
               }
               result$output[tooshort[t],"loc.start"] <- min(result$output[tooshort[t],"loc.start"],result$output[closest_seg,"loc.start"])
               result$output[tooshort[t],"loc.end"] <- max(result$output[tooshort[t],"loc.end"],result$output[closest_seg,"loc.end"])
@@ -155,12 +155,17 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
           while(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >=2){  ### para 0.5
             num.mark <- c(0,cumsum(result$output$num.mark),data.table::last(cumsum(result$output$num.mark)))
             TestPeak.pval <- c()
-            for(i in 1:(length(peak.loc)-1)){
-              z1 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],na.rm=T))
-              z2 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]],na.rm=T))
-              N1 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]])
-              N2 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]])
-              TestPeak.pval[i] <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
+            if (length(peak.loc)>2){
+              for(i in 1:(length(peak.loc)-1)){
+                #TestPeak.pval[i] <- t.test(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],triplet$corr[(num.mark[peak.loc[i+1]]+1):num.mark[peak.loc[i+1]+1]])$p.value
+                z1 <- fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],na.rm=T))
+                z2 <- fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]],na.rm=T))
+                N1 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]])
+                N2 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]])
+                TestPeak.pval[i] <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
+                #TestPeak.pval[i] <- t.test(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]])$p.value
+
+              }
             }
             if(sum(TestPeak.pval>0.05)!=0){  ### para:alpha 0.05
               TestPeak.p <- TestPeak.pval[TestPeak.pval>0.05]
@@ -194,7 +199,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                   no_merg_loc[no_merg_count] <- peak.loc.new[i]
                 }
               }
-              peak.loc.new <- peak.loc.new[order(-no_merg_loc)]
+              peak.loc.new <- peak.loc.new[as.numeric(-no_merg_loc)]
               #},error=function(e){})
 
               if(length(peak.loc.new)==length(peak.loc)) break
