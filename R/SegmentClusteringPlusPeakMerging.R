@@ -67,9 +67,9 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     tmp <- NULL
     #doParallel::registerDoParallel(parallel::detectCores()-3)
     #tmp <- tryCatch({
-    #tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
-    lst <- list()
-    for (p in 1:total_pairs){ # test foreach
+    tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
+    #lst <- list()
+    #for (p in 1:total_pairs){ # test foreach
       #p=1
       print(paste0('total pair:',p))
       cand.ceRNA=c()
@@ -253,7 +253,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     }
     #}
     #},error=function(e){e})
-    tmp <- do.call(rbind,lst)
+    #tmp <- do.call(rbind,lst)
     tmp
   }
   # seed=NULL
