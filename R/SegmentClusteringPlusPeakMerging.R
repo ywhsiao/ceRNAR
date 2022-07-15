@@ -56,6 +56,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   #doParallel::registerDoParallel(1)
   sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
     #index=1
+    print(paste0('microRNA:', index))
     w <- window_size
     mir = mirna_total[index]
     gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
@@ -199,7 +200,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                   no_merg_loc[no_merg_count] <- peak.loc.new[i]
                 }
               }
-              peak.loc.new <- peak.loc.new[as.numeric(-no_merg_loc)]
+              peak.loc.new <- peak.loc.new[-as.numeric(no_merg_loc)]
               #},error=function(e){})
 
               if(length(peak.loc.new)==length(peak.loc)) break
