@@ -5,6 +5,7 @@
 #'
 #' @import foreach
 #' @import magrittr
+#' @import dplyr
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
@@ -53,7 +54,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
   ## create a cluster
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
-  #doParallel::registerDoParallel(1)
   sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
     #index=1
     print(paste0('microRNA:', index))
@@ -64,8 +64,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
     gene_pair <- combn(gene,2)
     total_pairs <- choose(length(gene),2)
-    tmp <- NULL
-    #doParallel::registerDoParallel(parallel::detectCores()-3)
+    #tmp <- NULL
+    doParallel::registerDoParallel(parallel::detectCores()-3)
     #tmp <- tryCatch({
     tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
     #lst <- list()
