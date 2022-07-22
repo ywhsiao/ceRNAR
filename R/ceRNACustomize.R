@@ -3,8 +3,6 @@
 #' @title A function for uploading customized data
 #' @description A function to allow users to upload their own data
 #'
-#' @import data.table
-#'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in

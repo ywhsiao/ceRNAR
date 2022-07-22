@@ -4,7 +4,6 @@
 #' @description A function to retrieve TCGA data from GDC Xena Hub
 #' (https://xenabrowser.net/datapages/)
 #'
-#' @import data.table
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign

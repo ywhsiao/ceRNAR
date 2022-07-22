@@ -5,7 +5,6 @@
 #'
 #' @import foreach
 #' @import magrittr
-#' @import dplyr
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
