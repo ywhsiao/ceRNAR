@@ -56,7 +56,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
   sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
     #index=1
-    print(paste0('microRNA:', index))
+    #print(paste0('microRNA:', index))
     w <- window_size
     mir = mirna_total[index]
     gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
@@ -174,8 +174,10 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
               mergp.loc <- which(TestPeak.pval%in%TestPeak.p)
               #peak_min <- which(TestPeak.p==max(TestPeak.p))
               distance <- c()
-              for(i in 1:(length(peak.loc)-1)){
+              if (length(peak.loc)>2){
+                for(i in 1:(length(peak.loc)-1)){
                 distance[i] <- sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"])
+                }
               }
               peak_min <- mergp.loc[distance[mergp.loc]==min(distance[mergp.loc])]
               p_merg <- intersect(mergp.loc,peak_min)
@@ -196,9 +198,12 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
               #tryCatch({
               no_merg_loc <- c()
               no_merg_count <- 1
-              for(i in 1:(length(peak.loc.new)-1)){
+              if(length(closest_seg)>=2){
+                for(i in 1:(length(peak.loc.new)-1)){
+                if (is.na(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"]))) {break}
                 if(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"])> w){
                   no_merg_loc[no_merg_count] <- peak.loc.new[i]
+                }
                 }
               }
               peak.loc.new <- peak.loc.new[-as.numeric(no_merg_loc)]
