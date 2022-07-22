@@ -5,6 +5,7 @@
 #' filtering, segment clustering and peak merging
 #'
 #' @import foreach
+#' @rawNamespace import(data.table, except = c(first, last, between))
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
