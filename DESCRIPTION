@@ -13,7 +13,6 @@ Import:
   foreach,
   org.Hs.eg.db,
   SPONGE,
-  data.table,
   magrittr
 RoxygenNote: 7.2.0
 Suggests: 
