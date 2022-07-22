@@ -6,6 +6,12 @@
 #' 2019) and RJAMI (Hornakova et al.,2018.)
 #'
 #' @import SPONGE
+#' @import import(biomaRt, except = select)
+#' @import import(Biobase, except = combine)
+#' @import import(cvms, except = font)
+#' @import import(ggplot2, except = margin)
+#' @import import(dplyr, except = combine)
+#' @import import(Biobase, except = exprs)
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign

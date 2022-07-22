@@ -197,7 +197,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
               #tryCatch({
               no_merg_loc <- c()
               no_merg_count <- 1
-              if(length(closest_seg)>=2){
+              if(length(peak.loc.new)>=2){
                 for(i in 1:(length(peak.loc.new)-1)){
                 if (is.na(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"]))) {break}
                 if(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"])> w){
