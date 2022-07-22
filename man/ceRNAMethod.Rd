@@ -3,6 +3,16 @@
 \name{ceRNAMethod}
 \alias{ceRNAMethod}
 \title{Main ceRNAR algorithm}
+\usage{
+ceRNAMethod(
+  path_prefix = NULL,
+  project_name,
+  disease_name,
+  window_size,
+  cor_method = "pearson",
+  cor_threshold_peak = 0.85
+)
+}
 \arguments{
 \item{path_prefix}{user's working directory}
 

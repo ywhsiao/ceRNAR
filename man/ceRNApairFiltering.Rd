@@ -9,7 +9,7 @@ ceRNApairFilering(
   path_prefix = NULL,
   project_name,
   disease_name,
-  window_size,
+  window_size = 10,
   cor_method = "pearson"
 )
 }
@@ -20,7 +20,7 @@ ceRNApairFilering(
 
 \item{disease_name}{the abbreviation of disease that users are interested in}
 
-\item{window_size}{the number of samples for each window}
+\item{window_size}{the number of samples for each window (default:10)}
 
 \item{cor_method}{selection of correlation methods, including pearson and
 spearman (default: pearson)}
@@ -33,7 +33,7 @@ that is, pairs filtering
 ceRNApairFilering(
 project_name = 'demo',
 disease_name= 'DLBC',
-window_size = 45/5
+window_size = 10
 )
 
 }

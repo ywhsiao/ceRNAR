@@ -71,7 +71,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     #lst <- list()
     #for (p in 1:total_pairs){ # test foreach
       #p=1
-      print(paste0('total pair:',p))
+      print(paste0("no_of_index:", index,"|", "no_of_pairs:",p))
       cand.ceRNA=c()
       location=list()
       r=gene_pair[1,p]
@@ -146,6 +146,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
         no_merg_count <- 1
         if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >=2){ ### para 0.5
           for(i in 1:(length(peak.loc)-1)){
+            if (is.na(sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"]))) {break}
             if(sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"]) > w){
               no_merg_loc[no_merg_count] <- peak.loc[i]
             }

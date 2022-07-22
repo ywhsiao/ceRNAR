@@ -5,7 +5,7 @@
 \alias{ceRNAIntegrate}
 \title{Integration of the possible ceRNA pairs among published tools}
 \usage{
-ceRNAIntegrate(path_prefix = NULL, project_name = "TCGA", disease_name)
+ceRNAIntegrate(path_prefix = NULL, project_name, disease_name)
 }
 \arguments{
 \item{path_prefix}{user's working directory}
@@ -17,7 +17,7 @@ ceRNAIntegrate(path_prefix = NULL, project_name = "TCGA", disease_name)
 \description{
 A function to integrate the possible ceRNA pairs that are found
 by ceRNAR algorithm with those from other tools, such as SPONGE (List et al.,
-2019) and RJAMI (Hornakova et al.,)2018.
+2019) and RJAMI (Hornakova et al.,2018.)
 }
 \examples{
 ceRNAIntegrate(

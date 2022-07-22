@@ -13,14 +13,7 @@ ceRNAFunction(path_prefix = NULL, project_name, disease_name, pairs_cutoff)
 
 \item{disease_name}{the abbreviation of disease that users are interested in}
 
-\item{window_size}{the number of samples for each window and usually about
-one third of total samples}
-
-\item{cor_method}{selection of correlation methods, including pearson and
-spearman (default: pearson)}
-
-\item{cor_threshold_peak}{peak threshold of correlation value between 0 and 1
-(default: 0.85)}
+\item{pairs_cutoff}{at least the number of ceRNA pairs that a mirna must have}
 }
 \description{
 A function to conduct Functional enrichment analysis for

@@ -11,7 +11,7 @@
 #' @param disease_name the abbreviation of disease that users are interested in
 #' @param pairs_cutoff at least the number of ceRNA pairs that a mirna must have
 #'
-#' @importfrom SPONGE sponge_gene_miRNA_interaction_filter
+#'
 #' @examples
 #' ceRNAFunction(
 #' project_name = 'demo',

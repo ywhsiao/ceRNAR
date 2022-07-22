@@ -9,7 +9,7 @@ SegmentClusteringPlusPeakMerging(
   project_name,
   disease_name,
   cor_threshold_peak = 0.85,
-  window_size
+  window_size = 10
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ SegmentClusteringPlusPeakMerging(
 
 \item{cor_threshold_peak}{peak threshold of correlation value between 0 and 1 (default: 0.85)}
 
-\item{window_size}{the number of samples for each window}
+\item{window_size}{the number of samples for each window (default:10)}
 }
 \description{
 A function to conduct two of three steps in algorithm, that is, segment clustering and peak merging
@@ -30,7 +30,7 @@ A function to conduct two of three steps in algorithm, that is, segment clusteri
 SegmentClusteringPlusPeakMerging(
 project_name = 'demo',
 disease_name="DLBC",
-window_size = 45/5
+window_size = 10
 )
 
 }

@@ -22,9 +22,6 @@ ceRNAModule(
 \item{pairs_cutoff}{at least the number of ceRNA pairs that a mirna must have}
 
 \item{column_sum}{the number of ceRNAs}
-
-\item{window_size}{the number of samples for each window and usually about
-one third of total samples}
 }
 \description{
 A function to analyze and visualize potential network of
