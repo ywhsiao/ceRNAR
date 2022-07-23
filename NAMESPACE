@@ -14,7 +14,6 @@ export(ceRNApairFilering)
 export(ceRNAputativePairs)
 import(Biobase, except = c(combine, exprs))
 import(SPONGE)
-import(biomaRt, except = select)
 import(cvms, except = font)
 import(data.table, except = c(first, last, between))
 

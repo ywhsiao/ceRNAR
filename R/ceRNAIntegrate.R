@@ -6,7 +6,6 @@
 #' 2019) and RJAMI (Hornakova et al.,2018.)
 #'
 #' @import SPONGE
-#' @rawNamespace import(biomaRt, except = select)
 #' @rawNamespace import(Biobase, except = c(combine, exprs))
 #' @rawNamespace import(cvms, except = font)
 #' @rawNamespace import(ggplot2, except = margin)
