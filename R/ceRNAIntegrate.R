@@ -7,7 +7,6 @@
 #'
 #' @import SPONGE
 #' @rawNamespace import(Biobase, except = c(combine, exprs))
-#' @rawNamespace import(cvms, except = font)
 #' @rawNamespace import(ggplot2, except = margin)
 #' @rawNamespace import(dplyr, except = combine)
 #'
