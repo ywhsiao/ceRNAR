@@ -152,9 +152,3 @@ ceRNATCGA <- function(path_prefix = NULL,
   }
 
 }
-
-
-ceRNATCGA(
-project_name = 'TCGA',
-disease_name = 'DLBC',
-)
