@@ -83,10 +83,3 @@ ceRNAputativePairs <- function(path_prefix = NULL,
   message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
 
 }
-
-
-ceRNAputativePairs(
-project_name ='demo',
-disease_name = 'DLBC',
-filtering = 'less'
-)
