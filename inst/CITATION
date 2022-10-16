@@ -1,0 +1,15 @@
+citHeader("To cite ceRNAR in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "ceRNAR: An R package for identification and analysis of ceRNA-miRNA triplets",
+  author   = personList( as.person("Yi-Wen Hsiao"),
+                              as.person("Lin Wang"),
+                              as.person("Tzu-Pin Lu")),
+  journal  = "PLOS Computational Biology",
+  year     = 2022,
+  volume   = 18,
+  issue    = 9,
+  url      = "https://doi.org/10.1371/journal.pcbi.1010497",
+  textVersion = paste("Hsiao Y-W, Wang L, Lu T-P (2022) ceRNAR: An R package for identification and analysis of ceRNA-miRNA triplets. PLoS Comput Biol 18(9): e1010497.")
+)

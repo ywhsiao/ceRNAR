@@ -2,13 +2,13 @@ Package: ceRNAR
 Type: Package
 Title: ceRNAR: an R package for identification and analysis of ceRNAs-miRNA triplets
 Version: 1.1.0
-Author: Yi-Wen Hsiao†, Lin Wang† and Tzu-Pin Lu
+Author: Yi-Wen Hsiao, Lin Wang and Tzu-Pin Lu
 Maintainer: Yi-Wen Hsiao <d08849010@ntu.edu.tw>
 Description: This R package is designed for identification and analysis of ceRNA-miRNA triplets via integration of miRNA and RNA expression data at specific miRNA expression level. CeRNAR integrates three main steps: identification of ceRNA pairs, segment clustering, and peak merging. In addition, it also provides some downstream analyses of identified ceRNA-miRNA triplets, including network analysis, functional annotation, and survival analysis.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: 
-  R(>= 4.1.0)
+  R(>= 4.2.1)
 Import:
   foreach,
   org.Hs.eg.db,

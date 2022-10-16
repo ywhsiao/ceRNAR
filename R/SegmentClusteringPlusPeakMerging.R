@@ -19,7 +19,7 @@
 #' project_name = 'demo',
 #' disease_name = "DLBC",
 #' cor_threshold_peak = 0.85,
-#' window_size = 10
+#' window_size = 9
 #' )
 #'
 #' @export
