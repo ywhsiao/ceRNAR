@@ -7,8 +7,9 @@
 #' @import foreach
 #'
 #' @param path_prefix user's working directory
-#' @param project_name the project name that users can assign
+#' @param project_name the project name that users can assign (default: demo)
 #' @param disease_name the abbreviation of disease that users are interested in
+#' (defaut: DLBC)
 #' @param window_size the number of samples for each window (default:10)
 #' @param cor_method selection of correlation methods, including pearson and
 #' spearman (default: pearson)
@@ -16,18 +17,19 @@
 #' @examples
 #' ceRNApairFilering(
 #' project_name = 'demo',
-#' disease_name= 'DLBC',
-#' window_size = 10
+#' disease_name = 'DLBC',
+#' window_size = 10,
+#' cor_method = 'pearson'
 #' )
 #'
 #' @export
 
 
 ceRNApairFilering <- function(path_prefix = NULL,
-                              project_name,
-                              disease_name,
-                              window_size=10,
-                              cor_method='pearson'){
+                              project_name = 'demo',
+                              disease_name = 'DLBC',
+                              window_size = 10,
+                              cor_method = 'pearson'){
   if (is.null(path_prefix)){
     path_prefix <- getwd()
     setwd(path_prefix)
@@ -123,3 +125,9 @@ ceRNApairFilering <- function(path_prefix = NULL,
 
 }
 
+ceRNApairFilering(
+project_name = 'demo',
+disease_name = 'DLBC',
+window_size = 10,
+cor_method = 'pearson'
+)

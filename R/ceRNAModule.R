@@ -24,8 +24,8 @@
 ceRNAModule <- function(path_prefix=NULL,
                         project_name,
                         disease_name,
-                        pairs_cutoff,
-                        column_sum){
+                        pairs_cutoff = 5,
+                        column_sum = 1){
   if (is.null(path_prefix)){
     path_prefix <- getwd()
     setwd(path_prefix)

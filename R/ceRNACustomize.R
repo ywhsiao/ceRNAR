@@ -4,11 +4,12 @@
 #' @description A function to allow users to upload their own data
 #'
 #' @param path_prefix user's working directory
-#' @param project_name the project name that users can assign
+#' @param project_name the project name that users can assign (default: demo)
 #' @param disease_name the abbreviation of disease that users are interested in
-#' @param gene_exp location of gene expression data
-#' @param mirna_exp location of miRNA expression data
-#' @param surv_data location of survival data
+#' (default: DLBC)
+#' @param gene_exp location of gene expression data (default: gene_exp)
+#' @param mirna_exp location of miRNA expression data (default: mirna_exp)
+#' @param surv_data location of survival data (default: surv_data)
 #'
 #' @examples
 #' ceRNACustomize(
@@ -23,11 +24,11 @@
 
 
 ceRNACustomize <- function(path_prefix = NULL,
-                           project_name = NULL,
-                           disease_name = NULL,
-                           gene_exp = NULL,
-                           mirna_exp = NULL,
-                           surv_data){
+                           project_name = 'demo',
+                           disease_name = 'DLBC',
+                           gene_exp = gene_exp,
+                           mirna_exp = mirna_exp,
+                           surv_data = surv_data){
   if (!is.null(path_prefix)){
     setwd(path_prefix)
     message('Your current directory: ', getwd())
@@ -110,9 +111,9 @@ ceRNACustomize <- function(path_prefix = NULL,
   if (dir.exists(paste0(project_name,'-',disease_name,'/01_rawdata')) == FALSE){
     dir.create(paste0(project_name,'-',disease_name,'/01_rawdata'))
   }
-  fwrite(as.data.frame(exp),paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mrna.csv'), row.names = T)
-  fwrite(as.data.frame(mirna),paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mirna.csv'), row.names = T)
-  fwrite(surv, paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_survival.csv'), row.names = T)
+  data.table::fwrite(as.data.frame(exp),paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mrna.csv'), row.names = T)
+  data.table::fwrite(as.data.frame(mirna),paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mirna.csv'), row.names = T)
+  data.table::fwrite(surv, paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_survival.csv'), row.names = T)
 
   CatchupPause <- function(Secs){
     Sys.sleep(Secs) #pause to let connection work

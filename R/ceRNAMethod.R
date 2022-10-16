@@ -8,9 +8,10 @@
 #' @rawNamespace import(data.table, except = c(first, last, between))
 #'
 #' @param path_prefix user's working directory
-#' @param project_name the project name that users can assign
+#' @param project_name the project name that users can assign (default: demo)
 #' @param disease_name the abbreviation of disease that users are interested in
-#' @param window_size the number of samples for each window
+#' (default: DLBC)
+#' @param window_size the number of samples for each window (defaut: 10)
 #' @param cor_method selection of correlation methods, including pearson and
 #' spearman (default: pearson)
 #' @param cor_threshold_peak peak threshold of correlation value between 0 and 1
@@ -19,55 +20,63 @@
 #' @examples
 #' ceRNAMethod(
 #' project_name = 'demo',
-#' disease_name="DLBC",
-#' window_size = 45/5
+#' disease_name = 'DLBC',
+#' window_size = 10,
+#' cor_method = 'pearson',
+#' cor_threshold_peak = 0.85
 #' )
 #'
 #' @export
 
-
-ceRNAMethod <- function(path_prefix=NULL,
-                        project_name,
-                        disease_name,
-                        window_size,
+ceRNAMethod <- function(path_prefix = NULL,
+                        project_name = 'demo',
+                        disease_name = 'DLBC',
+                        window_size = 10,
                         cor_method = 'pearson',
                         cor_threshold_peak = 0.85){
 
-  if (is.null(path_prefix)){
-    path_prefix <- getwd()
-    setwd(path_prefix)
-    message('Your current directory: ', getwd())
-  }else if (!is.null(path_prefix)){
-    setwd(path_prefix)
-    message('Your current directory: ', getwd())
-  }else {
-    message('Incorrect directory!')
-    stop()
-  }
-
-
   # ceRNApairfiltering
-  ceRNApairFilering <- function(project_name,
-                                disease_name,
-                                window_size,
-                                cor_method='pearson'){
+  ceRNApairFilering <- function(path_prefix = NULL,
+                                project_name = 'demo',
+                                disease_name = 'DLBC',
+                                window_size = 10,
+                                cor_method = 'pearson'){
+    if (is.null(path_prefix)){
+      path_prefix <- getwd()
+      setwd(path_prefix)
+      message('Your current directory: ', getwd())
+    }else if (!is.null(path_prefix)){
+      setwd(path_prefix)
+      message('Your current directory: ', getwd())
+    }else {
+      message('Incorrect directory!')
+      stop()
+    }
+
+
     time1 <- Sys.time()
     message('\u25CF Step3: Filtering putative mRNA-miRNA pairs using sliding window approach')
+
+
+
     # setwd(paste0(project_name,'-',disease_name))
     # import example data & putative pairs
     dict <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
     mirna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv')),row.names = 1)
     mrna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
+
     mirna_total <- unlist(dict[,1])
     message(paste0('\u2605 total miRNA: ', length(mirna_total)))
+
     # create a cluster
     message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
-    doParallel::registerDoParallel(parallel::detectCores()-3)
+
 
     slidingWindow <- function(window_size, mirna_total, cor_method){
+      doParallel::registerDoParallel(parallel::detectCores()-3)
       parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
+        #mir = 50
         mir = mirna_total[mir]
-        #mir = 'hsa-let-7a-5p'
         gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
         gene <- intersect(gene,rownames(mrna))
         gene_mir <- data.frame("miRNA"=t(mirna[rownames(mirna)==mir,]), t(mrna[gene,]))
@@ -83,6 +92,8 @@ ceRNAMethod <- function(path_prefix=NULL,
         message(paste0("\u2605 ",mir,"'s total potential ceRNA-miRNA pairs: ",total_pairs))
 
         getcorr <- function(r,s){
+          #r=2
+          #s=3
           y <- gene_mir[,c(1,r,s)]
           y <- y[order(y$miRNA),]
           corr <- zoo::rollapply(y, width=w, function(x) cor(x[,2],x[,3],method = cor_method), by.column=FALSE)
@@ -92,15 +103,16 @@ ceRNAMethod <- function(path_prefix=NULL,
           data$corr
         }
         cor_all <- purrr::map2_dfc(gene_pair_index[1,1:total_pairs],gene_pair_index[2,1:total_pairs],getcorr)
-        #test <- gL1(gene_pair_index[1,1:total_pairs],gene_pair_index[2,1:total_pairs],getcorr)
-        #cor_all <- as.matrix(Reduce(cbind, test))
-        getwinmiRNA <- function(){
+        getordermiRNA <- function(){
           y <- gene_mir[,c(1,1,1)]
           y <- y[order(y$miRNA),]
+          #corr <- zoo::rollapply(y, width=w, function(x) cor(x[,2],x[,3],method = cor_method), by.column=FALSE)
           miRNA <- zoo::rollapply(y, width=w, function(x) mean(x[,1]), by.column=FALSE)
-          miRNA
+          #data <- data.frame(cbind(miRNA,corr))
+          #data <- data[order(data$miRNA),]
+          #data$miRNA
         }
-        win_miRNA <- getwinmiRNA()
+        win_miRNA <- getordermiRNA()
         triplet = data.frame("miRNA"=win_miRNA,"corr"=cor_all)
         if (dim(triplet)[2]==2){
           names(triplet)[2] <- gsub('\\.\\.\\.','\\.init',names(triplet)[2])
@@ -115,37 +127,56 @@ ceRNAMethod <- function(path_prefix=NULL,
     }
     Realdata <- slidingWindow(window_size,mirna_total, 'pearson')
     saveRDS(Realdata,paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
+
     time2 <- Sys.time()
     diftime <- difftime(time2, time1, units = 'min')
     message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' minutes.'))
 
     message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
+
   }
 
-  ceRNApairFilering(project_name,
+  ceRNApairFilering(path_prefix,
+                    project_name,
                     disease_name,
                     window_size,
                     cor_method)
 
   # SegmentClustering + PeakMerging
-  SegmentClusteringPlusPeakMerging <- function(project_name,
-                                               disease_name,
-                                               cor_threshold_peak,
-                                               window_size){
+  SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
+                                               project_name = 'demo',
+                                               disease_name = 'DLBC',
+                                               cor_threshold_peak = 0.85,
+                                               window_size = 10){
+
+    if (is.null(path_prefix)){
+      path_prefix <- getwd()
+      setwd(path_prefix)
+      message('Your current directory: ', getwd())
+    }else if (!is.null(path_prefix)){
+      setwd(path_prefix)
+      message('Your current directory: ', getwd())
+    }else {
+      message('Incorrect directory!')
+      stop()
+    }
+
     time1 <- Sys.time()
+
     message('\u25CF Step4: Clustering segments using CBS algorithm plus Mearging peaks')
 
+    # setwd(paste0(project_name,'-',disease_name))
     dict <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
     mirna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv')),row.names = 1)
     mrna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
     mirna_total <- unlist(dict[,1])
     d <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
 
-    # create a cluster
+    ## create a cluster
     message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
-    doParallel::registerDoParallel(parallel::detectCores()-3)
-
     sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
+      #index=1
+      #print(paste0('microRNA:', index))
       w <- window_size
       mir = mirna_total[index]
       gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
@@ -153,12 +184,14 @@ ceRNAMethod <- function(path_prefix=NULL,
 
       gene_pair <- combn(gene,2)
       total_pairs <- choose(length(gene),2)
-      tmp <- NULL
+      #tmp <- NULL
+      doParallel::registerDoParallel(parallel::detectCores()-3)
+      #tmp <- tryCatch({
       tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
-        lst <- list()
+        #lst <- list()
         #for (p in 1:total_pairs){ # test foreach
         #p=1
-        print(p)
+        print(paste0("no_of_index:", index,"|", "no_of_pairs:",p))
         cand.ceRNA=c()
         location=list()
         r=gene_pair[1,p]
@@ -203,13 +236,13 @@ ceRNAMethod <- function(path_prefix=NULL,
             if(length(tooshort)>=1){
               cc=1
               lag=c()
-              for(t in 1:length(tooshort)){
+              for(t in seq_along(tooshort)){
                 long_seg <- which(result$output$num.mark>3)
                 diff=abs(tooshort[t]-long_seg)
                 closest_seg <- long_seg[which(diff==min(diff))]
                 if(length(closest_seg)>=2){
                   b <- abs(result$output$seg.mean[closest_seg]-result$output$seg.mean[tooshort[t]])
-                  closest_seg <- closest_seg[b==min(b)]
+                  closest_seg <- closest_seg[b==min(b)][1]
                 }
                 result$output[tooshort[t],"loc.start"] <- min(result$output[tooshort[t],"loc.start"],result$output[closest_seg,"loc.start"])
                 result$output[tooshort[t],"loc.end"] <- max(result$output[tooshort[t],"loc.end"],result$output[closest_seg,"loc.end"])
@@ -233,6 +266,7 @@ ceRNAMethod <- function(path_prefix=NULL,
           no_merg_count <- 1
           if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >=2){ ### para 0.5
             for(i in 1:(length(peak.loc)-1)){
+              if (is.na(sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"]))) {break}
               if(sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"]) > w){
                 no_merg_loc[no_merg_count] <- peak.loc[i]
               }
@@ -243,20 +277,27 @@ ceRNAMethod <- function(path_prefix=NULL,
             while(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >=2){  ### para 0.5
               num.mark <- c(0,cumsum(result$output$num.mark),data.table::last(cumsum(result$output$num.mark)))
               TestPeak.pval <- c()
-              for(i in 1:(length(peak.loc)-1)){
-                z1 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],na.rm=T))
-                z2 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]],na.rm=T))
-                N1 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]])
-                N2 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]])
-                TestPeak.pval[i] <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
+              if (length(peak.loc)>2){
+                for(i in 1:(length(peak.loc)-1)){
+                  #TestPeak.pval[i] <- t.test(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],triplet$corr[(num.mark[peak.loc[i+1]]+1):num.mark[peak.loc[i+1]+1]])$p.value
+                  z1 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],na.rm=T))
+                  z2 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]],na.rm=T))
+                  N1 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]])
+                  N2 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]])
+                  TestPeak.pval[i] <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
+                  #TestPeak.pval[i] <- t.test(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]])$p.value
+
+                }
               }
               if(sum(TestPeak.pval>0.05)!=0){  ### para:alpha 0.05
                 TestPeak.p <- TestPeak.pval[TestPeak.pval>0.05]
                 mergp.loc <- which(TestPeak.pval%in%TestPeak.p)
                 #peak_min <- which(TestPeak.p==max(TestPeak.p))
                 distance <- c()
-                for(i in 1:(length(peak.loc)-1)){
-                  distance[i] <- sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"])
+                if (length(peak.loc)>2){
+                  for(i in 1:(length(peak.loc)-1)){
+                    distance[i] <- sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"])
+                  }
                 }
                 peak_min <- mergp.loc[distance[mergp.loc]==min(distance[mergp.loc])]
                 p_merg <- intersect(mergp.loc,peak_min)
@@ -277,12 +318,15 @@ ceRNAMethod <- function(path_prefix=NULL,
                 #tryCatch({
                 no_merg_loc <- c()
                 no_merg_count <- 1
-                for(i in 1:(length(peak.loc.new)-1)){
-                  if(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"])> w){
-                    no_merg_loc[no_merg_count] <- peak.loc.new[i]
+                if(length(peak.loc.new)>=2){
+                  for(i in 1:(length(peak.loc.new)-1)){
+                    if (is.na(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"]))) {break}
+                    if(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"])> w){
+                      no_merg_loc[no_merg_count] <- peak.loc.new[i]
+                    }
                   }
                 }
-                peak.loc.new <- peak.loc.new[-no_merg_loc]
+                peak.loc.new <- peak.loc.new[-as.numeric(no_merg_loc)]
                 #},error=function(e){})
 
                 if(length(peak.loc.new)==length(peak.loc)) break
@@ -299,18 +343,21 @@ ceRNAMethod <- function(path_prefix=NULL,
           max_seg <- which(result$output$seg.mean==max(result$output$seg.mean))
           min_seg <- which(result$output$seg.mean==min(result$output$seg.mean))
 
+          if (length(max_seg)!=1){
+            max_seg <- max_seg[2]
+          }
+          print(paste0('min_len:',length(max_seg)))
+          if (length(min_seg)!=1){
+            min_seg <- min_seg[1]
+          }
+
           z1 <- psych::fisherz(result$output$seg.mean[max_seg])
           z2 <- psych::fisherz(result$output$seg.mean[min_seg])
           N1 <- result$output[max_seg,"num.mark"]
           N2 <- result$output[min_seg,"num.mark"]
           Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
-
-          if (length(Test)!=1){
-            Test=mean(Test)
-          }
-
           # generate final output
-          if(Test < 0.05){
+          if(!is.na(Test) && Test < 0.05){
             if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
               cand.ceRNA=paste(r,s)
 
@@ -322,40 +369,55 @@ ceRNAMethod <- function(path_prefix=NULL,
               location=result$output[True_peak,c("loc.start","loc.end")]
 
               if(!is.null(cand.ceRNA)){
-                lst[[p]] <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
-
+                lst <- list(miRNA=mir,cand.ceRNA=cand.ceRNA,location=location,numOfseg=result$output$num.mark[True_peak])
+                lst
               }
 
             }
           }
         }
       }
+      #}
+      #},error=function(e){e})
+      #tmp <- do.call(rbind,lst)
+      tmp
     }
+    # seed=NULL
+    # txt=list()
+    # for (i in 1:length(mirna_total)){
+    #   print(i)
+    #   txt[[i]] <- sigCernaPeak(i,d, cor_threshold_peak, window_size)
+    # }
+    # txt_final <- do.call(rbind, txt)
 
-    testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),0.85,105)
-
+    #future::plan("future::cluster", workers=parallel::detectCores()-3)
+    testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),cor_threshold_peak,window_size)
     FinalResult <- purrr::compact(testfunction)
-    if (dir.exists(paste0(project_name,'-',disease_name,'/03_identifiedPairs')) == FALSE){
-      dir.create(paste0(project_name,'-',disease_name,'/03_identifiedPairs'))
+
+    if (dir.exists(paste0(project_name, '-', disease_name,'/03_identifiedPairs')) == FALSE){
+      dir.create(paste0(project_name, '-', disease_name,'/03_identifiedPairs'))
     }
     saveRDS(FinalResult,paste0(project_name,'-',disease_name,'/03_identifiedPairs/',project_name,'-',disease_name,'_finalpairs.rds'))
 
     final_df <- as.data.frame(Reduce(rbind, FinalResult))
-    final_df <- cbind(final_df,Reduce(rbind,final_df$location))
-    final_df <- final_df[,c(1,2,5,6,4)]
-    data.table::fwrite(final_df, paste0(project_name,'-',disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = F)
+    flat_df <-  final_df %>%
+      tidyr::unnest(location, .drop = FALSE) %>%
+      tidyr::unnest(numOfseg, .drop = FALSE)
+    data.table::fwrite(flat_df, paste0(project_name,'-', disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = F)
 
     time2 <- Sys.time()
     diftime <- difftime(time2, time1, units = 'min')
+
     message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
     message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
+
   }
 
-  SegmentClusteringPlusPeakMerging(project_name,
+  SegmentClusteringPlusPeakMerging(path_prefix,
+                                   project_name,
                                    disease_name,
                                    cor_threshold_peak,
                                    window_size)
 
 }
-
 

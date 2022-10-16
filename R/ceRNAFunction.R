@@ -7,9 +7,11 @@
 #' Genes and Genomes (KEGG; https://www.genome.jp/kegg/).
 #'
 #' @param path_prefix user's working directory
-#' @param project_name the project name that users can assign
+#' @param project_name the project name that users can assign (default: demo)
 #' @param disease_name the abbreviation of disease that users are interested in
+#' (default: DLBC)
 #' @param pairs_cutoff at least the number of ceRNA pairs that a mirna must have
+#'  (default: 1)
 #'
 #'
 #' @examples
@@ -151,3 +153,8 @@ ceRNAFunction <- function(path_prefix = NULL,
   message('\u2605\u2605\u2605 All analyses has completed! \u2605\u2605\u2605')
 }
 
+ceRNAFunction(
+project_name = 'demo',
+disease_name = 'DLBC',
+pairs_cutoff = 1
+)

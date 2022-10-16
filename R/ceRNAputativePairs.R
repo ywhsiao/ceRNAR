@@ -7,7 +7,7 @@
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
 #' @param filtering three different filtering criteria, including strict,
-#' moderate and less. (Default: strict)
+#' moderate and less. (Default: less)
 #'
 #' @examples
 #' ceRNAputativePairs(
@@ -18,10 +18,10 @@
 #'
 #' @export
 
-ceRNAputativePairs <- function(path_prefix=NULL,
-                               project_name,
-                               disease_name,
-                               filtering = 'strict'){
+ceRNAputativePairs <- function(path_prefix = NULL,
+                               project_name = 'demo',
+                               disease_name = 'DLBC',
+                               filtering = 'less'){
   if (is.null(path_prefix)){
     path_prefix <- getwd()
     setwd(path_prefix)
@@ -45,13 +45,13 @@ ceRNAputativePairs <- function(path_prefix=NULL,
   # miRNA-mRNA validation
   target <- ceRNAR:::mirna_mrna_pairsdb
   if (filtering == 'strict'){
-    target.t.val <- target[target$evidence_levels=="Strong" & target$total_counts==7 ,]
+    target.t.val <- target[target$evidence_levels=="Strong" & target$total_counts==7,]
     message('\u2605 Filtering: strict')
   }else if (filtering == 'moderate') {
-    target.t.val <- target[target$evidence_levels=="Strong" | target$total_counts==7 ,]
+    target.t.val <- target[target$evidence_levels=="Strong" | target$total_counts==7,]
     message('\u2605 Filtering: moderate')
   }else if (filtering == 'less'){
-    target.t.val <- target[target$evidence_levels=="Strong" | target$total_counts>=6 ,]
+    target.t.val <- target[target$evidence_levels=="Strong" | target$total_counts>=6,]
     message('\u2605 Filtering: less')
   }
 
@@ -83,3 +83,10 @@ ceRNAputativePairs <- function(path_prefix=NULL,
   message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
 
 }
+
+
+ceRNAputativePairs(
+project_name ='demo',
+disease_name = 'DLBC',
+filtering = 'less'
+)

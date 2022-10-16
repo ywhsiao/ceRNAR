@@ -7,26 +7,28 @@
 #' @import magrittr
 #'
 #' @param path_prefix user's working directory
-#' @param project_name the project name that users can assign
+#' @param project_name the project name that users can assign (default: demo)
 #' @param disease_name the abbreviation of disease that users are interested in
-#' @param cor_threshold_peak peak threshold of correlation value between 0 and 1 (default: 0.85)
+#' (default: DLBC)
+#' @param cor_threshold_peak peak threshold of correlation value between 0 and 1
+#' (default: 0.85)
 #' @param window_size the number of samples for each window (default:10)
 #'
 #' @examples
 #' SegmentClusteringPlusPeakMerging(
 #' project_name = 'demo',
-#' disease_name="DLBC",
+#' disease_name = "DLBC",
+#' cor_threshold_peak = 0.85,
 #' window_size = 10
 #' )
 #'
 #' @export
 
-
 SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
-                                             project_name,
-                                             disease_name,
+                                             project_name = 'demo',
+                                             disease_name = 'DLBC',
                                              cor_threshold_peak = 0.85,
-                                             window_size=10){
+                                             window_size = 10){
 
   if (is.null(path_prefix)){
     path_prefix <- getwd()
@@ -292,5 +294,9 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
 
 }
 
-
-
+SegmentClusteringPlusPeakMerging(
+project_name = 'demo',
+disease_name = "DLBC",
+cor_threshold_peak = 0.85,
+window_size = 9
+)
