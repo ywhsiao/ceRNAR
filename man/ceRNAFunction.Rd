@@ -9,11 +9,13 @@ ceRNAFunction(path_prefix = NULL, project_name, disease_name, pairs_cutoff)
 \arguments{
 \item{path_prefix}{user's working directory}
 
-\item{project_name}{the project name that users can assign}
+\item{project_name}{the project name that users can assign (default: demo)}
 
-\item{disease_name}{the abbreviation of disease that users are interested in}
+\item{disease_name}{the abbreviation of disease that users are interested in
+(default: DLBC)}
 
-\item{pairs_cutoff}{at least the number of ceRNA pairs that a mirna must have}
+\item{pairs_cutoff}{at least the number of ceRNA pairs that a mirna must have
+(default: 1)}
 }
 \description{
 A function to conduct Functional enrichment analysis for

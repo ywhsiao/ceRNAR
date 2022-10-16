@@ -7,8 +7,8 @@
 \usage{
 ceRNApairFilering(
   path_prefix = NULL,
-  project_name,
-  disease_name,
+  project_name = "demo",
+  disease_name = "DLBC",
   window_size = 10,
   cor_method = "pearson"
 )
@@ -16,9 +16,10 @@ ceRNApairFilering(
 \arguments{
 \item{path_prefix}{user's working directory}
 
-\item{project_name}{the project name that users can assign}
+\item{project_name}{the project name that users can assign (default: demo)}
 
-\item{disease_name}{the abbreviation of disease that users are interested in}
+\item{disease_name}{the abbreviation of disease that users are interested in
+(defaut: DLBC)}
 
 \item{window_size}{the number of samples for each window (default:10)}
 
@@ -32,8 +33,9 @@ that is, pairs filtering
 \examples{
 ceRNApairFilering(
 project_name = 'demo',
-disease_name= 'DLBC',
-window_size = 10
+disease_name = 'DLBC',
+window_size = 10,
+cor_method = 'pearson'
 )
 
 }

@@ -6,9 +6,9 @@
 \usage{
 ceRNAputativePairs(
   path_prefix = NULL,
-  project_name,
-  disease_name,
-  filtering = "strict"
+  project_name = "demo",
+  disease_name = "DLBC",
+  filtering = "less"
 )
 }
 \arguments{
@@ -19,7 +19,7 @@ ceRNAputativePairs(
 \item{disease_name}{the abbreviation of disease that users are interested in}
 
 \item{filtering}{three different filtering criteria, including strict,
-moderate and less. (Default: strict)}
+moderate and less. (Default: less)}
 }
 \description{
 A function to obtain putative mRNA-miRNA pairs from several databases

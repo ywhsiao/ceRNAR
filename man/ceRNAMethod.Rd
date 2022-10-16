@@ -6,9 +6,9 @@
 \usage{
 ceRNAMethod(
   path_prefix = NULL,
-  project_name,
-  disease_name,
-  window_size,
+  project_name = "demo",
+  disease_name = "DLBC",
+  window_size = 10,
   cor_method = "pearson",
   cor_threshold_peak = 0.85
 )
@@ -16,11 +16,12 @@ ceRNAMethod(
 \arguments{
 \item{path_prefix}{user's working directory}
 
-\item{project_name}{the project name that users can assign}
+\item{project_name}{the project name that users can assign (default: demo)}
 
-\item{disease_name}{the abbreviation of disease that users are interested in}
+\item{disease_name}{the abbreviation of disease that users are interested in
+(default: DLBC)}
 
-\item{window_size}{the number of samples for each window}
+\item{window_size}{the number of samples for each window (defaut: 10)}
 
 \item{cor_method}{selection of correlation methods, including pearson and
 spearman (default: pearson)}
@@ -35,8 +36,10 @@ filtering, segment clustering and peak merging
 \examples{
 ceRNAMethod(
 project_name = 'demo',
-disease_name="DLBC",
-window_size = 45/5
+disease_name = 'DLBC',
+window_size = 10,
+cor_method = 'pearson',
+cor_threshold_peak = 0.85
 )
 
 }

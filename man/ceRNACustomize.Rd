@@ -6,25 +6,26 @@
 \usage{
 ceRNACustomize(
   path_prefix = NULL,
-  project_name = NULL,
-  disease_name = NULL,
-  gene_exp = NULL,
-  mirna_exp = NULL,
-  surv_data
+  project_name = "demo",
+  disease_name = "DLBC",
+  gene_exp = gene_exp,
+  mirna_exp = mirna_exp,
+  surv_data = surv_data
 )
 }
 \arguments{
 \item{path_prefix}{user's working directory}
 
-\item{project_name}{the project name that users can assign}
+\item{project_name}{the project name that users can assign (default: demo)}
 
-\item{disease_name}{the abbreviation of disease that users are interested in}
+\item{disease_name}{the abbreviation of disease that users are interested in
+(default: DLBC)}
 
-\item{gene_exp}{location of gene expression data}
+\item{gene_exp}{location of gene expression data (default: gene_exp)}
 
-\item{mirna_exp}{location of miRNA expression data}
+\item{mirna_exp}{location of miRNA expression data (default: mirna_exp)}
 
-\item{surv_data}{location of survival data}
+\item{surv_data}{location of survival data (default: surv_data)}
 }
 \description{
 A function to allow users to upload their own data

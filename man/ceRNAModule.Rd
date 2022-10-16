@@ -8,8 +8,8 @@ ceRNAModule(
   path_prefix = NULL,
   project_name,
   disease_name,
-  pairs_cutoff,
-  column_sum
+  pairs_cutoff = 5,
+  column_sum = 1
 )
 }
 \arguments{

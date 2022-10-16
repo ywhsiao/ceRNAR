@@ -7,18 +7,20 @@
 ceRNATCGA(
   path_prefix = NULL,
   project_name = "TCGA",
-  disease_name,
+  disease_name = "DLBC",
   timeout = 5e+06
 )
 }
 \arguments{
 \item{path_prefix}{user's working directory}
 
-\item{project_name}{the project name that users can assign}
+\item{project_name}{the project name that users can assign (default = 'TCGA')}
 
-\item{disease_name}{the abbreviation of disease that users are interested in}
+\item{disease_name}{the abbreviation of disease that users are interested in
+(default = 'DLBC')}
 
-\item{timout}{the allowance time for downloading TCGA data}
+\item{timout}{the allowance time for downloading TCGA data
+(default = 5000000)}
 }
 \description{
 A function to retrieve TCGA data from GDC Xena Hub

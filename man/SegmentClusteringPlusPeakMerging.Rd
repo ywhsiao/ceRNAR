@@ -6,8 +6,8 @@
 \usage{
 SegmentClusteringPlusPeakMerging(
   path_prefix = NULL,
-  project_name,
-  disease_name,
+  project_name = "demo",
+  disease_name = "DLBC",
   cor_threshold_peak = 0.85,
   window_size = 10
 )
@@ -15,11 +15,13 @@ SegmentClusteringPlusPeakMerging(
 \arguments{
 \item{path_prefix}{user's working directory}
 
-\item{project_name}{the project name that users can assign}
+\item{project_name}{the project name that users can assign (default: demo)}
 
-\item{disease_name}{the abbreviation of disease that users are interested in}
+\item{disease_name}{the abbreviation of disease that users are interested in
+(default: DLBC)}
 
-\item{cor_threshold_peak}{peak threshold of correlation value between 0 and 1 (default: 0.85)}
+\item{cor_threshold_peak}{peak threshold of correlation value between 0 and 1
+(default: 0.85)}
 
 \item{window_size}{the number of samples for each window (default:10)}
 }
@@ -29,8 +31,9 @@ A function to conduct two of three steps in algorithm, that is, segment clusteri
 \examples{
 SegmentClusteringPlusPeakMerging(
 project_name = 'demo',
-disease_name="DLBC",
-window_size = 10
+disease_name = "DLBC",
+cor_threshold_peak = 0.85,
+window_size = 9
 )
 
 }
