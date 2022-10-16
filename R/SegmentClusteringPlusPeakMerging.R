@@ -4,7 +4,7 @@
 #' @description A function to conduct two of three steps in algorithm, that is, segment clustering and peak merging
 #'
 #' @import foreach
-#' @import magrittr
+#' @rawNamespace import(magrittr, except = set_names)
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign (default: demo)

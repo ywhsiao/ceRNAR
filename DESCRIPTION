@@ -13,9 +13,7 @@ Import:
   foreach,
   org.Hs.eg.db,
   SPONGE,
-  dplyr,
-  data.table,
-  magrittr
+  dplyr
 RoxygenNote: 7.2.1
 Suggests: 
     rmarkdown,

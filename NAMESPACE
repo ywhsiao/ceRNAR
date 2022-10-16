@@ -15,12 +15,11 @@ export(ceRNAputativePairs)
 import(Biobase, except = c(select, exprs))
 import(SPONGE)
 import(cvms, except = font)
-import(data.table, except = c(first, last, between))
-
 import(dplyr, except = combine)
 import(foreach)
 import(ggplot2, except = margin)
-import(magrittr)
+import(magrittr, except = set_names)
+
 import(rlang, except = exprs)
 
 
