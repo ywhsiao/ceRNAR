@@ -125,9 +125,3 @@ ceRNApairFilering <- function(path_prefix = NULL,
 
 }
 
-ceRNApairFilering(
-project_name = 'demo',
-disease_name = 'DLBC',
-window_size = 10,
-cor_method = 'pearson'
-)
