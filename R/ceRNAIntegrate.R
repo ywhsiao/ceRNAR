@@ -131,7 +131,7 @@ ceRNAIntegrate <- function(path_prefix,
   our_result$sponge[our_result$genepairs%in%sponge_integrate] <- 'yes'
   our_result$rjami[our_result$triplets%in%rjami_integrate] <- 'yes'
   utils::write.csv(our_result, paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_integrate.csv'), row.names = F)
-
+  return(our_result)
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
