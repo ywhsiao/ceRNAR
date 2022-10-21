@@ -41,9 +41,10 @@ ceRNATCGA <- function(path_prefix,
     time1 <- Sys.time()
 
     # download cancer files (phenotype, survival, miRNA and mRNA) from gdc resource
-    downloadFromGDC <- function(project,cancer,timeout=5000000){
+    downloadFromGDC <- function(project, cancer, timeout=5000000){
       message('\u25CF Step1 for TCGA data: Downloading the data ...')
       options(timeout=timeout) # to test the largest data
+      setwd(paste0(path_prefix, '/', project_name,'-', disease_name))
       HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'))
       HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.survival.tsv'))
       HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.mirna.tsv.gz'))

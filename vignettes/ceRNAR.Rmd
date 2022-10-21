@@ -4,7 +4,6 @@ author: "Yi-Wen Hsiao†, Lin Wang† and Tzu-Pin Lu"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ceRNAR}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -96,7 +95,7 @@ ceRNACustomize(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC',
 Alternatively, `ceRNATCGA()` can be used to retrieve TCGA data
 
 ```{r}
-ceRNATCGA(path_prefix = '~/', project_name = 'TCGA',disease_name = 'DLBC', timeout = 5000000)
+ceRNATCGA(path_prefix = '~/', project_name = 'TCGA', disease_name = 'DLBC', timeout = 5000000)
 ```
 
 ## Putative miRNA-gene interaction
