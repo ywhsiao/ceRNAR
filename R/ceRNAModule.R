@@ -33,16 +33,16 @@ ceRNAModule <- function(path_prefix,
 
   time1 <- Sys.time()
   # setwd(paste0(project_name,'-',disease_name))
-  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
-    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))
+  if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
+    dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/'))
   }
 
-  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults'))){
-    dir.create(paste0(path_prefix, '/',project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults'))
+  if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults'))){
+    dir.create(paste0(path_prefix,project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults'))
   }
   message('\u25CF Step4: Dowstream Analyses - Network analysis')
-  Dict <- readRDS(paste0(path_prefix, '/', project_name,'-',disease_name,'/02_potentialPairs/', project_name, '-', disease_name, '_MirnaTarget_dictionary.rds'))
-  Res <- readRDS(paste0(path_prefix, '/', project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name, '_finalpairs.rds'))
+  Dict <- readRDS(paste0(path_prefix, project_name,'-',disease_name,'/02_potentialPairs/', project_name, '-', disease_name, '_MirnaTarget_dictionary.rds'))
+  Res <- readRDS(paste0(path_prefix, project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name, '_finalpairs.rds'))
   # total number of putative genes (targeted gene not data gene)
   all_putative_p <- unlist(lapply(Dict[,2], function(x) unlist(c(x))))
   message('\u2605 Number of targeted genes: ', length(unique(all_putative_p)), '.')
@@ -63,7 +63,7 @@ ceRNAModule <- function(path_prefix,
   }
 
   # save miR summary table
-  utils::write.csv(summary_miR, paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/miR_summary_', project_name, '-', disease_name, '.csv'), row.names = F)
+  utils::write.csv(summary_miR, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/miR_summary_', project_name, '-', disease_name, '.csv'), row.names = F)
 
   # Average ceRNA pairs of overall miRNAs
   message('\u2605 Average ceRNA pairs of overall miRNAs: ', sum(unlist(summary_miR[,2]))/dim(summary_miR)[1], '.')
@@ -83,14 +83,14 @@ ceRNAModule <- function(path_prefix,
     hubgene_name[[i]] <- tmp
   }
 
-  utils::write.csv(matrix(unlist(hubgene_name),ncol=2,byrow=TRUE),paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/hubgene_miR_', project_name, '-', disease_name, '.csv'), row.names = F)
+  utils::write.csv(matrix(unlist(hubgene_name),ncol=2,byrow=TRUE),paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/hubgene_miR_', project_name, '-', disease_name, '.csv'), row.names = F)
   hubg_onlyname <- unlist(sapply(hubgene_name, function(x) x[,1]))
 
   # get all ceRNAs (Res list => Res dataframe)
   Res <- as.data.frame(Reduce(rbind,purrr::compact(Res)))
 
   hubgene_all <- sort(table(unlist(strsplit(as.character(Res[,2])," "))), decreasing = TRUE)
-  utils::write.csv(hubgene_all, paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/hubgene_all_', project_name, '-', disease_name, '.csv'), row.names = F)
+  utils::write.csv(hubgene_all, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/hubgene_all_', project_name, '-', disease_name, '.csv'), row.names = F)
 
   # average number of coexpressed gene
   message('\u2605 Average number of coexpressed gene: ', sum(hubgene_all)/length(hubgene_all), '.')
@@ -127,7 +127,7 @@ ceRNAModule <- function(path_prefix,
       # general network
       #print(paste0(i, ' is processed.'))
       network_plot(mir_df[,-1], column_sum)
-      ggplot2::ggsave(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/',i,'_ceRNAs_network.png'), height = 10, width = 10, dpi = 300)
+      ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/',i,'_ceRNAs_network.png'), height = 10, width = 10, dpi = 300)
     }
   }
   time2 <- Sys.time()

@@ -39,9 +39,9 @@ ceRNApairFilering <- function(path_prefix,
 
   # setwd(paste0(project_name,'-',disease_name))
   # import example data & putative pairs
-  dict <- readRDS(paste0(path_prefix, '/', project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
-  mirna <- data.frame(data.table::fread(paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv')),row.names = 1)
-  mrna <- data.frame(data.table::fread(paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
+  dict <- readRDS(paste0(path_prefix, project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
+  mirna <- data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv')),row.names = 1)
+  mrna <- data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
 
   mirna_total <- unlist(dict[,1])
   message(paste0('\u2605 total miRNA: ', length(mirna_total)))
@@ -114,7 +114,7 @@ ceRNApairFilering <- function(path_prefix,
     parallel_d
   }
   Realdata <- slidingWindow(window_size,mirna_total, 'pearson')
-  saveRDS(Realdata,paste0(path_prefix, '/', project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
+  saveRDS(Realdata,paste0(path_prefix, project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')

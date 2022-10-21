@@ -29,12 +29,12 @@ ceRNATCGA <- function(path_prefix,
                       disease_name = 'DLBC',
                       timeout = 500000){
 
-    if (dir.exists(paste0(path_prefix, '/', project_name,'-', disease_name)) == FALSE){
-      dir.create(paste0(path_prefix, '/', project_name,'-', disease_name))
+    if (dir.exists(paste0(path_prefix, project_name,'-', disease_name)) == FALSE){
+      dir.create(paste0(path_prefix, project_name,'-', disease_name))
     }
 
-    if (dir.exists(paste0(path_prefix, '/', project_name,'-', disease_name, '/01_rawdata')) == FALSE){
-      dir.create(paste0(path_prefix, '/', project_name,'-', disease_name, '/01_rawdata'))
+    if (dir.exists(paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata')) == FALSE){
+      dir.create(paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'))
     }
 
 
@@ -44,10 +44,10 @@ ceRNATCGA <- function(path_prefix,
     downloadFromGDC <- function(project, cancer, timeout=5000000){
       message('\u25CF Step1 for TCGA data: Downloading the data ...')
       options(timeout=timeout) # to test the largest data
-      HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'), destfile = paste0(path_prefix, '/', project_name,'-', disease_name))
-      HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.survival.tsv'), destfile = paste0(path_prefix, '/', project_name,'-', disease_name))
-      HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.mirna.tsv.gz'), destfile = paste0(path_prefix, '/', project_name,'-', disease_name))
-      HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.htseq_fpkm.tsv.gz'), destfile = paste0(path_prefix, '/', project_name,'-', disease_name))
+      HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'), destfile = paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'))
+      HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.survival.tsv'), destfile = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.survival.tsv'))
+      HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.mirna.tsv.gz'), destfile = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.mirna.tsv.gz'))
+      HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.htseq_fpkm.tsv.gz'), destfile = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.htseq_fpkm.tsv.gz'))
     }
 
     downloadFromGDC(project,cancer)
@@ -134,10 +134,10 @@ ceRNATCGA <- function(path_prefix,
     miRNA_with_precurer <- miRNA_with_precurer[,-1]
 
     # store processed data
-    data.table::fwrite(as.data.frame(annot_cdRNA_unique),paste0(path_prefix, '/', project_name,'-', disease_name,'_mrna.csv'), row.names = T)
-    data.table::fwrite(as.data.frame(miRNA_with_precurer),paste0(path_prefix, '/', project_name,'-', disease_name,'_mirna.csv'), row.names = T)
-    data.table::fwrite(as.data.frame(GDC_phenotype),paste0(path_prefix, '/', project_name,'-', disease_name,'_phenotype.csv'), row.names = T)
-    data.table::fwrite(as.data.frame(survival), paste0(path_prefix, '/', project_name,'-', disease_name,'_survival.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(annot_cdRNA_unique),paste0(path_prefix, project_name,'-', disease_name,'_mrna.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(miRNA_with_precurer),paste0(path_prefix, project_name,'-', disease_name,'_mirna.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(GDC_phenotype),paste0(path_prefix, project_name,'-', disease_name,'_phenotype.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(survival), paste0(path_prefix, project_name,'-', disease_name,'_survival.csv'), row.names = T)
     message('(\u2714) All files have been preprocessed!')
     time2 <- Sys.time()
     diftime <- difftime(time2, time1, units = 'min')

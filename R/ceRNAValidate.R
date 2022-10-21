@@ -27,12 +27,12 @@ ceRNAValidate <- function(path_prefix,
   time1 <- Sys.time()
   #setwd(paste0(project_name,'-',disease_name))
 
-  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
-    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))
+  if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
+    dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/'))
   }
 
-  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/'))){
-    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/'))
+  if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/'))){
+    dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/'))
   }
 
   message('\u25CF Step5: Dowstream Analyses - External validation')
@@ -48,7 +48,7 @@ ceRNAValidate <- function(path_prefix,
     candidate_ceRNA_list$miRNA_short1 <- gsub('[[:alpha:]]{1}$', '', candidate_ceRNA_list$miRNA_short)
     candidate_ceRNA_list
   }
-  pair <-datapreparing(paste0(path_prefix, '/', project_name,'-',disease_name,'/',project_name,'-',disease_name,'_finalpairs.csv'))
+  pair <-datapreparing(paste0(path_prefix, project_name,'-',disease_name,'/',project_name,'-',disease_name,'_finalpairs.csv'))
   total_findings <- dim(pair)[1]
   pair_lst <-  dplyr::group_split(pair,miRNA_short)
   # miRSponge clean data
@@ -148,7 +148,7 @@ ceRNAValidate <- function(path_prefix,
   }
   with_evidence[is.na(with_evidence)] <- '-'
   common_pairs <- dim(with_evidence)[1]
-  utils::write.csv(with_evidence, paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/',project_name,'-',disease_name,'_with_target_exp_evidence.csv'), row.names = F)
+  utils::write.csv(with_evidence, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/',project_name,'-',disease_name,'_with_target_exp_evidence.csv'), row.names = F)
   return(with_evidence)
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')

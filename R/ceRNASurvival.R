@@ -30,30 +30,30 @@ ceRNASurvival <- function(path_prefix,
 
   time1 <- Sys.time()
   #setwd(paste0(project_name,'-',disease_name))
-  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
-    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))
+  if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
+    dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/'))
   }
 
-  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/'))){
-    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/'))
+  if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/'))){
+    dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/'))
   }
 
   message('\u25CF Step5: Dowstream Analyses - Survival analysis')
 
   # expression data
-  geneExp <- as.data.frame(data.table::fread(paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv'),header = T, stringsAsFactors = F))
+  geneExp <- as.data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv'),header = T, stringsAsFactors = F))
   row.names(geneExp) <- geneExp[,1]
   geneExp <- geneExp[,-1]
   names(geneExp) <- substring(names(geneExp),1,12)
 
   # survival data
-  survivalData <- as.data.frame(data.table::fread(paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_survival.csv'),header = T, stringsAsFactors = F))
+  survivalData <- as.data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_survival.csv'),header = T, stringsAsFactors = F))
   row.names(survivalData) <- survivalData[,1]
   survivalData <- survivalData[,-1]
   survivalData <- survivalData[,colnames(survivalData)%in%c('OS', 'OS.time')]
 
   # mirna-gene pairs results
-  Res <- readRDS(paste0(path_prefix, '/', project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name,'_finalpairs.rds'))
+  Res <- readRDS(paste0(path_prefix, project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name,'_finalpairs.rds'))
   Res_dataframe <- Reduce(rbind, Res)
 
   mirna <- as.data.frame(Reduce(rbind, Res_dataframe[,1]))
@@ -65,8 +65,8 @@ ceRNASurvival <- function(path_prefix,
   message('\u2605 Total number of identified miRNA-ceRNAs in ',project_name, '-', disease_name,' cohort: ', dim(mirna_gene_pairs)[1], '.')
 
   runforeachmirna <- function(mirna){
-    if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/',mirna))){
-      dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/',mirna))
+    if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/',mirna))){
+      dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/',mirna))
     }
     df <- mirna_gene_pairs[mirna_gene_pairs$mirna == mirna,]
     if (dim(df)[1] !=1) {
@@ -98,7 +98,7 @@ ceRNASurvival <- function(path_prefix,
       #j =1
       which_gene <- as.character(each_gene[j,])
       surCurve_list <- purrr::map(which_gene, draw_surCurve)
-      grDevices::png(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/',mirna,'/',mirna,'_', which_gene[1],'-', which_gene[2], '_triplets.png'),height = 1500, width = 2800, res = 300)
+      grDevices::png(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/',mirna,'/',mirna,'_', which_gene[1],'-', which_gene[2], '_triplets.png'),height = 1500, width = 2800, res = 300)
       survminer::arrange_ggsurvplots(surCurve_list, print = TRUE, ncol=2, nrow=1,
                                      title = paste0(mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
                                      surv.plot.height = 0.6)

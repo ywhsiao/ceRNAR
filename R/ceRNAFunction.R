@@ -36,16 +36,16 @@ ceRNAFunction <- function(path_prefix,
   time1 <- Sys.time()
   #setwd(paste0(project_name,'-',disease_name))
 
-  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
-    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))
+  if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
+    dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/'))
   }
 
-  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/'))){
-    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/'))
+  if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/'))){
+    dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/'))
   }
 
   message('\u25CF Step5: Dowstream Analyses - Functional analysis')
-  Res <- readRDS(paste0(path_prefix, '/', project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name,'_finalpairs.rds'))
+  Res <- readRDS(paste0(path_prefix, project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name,'_finalpairs.rds'))
   Res_dataframe <- Reduce(rbind, Res)
   mir_unique <- unique(Res_dataframe[,1])
   mir_df_final <- c()
@@ -87,7 +87,7 @@ ceRNAFunction <- function(path_prefix,
                                     pvalueCutoff = 0.01)
 
   kk_df <- kk@result
-  utils::write.csv(kk_df,paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name,'-',disease_name,'_kegg_ora.csv'), row.names = F)
+  utils::write.csv(kk_df,paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name,'-',disease_name,'_kegg_ora.csv'), row.names = F)
   kk_babble <- enrichplot::dotplot(kk, showCategory=10,orderBy = "x")+ ggplot2::ggtitle('Dotplot for ORA based on KEGG')
   kk_bar <- graphics::barplot(kk,showCategory = 10)+ ggplot2::ggtitle('Barplot for ORA based on KEGG')
 
@@ -121,7 +121,7 @@ ceRNAFunction <- function(path_prefix,
   go_bp <- go[[3]]@result
   go_bp$GOLevel <- 'BP'
   go_all <- rbind(go_cc, go_mf, go_bp)
-  utils::write.csv(go_all,paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name, '-',disease_name, '_go_ora.csv'), row.names = F)
+  utils::write.csv(go_all,paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name, '-',disease_name, '_go_ora.csv'), row.names = F)
   go_tobarplot <- rbind(utils::head(go_cc, n=10), utils::head(go_mf, n=10), utils::head(go_bp, n=10))
   go_tobarplot$p.adjust.convert <- -log10(go_tobarplot$p.adjust)
   go_bar <- ggpubr::ggbarplot(go_tobarplot, x = "Description", y = "p.adjust.convert",
@@ -134,9 +134,9 @@ ceRNAFunction <- function(path_prefix,
                               y.text.angle = 0) + ggpubr::rotate()
   # merge kegg and GO results
   gg_babble <- cowplot::plot_grid(kk_babble, go_babble[[1]], go_babble[[2]], go_babble[[3]], labels = c('A', 'B', 'C', 'D'), label_size = 12, ncol=2)
-  ggplot2::ggsave(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_babble.png'), height = 10, width = 20,dpi = 300)
+  ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_babble.png'), height = 10, width = 20,dpi = 300)
   gg_bar <- cowplot::plot_grid(kk_bar, go_bar, labels = c('A', 'B'), label_size = 12, ncol = 2)
-  ggplot2::ggsave(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_bar.png'), height = 8, width = 20,dpi = 300)
+  ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_bar.png'), height = 8, width = 20,dpi = 300)
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
