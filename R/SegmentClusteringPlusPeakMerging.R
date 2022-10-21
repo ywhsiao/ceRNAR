@@ -4,6 +4,8 @@
 #' @description A function to conduct two of three steps in algorithm, that is, segment clustering and peak merging
 #'
 #' @import foreach
+#' @import parallel
+#' @import utils
 #' @rawNamespace import(magrittr, except = set_names)
 #'
 #' @param path_prefix user's working directory
@@ -14,48 +16,37 @@
 #' (default: 0.85)
 #' @param window_size the number of samples for each window (default:10)
 #'
+#' @export
+#'
 #' @examples
 #' SegmentClusteringPlusPeakMerging(
+#' path_prefix =  '~/',
 #' project_name = 'demo',
 #' disease_name = "DLBC",
 #' cor_threshold_peak = 0.85,
 #' window_size = 9
 #' )
 #'
-#' @export
 
-SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
+SegmentClusteringPlusPeakMerging <- function(path_prefix,
                                              project_name = 'demo',
                                              disease_name = 'DLBC',
                                              cor_threshold_peak = 0.85,
                                              window_size = 10){
-
-  if (is.null(path_prefix)){
-    path_prefix <- getwd()
-    setwd(path_prefix)
-    message('Your current directory: ', getwd())
-  }else if (!is.null(path_prefix)){
-    setwd(path_prefix)
-    message('Your current directory: ', getwd())
-  }else {
-    message('Incorrect directory!')
-    stop()
-  }
-
   time1 <- Sys.time()
 
   message('\u25CF Step4: Clustering segments using CBS algorithm plus Mearging peaks')
 
   # setwd(paste0(project_name,'-',disease_name))
-  dict <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
-  mirna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv')),row.names = 1)
-  mrna <- data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
+  dict <- readRDS(paste0(path_prefix, '/', project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
+  mirna <- data.frame(data.table::fread(paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv')),row.names = 1)
+  mrna <- data.frame(data.table::fread(paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv')),row.names = 1)
   mirna_total <- unlist(dict[,1])
-  d <- readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
+  d <- readRDS(paste0(path_prefix, '/', project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
 
   ## create a cluster
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
-  sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
+  sigCernaPeak <- function(index, d, cor_threshold_peak, window_size){
     #index=1
     #print(paste0('microRNA:', index))
     w <- window_size
@@ -63,12 +54,23 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
     gene <- intersect(gene,rownames(mrna))
 
-    gene_pair <- combn(gene,2)
+    gene_pair <- utils::combn(gene,2)
     total_pairs <- choose(length(gene),2)
     #tmp <- NULL
-    doParallel::registerDoParallel(parallel::detectCores()-3)
+    #doParallel::registerDoParallel(parallel::detectCores()-3)
+    chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+
+    if (nzchar(chk) && chk == "TRUE") {
+      # use 2 cores in CRAN/Travis/AppVeyor
+      num_workers <- 2L
+    } else {
+      # use all cores in devtools::test()
+      num_workers <- parallel::detectCores()-3
+    }
+
+    doParallel::registerDoParallel(num_workers)
     #tmp <- tryCatch({
-    tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
+    tmp <- foreach::foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
     #lst <- list()
     #for (p in 1:total_pairs){ # test foreach
       #p=1
@@ -165,7 +167,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                 z2 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]],na.rm=T))
                 N1 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]])
                 N2 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]])
-                TestPeak.pval[i] <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
+                TestPeak.pval[i] <- 2*stats::pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
                 #TestPeak.pval[i] <- t.test(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]])$p.value
 
               }
@@ -236,7 +238,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
         z2 <- psych::fisherz(result$output$seg.mean[min_seg])
         N1 <- result$output[max_seg,"num.mark"]
         N2 <- result$output[min_seg,"num.mark"]
-        Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
+        Test <- 2*stats::pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
         # generate final output
         if(!is.na(Test) && Test < 0.05){
           if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
@@ -272,19 +274,19 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   # txt_final <- do.call(rbind, txt)
 
   #future::plan("future::cluster", workers=parallel::detectCores()-3)
-  testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),cor_threshold_peak,window_size)
+  testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(path_prefix, '/',project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),cor_threshold_peak,window_size)
   FinalResult <- purrr::compact(testfunction)
 
-  if (dir.exists(paste0(project_name, '-', disease_name,'/03_identifiedPairs')) == FALSE){
-    dir.create(paste0(project_name, '-', disease_name,'/03_identifiedPairs'))
+  if (dir.exists(paste0(path_prefix, '/', project_name, '-', disease_name,'/03_identifiedPairs')) == FALSE){
+    dir.create(paste0(path_prefix, '/', project_name, '-', disease_name,'/03_identifiedPairs'))
   }
-  saveRDS(FinalResult,paste0(project_name,'-',disease_name,'/03_identifiedPairs/',project_name,'-',disease_name,'_finalpairs.rds'))
+  saveRDS(FinalResult,paste0(path_prefix, '/', project_name,'-',disease_name,'/03_identifiedPairs/',project_name,'-',disease_name,'_finalpairs.rds'))
 
   final_df <- as.data.frame(Reduce(rbind, FinalResult))
   flat_df <-  final_df %>%
-    tidyr::unnest(location, .drop = FALSE) %>%
-    tidyr::unnest(numOfseg, .drop = FALSE)
-  data.table::fwrite(flat_df, paste0(project_name,'-', disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = F)
+    tidyr::unnest(location) %>%
+    tidyr::unnest(numOfseg)
+  data.table::fwrite(flat_df, paste0(path_prefix, '/', project_name,'-', disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = F)
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')

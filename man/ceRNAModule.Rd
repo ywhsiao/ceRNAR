@@ -5,7 +5,7 @@
 \title{Network analysis and visualization}
 \usage{
 ceRNAModule(
-  path_prefix = NULL,
+  path_prefix,
   project_name,
   disease_name,
   pairs_cutoff = 5,
@@ -29,6 +29,7 @@ identified ceRNAs
 }
 \examples{
 ceRNAModule(
+path_prefix = '~/',
 project_name = 'demo',
 disease_name = 'DLBC',
 pairs_cutoff = 5,

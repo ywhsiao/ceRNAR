@@ -5,7 +5,7 @@
 \title{Main ceRNAR algorithm}
 \usage{
 ceRNAMethod(
-  path_prefix = NULL,
+  path_prefix,
   project_name = "demo",
   disease_name = "DLBC",
   window_size = 10,
@@ -35,6 +35,7 @@ filtering, segment clustering and peak merging
 }
 \examples{
 ceRNAMethod(
+path_prefix = '~/',
 project_name = 'demo',
 disease_name = 'DLBC',
 window_size = 10,

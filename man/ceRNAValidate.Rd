@@ -4,7 +4,7 @@
 \alias{ceRNAValidate}
 \title{Externally experimental validation for the potential ceRNA pairs}
 \usage{
-ceRNAValidate(path_prefix = NULL, project_name = "TCGA", disease_name)
+ceRNAValidate(path_prefix, project_name = "TCGA", disease_name)
 }
 \arguments{
 \item{path_prefix}{user's working directory}
@@ -19,8 +19,9 @@ A function to validate the potential ceRNA pairs based on the miRSponge database
 }
 \examples{
 ceRNAValidate(
+path_prefix = '~/',
 project_name = 'demo',
-disease_name = 'DLBC',
+disease_name = 'DLBC'
 )
 
 }

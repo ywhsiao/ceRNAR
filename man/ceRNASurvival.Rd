@@ -4,7 +4,7 @@
 \alias{ceRNASurvival}
 \title{Survival analysis and visualization}
 \usage{
-ceRNASurvival(path_prefix = NULL, project_name, disease_name, mirnas)
+ceRNASurvival(path_prefix, project_name, disease_name, mirnas)
 }
 \arguments{
 \item{path_prefix}{user's working directory}
@@ -21,6 +21,7 @@ identified ceRNAs and visualize the results using Kaplan-Meier plot
 }
 \examples{
 ceRNASurvival(
+path_prefix = '~/',
 project_name = 'demo',
 disease_name = 'DLBC',
 mirnas = 'hsa-miR-101-3p'

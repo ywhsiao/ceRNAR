@@ -5,10 +5,10 @@
 \title{Retrieval of public TCGA data from GDC Xena Hub}
 \usage{
 ceRNATCGA(
-  path_prefix = NULL,
+  path_prefix,
   project_name = "TCGA",
   disease_name = "DLBC",
-  timeout = 5e+06
+  timeout = 5e+05
 )
 }
 \arguments{
@@ -19,8 +19,8 @@ ceRNATCGA(
 \item{disease_name}{the abbreviation of disease that users are interested in
 (default = 'DLBC')}
 
-\item{timout}{the allowance time for downloading TCGA data
-(default = 5000000)}
+\item{timeout}{the allowance time for downloading TCGA data
+(default = 1000)}
 }
 \description{
 A function to retrieve TCGA data from GDC Xena Hub
@@ -28,8 +28,9 @@ A function to retrieve TCGA data from GDC Xena Hub
 }
 \examples{
 ceRNATCGA(
+path_prefix = '~/',
 project_name = 'TCGA',
-disease_name = 'DLBC',
+disease_name = 'DLBC'
 )
 
 }

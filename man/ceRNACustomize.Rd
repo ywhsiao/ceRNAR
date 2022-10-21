@@ -5,7 +5,7 @@
 \title{A function for uploading customized data}
 \usage{
 ceRNACustomize(
-  path_prefix = NULL,
+  path_prefix,
   project_name = "demo",
   disease_name = "DLBC",
   gene_exp = gene_exp,
@@ -31,7 +31,11 @@ ceRNACustomize(
 A function to allow users to upload their own data
 }
 \examples{
+data(gene_exp)
+data(mirna_exp)
+data(surv_data)
 ceRNACustomize(
+path_prefix = '~/',
 project_name = 'demo',
 disease_name = 'DLBC',
 gene_exp = gene_exp,

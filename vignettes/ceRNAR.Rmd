@@ -1,0 +1,171 @@
+---
+title: "ceRNAR: An R Package for Identification and Analysis of ceRNAs-miRNA Triplets"
+author: "Yi-Wen Hsiao†, Lin Wang† and Tzu-Pin Lu"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ceRNAR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r style, echo=FALSE, results="asis", message=FALSE}
+knitr::opts_chunk$set(tidy = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+# Introduction
+The gene expression regulating mechanisms in humans are complex as many regulators are highly connected and are compensatory to each other. Many non-coding RNAs have critical roles in post-transcriptional regulation of protein-coding genes, including microRNAs. They are short, non-coding, single-stranded RNAs with ~22 nucleotides. Typically, microRNAs modulate gene expression via partial complementarity with many miRNA response elements (MREs) on protein-coding genes. Recently, competitive endogenous RNA (ceRNA), including canonical protein-coding messenger RNAs (mRNAs), long non-coding RNAs (lncRNAs), circular RNAs (circRNAs), and pseudogenes, represents a novel mechanism of gene regulation that controls several biological and pathological processes. Their mechanism is to compete with miRNAs for binding their regulatory sequences, as shown in Fig 1. The regulation of ceRNAs have been identified in multiple cancers; PTEN is an important tumor suppressor gene that was also reported to encode ceRNA in prostate cancer, glioblastoma, and melanoma. Therefore, it is of important to speed up our knowledge of the regulatory mechanisms and functions of ceRNA-miRNA triplets in the pathogenesis of disease, including cancers.
+
+```{r fig.width=10, echo=FALSE}
+library(png)
+library(grid)
+img <- readPNG("figure/mechanism_of_ceRNA.png")
+grid.raster(img, just = "center")
+```
+
+However, it is relatively time-consuming and labor-intensive to identify such ceRNA events through biological experiment. Although an increasing number of computational methods applying into high throughput miRNA and mRNA data have been developed for identifying ceRNAs, some of the prerequest (i.e. predefined threshold for genes for further analysis), limitation of the nature of data (i.e. continuous data are sensitive to outliers or the sample size) and huge computational cost existed in the current related tools may not effectively and accurately identify ceRNA events. 
+
+Therefore, we present a novel rank-based algorithm considering the contribution of miRNA expression in a ceRNA binding event and extending the pairwise correlation approach to identify ceRNA-miRNA triplets. In this package, we also included several downstream analyses to further interpret the biological meaning of identified ceRNA events for its users.
+
+# General Workflow
+The main pipeline of ceRNAR contains three components, including: (1) data preprocessing; (2) identification of ceRNA-miRNA triplets; (3) downstream analyses, as illustrated in Fig 2. In order to reduce the computational time and cost, this package only processed on the interactions between mRNA and miRNA that have been predicted/experimentally validated from night well-established databases for identifing ceRNA events. 
+
+```{r fig.width=10,  echo=FALSE}
+library(png)
+library(grid)
+img <- readPNG("figure/overview_of_ceRNAR.png")
+grid.raster(img, just = "center")
+```
+
+Specifically, there are three main steps for identification of ceRNA-miRNA triplets: (1) the ceRNApairFiltering method is to adopt a sliding window approach to identify the correlation patterns of the two target genes within a specific range of expression values for the miRNA; (2) the SegmentClustering method is to group the samples showing high correlation between the expression levels of the two target genes into one single cluster for detecting the possible signals of ceRNA-miRNA triplets; (3) the PeakMerging method is designed to prevent smashed segments resulting from noise for identfing the most important ceRNA events in a given dataset (as shown in Fig 3). To characterize the biological functions and pathways of identified ceRNA pairs, six possible downstream analyses have be implemented in this package. 
+
+```{r fig.width=10, echo=FALSE}
+library(png)
+library(grid)
+img <- readPNG("figure/details_of_ceRNA_algorithm.png")
+grid.raster(img, just = "center")
+```
+
+## Data preprocessing
+To illustrate functionality of ceRNAR, a small toy dataset (including gene and miRNA expression and clinical data) extracted from TCGA pan-cancer altas is used. 
+Larger expression datasets can be obtained via either `ceRNAcustomize()` to load user's own data or `ceRNAcustomize()` to load data from TCGA. Once importing the package, the toy dataset to can be accessed via `data()`:
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+library(ceRNAR)
+```
+
+- Gene expression:
+
+```{r}
+data(gene_exp)
+```
+
+```{r, echo=FALSE}
+knitr::kable(gene_exp[1:5,1:5])
+```
+
+- miRNA expression:
+
+```{r}
+data(mirna_exp)
+```
+
+```{r, echo=FALSE}
+knitr::kable(mirna_exp[1:5,1:5])
+```
+
+- clinical data:
+
+```{r}
+data("surv_data")
+```
+
+```{r, echo=FALSE}
+knitr::kable(surv_data[1:5,1:2])
+```
+
+
+Then, `ceRNACustomize()` is used to further preprocess and check the data
+
+```{r, eval=FALSE}
+ceRNACustomize(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', gene_exp = gene_exp,  mirna_exp = mirna_exp, surv_data = surv_data)
+```
+
+Alternatively, `ceRNATCGA()` can be used to retrieve TCGA data
+
+```{r}
+ceRNATCGA(path_prefix = '~/', project_name = 'TCGA',disease_name = 'DLBC', timeout = 5000000)
+```
+
+## Putative miRNA-gene interaction
+
+Here, ceRNAR comes with 2 experimentally validated miRNA-target databases and 7 computationally predicted miRNA-target databases for only considering genes with shared miRNAs. Three options for filtering putative miRNA-gene pairs:
+
+- `strict`: experimentally validated by 2 databases and predicted by 7 databaes 
+- `moderate`: experimentally validated by 2 databases or predicted by 7 databaes
+- `less`:experimentally validated by 2 databases or predicted by more than 6 databaes
+
+```{r}
+ceRNAputativePairs(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', filtering = 'less')
+```
+
+## ceRNA interaction
+
+```{r, echo=FALSE}
+cernar_result <- ceRNAMethod(path_prefix = '~/', project_name = 'demo', disease_name = "DLBC", window_size = 10)
+```
+
+```{r, echo=FALSE}
+knitr::kable(cernar_result[1:5,1:5])
+```
+
+
+## Downstream analyses
+
+- Functional analysis
+
+```{r, eval=FALSE}
+ceRNAFunction(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)
+```
+
+- Location plot
+
+```{r,eval=FALSE}
+ceRNALocation(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101-3p', window_size = 10)
+```
+
+- Survival analysis
+
+```{r,eval=FALSE}
+ceRNAModule(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 5, column_sum = 1)
+```
+
+- Network analysis
+
+```{r,eval=FALSE}
+ceRNASurvival(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirnas = 'hsa-miR-101-3p')
+```
+
+- External validation
+
+```{r,eval=FALSE}
+ceRNAValidate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
+```
+
+- Data integration
+
+```{r,eval=FALSE}
+library(SPONGE)
+ceRNAIntegrate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
+```
+
+
+# Session Information
+```{r}
+sessionInfo()
+```
+
+
+# References

@@ -5,7 +5,7 @@
 \title{Extraction of putative mRNA-miRNA pairs}
 \usage{
 ceRNAputativePairs(
-  path_prefix = NULL,
+  path_prefix,
   project_name = "demo",
   disease_name = "DLBC",
   filtering = "less"
@@ -26,6 +26,7 @@ A function to obtain putative mRNA-miRNA pairs from several databases
 }
 \examples{
 ceRNAputativePairs(
+path_prefix = '~/',
 project_name ='demo',
 disease_name = 'DLBC',
 filtering = 'less'

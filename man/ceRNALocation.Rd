@@ -4,13 +4,7 @@
 \alias{ceRNALocation}
 \title{Visualization for peak location}
 \usage{
-ceRNALocation(
-  path_prefix = NULL,
-  project_name,
-  disease_name,
-  mirna,
-  window_size
-)
+ceRNALocation(path_prefix, project_name, disease_name, mirna, window_size)
 }
 \arguments{
 \item{path_prefix}{user's working directory}
@@ -29,6 +23,7 @@ A function to visualize the peak location at certain miRNA level
 }
 \examples{
 ceRNALocation(
+path_prefix = '~/',
 project_name = 'demo',
 disease_name = 'DLBC',
 mirna='hsa-miR-101-3p',

@@ -4,45 +4,39 @@
 #' @description A function to retrieve TCGA data from GDC Xena Hub
 #' (https://xenabrowser.net/datapages/)
 #'
+#' @import utils
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign (default = 'TCGA')
 #' @param disease_name the abbreviation of disease that users are interested in
 #' (default = 'DLBC')
-#' @param timout the allowance time for downloading TCGA data
-#' (default = 5000000)
+#' @param timeout the allowance time for downloading TCGA data
+#' (default = 1000)
+#'
+#' @export
 #'
 #' @examples
 #' ceRNATCGA(
+#' path_prefix = '~/',
 #' project_name = 'TCGA',
-#' disease_name = 'DLBC',
+#' disease_name = 'DLBC'
 #' )
 #'
-#' @export
 
-ceRNATCGA <- function(path_prefix = NULL,
+
+ceRNATCGA <- function(path_prefix,
                       project_name = 'TCGA',
                       disease_name = 'DLBC',
-                      timeout = 5000000){
-  if (disease_name != 'GBM'){
-    if (is.null(path_prefix)){
-      path_prefix <- getwd()
-      setwd(path_prefix)
-      message('Your current directory: ', getwd())
-    }else{
-      setwd(path_prefix)
-      message('Your current directory: ', getwd())
+                      timeout = 500000){
+
+    if (dir.exists(paste0(path_prefix, '/', project_name,'-', disease_name)) == FALSE){
+      dir.create(paste0(path_prefix, '/', project_name,'-', disease_name))
     }
 
-    if (dir.exists(paste0(project_name,'-',disease_name)) == FALSE){
-      dir.create(paste0(project_name,'-',disease_name))
+    if (dir.exists(paste0(path_prefix, '/', project_name,'-', disease_name, '/01_rawdata')) == FALSE){
+      dir.create(paste0(path_prefix, '/', project_name,'-', disease_name, '/01_rawdata'))
     }
-    setwd(paste0(project_name,'-',disease_name))
 
-    if (dir.exists('01_rawdata') == FALSE){
-      dir.create('01_rawdata')
-    }
-    setwd('01_rawdata')
 
     time1 <- Sys.time()
 
@@ -59,7 +53,6 @@ ceRNATCGA <- function(path_prefix = NULL,
 
     # unzip
     temp <-  list.files(pattern="*.gz")
-    head(temp)
     for (i in 1:length(temp)) R.utils::gunzip(temp[i], remove=TRUE)
     message('(\u2714) All files have been and downloaded and uncompressed!')
 
@@ -118,7 +111,7 @@ ceRNATCGA <- function(path_prefix = NULL,
     # htseq_fpkm <- 2^htseq_fpkm -1
 
     # focus on protein coding RNA because downloaded mRNA expression matrix includes both codingRNA and lncRNA
-    gtf_df <- ceRNAR:::gencode_v22_annot
+    gtf_df <- get0("gencode_v22_annot", envir = asNamespace("ceRNAR"))
     ensem2symbol <- gtf_df[gtf_df$type == 'gene',c('gene_id', 'gene_type', 'gene_name')]
 
     rownames(ensem2symbol) <- ensem2symbol$gene_id
@@ -126,29 +119,29 @@ ceRNATCGA <- function(path_prefix = NULL,
     annot_cdRNA <- merge(ensem2symbol, cdRNA, by = 'row.names')
     rownames(annot_cdRNA) <- annot_cdRNA[,1]
     annot_cdRNA <- annot_cdRNA[,-1:-3]
-    annot_cdRNA_unique <- aggregate(. ~ gene_name, data = annot_cdRNA, mean) # longer time
+    annot_cdRNA_unique <- stats::aggregate(. ~ gene_name, data = annot_cdRNA, mean) # longer time
     row.names(annot_cdRNA_unique) <- annot_cdRNA_unique$gene_name
     annot_cdRNA_unique <- annot_cdRNA_unique[,-1]
 
     #miRNA id conversion
-    ID_converter <- ceRNAR:::hsa_pre_mature_matching
+    #ID_converter <- ceRNAR:::hsa_pre_mature_matching
+    ID_converter <- get0("hsa_pre_mature_matching", envir = asNamespace("ceRNAR"))
     mirna$ID <- row.names(mirna)
     miRNA_with_precurer <- merge(ID_converter, mirna, by='ID')[,-1]
-    miRNA_with_precurer <- aggregate(. ~ Mature_ID, data = miRNA_with_precurer, mean)
+    miRNA_with_precurer <- stats::aggregate(. ~ Mature_ID, data = miRNA_with_precurer, mean)
     row.names(miRNA_with_precurer) <- miRNA_with_precurer[,1]
     miRNA_with_precurer <- miRNA_with_precurer[,-1]
 
     # store processed data
-    data.table::fwrite(as.data.frame(annot_cdRNA_unique),paste0(project_name,'-', disease_name,'_mrna.csv'), row.names = T)
-    data.table::fwrite(as.data.frame(miRNA_with_precurer),paste0(project_name,'-', disease_name,'_mirna.csv'), row.names = T)
-    data.table::fwrite(as.data.frame(GDC_phenotype),paste0(project_name,'-', disease_name,'_phenotype.csv'), row.names = T)
-    data.table::fwrite(as.data.frame(survival), paste0(project_name,'-', disease_name,'_survival.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(annot_cdRNA_unique),paste0(path_prefix, '/', project_name,'-', disease_name,'_mrna.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(miRNA_with_precurer),paste0(path_prefix, '/', project_name,'-', disease_name,'_mirna.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(GDC_phenotype),paste0(path_prefix, '/', project_name,'-', disease_name,'_phenotype.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(survival), paste0(path_prefix, '/', project_name,'-', disease_name,'_survival.csv'), row.names = T)
     message('(\u2714) All files have been preprocessed!')
     time2 <- Sys.time()
     diftime <- difftime(time2, time1, units = 'min')
-    setwd('../../')
     message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' minutes.'))
     message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
   }
 
-}
+

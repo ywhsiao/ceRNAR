@@ -6,6 +6,9 @@
 #' Gene Ontology (GO; http://geneontology.org/) and Kyoto Encyclopedia of
 #' Genes and Genomes (KEGG; https://www.genome.jp/kegg/).
 #'
+#' @import utils
+#' @import grDevices
+#'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign (default: demo)
 #' @param disease_name the abbreviation of disease that users are interested in
@@ -13,47 +16,36 @@
 #' @param pairs_cutoff at least the number of ceRNA pairs that a mirna must have
 #'  (default: 1)
 #'
+#' @export
 #'
 #' @examples
 #' ceRNAFunction(
+#' path_prefix = '~/',
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' pairs_cutoff = 1
 #' )
 #'
-#' @export
 
 
-ceRNAFunction <- function(path_prefix = NULL,
+ceRNAFunction <- function(path_prefix,
                           project_name,
                           disease_name,
                           pairs_cutoff){
 
-  if (is.null(path_prefix)){
-    path_prefix <- getwd()
-    setwd(path_prefix)
-    message('Your current directory: ', getwd())
-  }else if (!is.null(path_prefix)){
-    setwd(path_prefix)
-    message('Your current directory: ', getwd())
-  }else {
-    message('Incorrect directory!')
-    stop()
-  }
-
   time1 <- Sys.time()
   #setwd(paste0(project_name,'-',disease_name))
 
-  if(!dir.exists(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
-    dir.create(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/'))
+  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
+    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))
   }
 
-  if(!dir.exists(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/'))){
-    dir.create(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/'))
+  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/'))){
+    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/'))
   }
 
   message('\u25CF Step5: Dowstream Analyses - Functional analysis')
-  Res <- readRDS(paste0(project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name,'_finalpairs.rds'))
+  Res <- readRDS(paste0(path_prefix, '/', project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name,'_finalpairs.rds'))
   Res_dataframe <- Reduce(rbind, Res)
   mir_unique <- unique(Res_dataframe[,1])
   mir_df_final <- c()
@@ -95,9 +87,9 @@ ceRNAFunction <- function(path_prefix = NULL,
                                     pvalueCutoff = 0.01)
 
   kk_df <- kk@result
-  write.csv(kk_df,paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name,'-',disease_name,'_kegg_ora.csv'), row.names = F)
+  utils::write.csv(kk_df,paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name,'-',disease_name,'_kegg_ora.csv'), row.names = F)
   kk_babble <- enrichplot::dotplot(kk, showCategory=10,orderBy = "x")+ ggplot2::ggtitle('Dotplot for ORA based on KEGG')
-  kk_bar <- barplot(kk,showCategory = 10)+ ggplot2::ggtitle('Barplot for ORA based on KEGG')
+  kk_bar <- graphics::barplot(kk,showCategory = 10)+ ggplot2::ggtitle('Barplot for ORA based on KEGG')
 
   # go ora
   message('\u2605 Running GO ORA analysis ...')
@@ -129,8 +121,8 @@ ceRNAFunction <- function(path_prefix = NULL,
   go_bp <- go[[3]]@result
   go_bp$GOLevel <- 'BP'
   go_all <- rbind(go_cc, go_mf, go_bp)
-  write.csv(go_all,paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name, '-',disease_name, '_go_ora.csv'), row.names = F)
-  go_tobarplot <- rbind(head(go_cc, n=10), head(go_mf, n=10), head(go_bp, n=10))
+  utils::write.csv(go_all,paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name, '-',disease_name, '_go_ora.csv'), row.names = F)
+  go_tobarplot <- rbind(utils::head(go_cc, n=10), utils::head(go_mf, n=10), utils::head(go_bp, n=10))
   go_tobarplot$p.adjust.convert <- -log10(go_tobarplot$p.adjust)
   go_bar <- ggpubr::ggbarplot(go_tobarplot, x = "Description", y = "p.adjust.convert",
                               fill = "GOLevel",
@@ -142,9 +134,9 @@ ceRNAFunction <- function(path_prefix = NULL,
                               y.text.angle = 0) + ggpubr::rotate()
   # merge kegg and GO results
   gg_babble <- cowplot::plot_grid(kk_babble, go_babble[[1]], go_babble[[2]], go_babble[[3]], labels = c('A', 'B', 'C', 'D'), label_size = 12, ncol=2)
-  ggplot2::ggsave(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_babble.png'), height = 10, width = 20,dpi = 300)
+  ggplot2::ggsave(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_babble.png'), height = 10, width = 20,dpi = 300)
   gg_bar <- cowplot::plot_grid(kk_bar, go_bar, labels = c('A', 'B'), label_size = 12, ncol = 2)
-  ggplot2::ggsave(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_bar.png'), height = 8, width = 20,dpi = 300)
+  ggplot2::ggsave(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_bar.png'), height = 8, width = 20,dpi = 300)
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')

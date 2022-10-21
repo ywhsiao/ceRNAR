@@ -18,8 +18,11 @@ import(cvms, except = font)
 import(dplyr, except = combine)
 import(foreach)
 import(ggplot2, except = margin)
+import(grDevices)
 import(magrittr, except = set_names)
 
+import(parallel)
 import(rlang, except = exprs)
 
 
+import(utils)

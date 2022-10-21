@@ -4,45 +4,41 @@
 #' @description A function to validate the potential ceRNA pairs based on the miRSponge database
 #' (http://www.bio-bigdata.net/miRSponge)
 #'
+#' @import utils
+#'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
 #'
+#' @export
+#'
 #' @examples
 #' ceRNAValidate(
+#' path_prefix = '~/',
 #' project_name = 'demo',
-#' disease_name = 'DLBC',
+#' disease_name = 'DLBC'
 #' )
 #'
-#' @export
 
-ceRNAValidate <- function(path_prefix = NULL,
+ceRNAValidate <- function(path_prefix,
                           project_name = 'TCGA',
                           disease_name){
-  if (is.null(path_prefix)){
-    path_prefix <- getwd()
-    setwd(path_prefix)
-    message('Your current directory: ', getwd())
-  }else{
-    setwd(path_prefix)
-    message('Your current directory: ', getwd())
-  }
 
   time1 <- Sys.time()
   #setwd(paste0(project_name,'-',disease_name))
 
-  if(!dir.exists(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
-    dir.create(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/'))
+  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
+    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))
   }
 
-  if(!dir.exists(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/'))){
-    dir.create(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/'))
+  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/'))){
+    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/'))
   }
 
   message('\u25CF Step5: Dowstream Analyses - External validation')
 
   datapreparing <- function(file){
-    candidate_ceRNA <- as.data.frame(read.csv(file))
+    candidate_ceRNA <- as.data.frame(utils::read.csv(file))
     candidate_ceRNA_list <- candidate_ceRNA[,c(1,2)]
     candidate_ceRNA_list$miRNA <- unlist(candidate_ceRNA_list$miRNA)
     candidate_ceRNA_list <- tidyr::separate(candidate_ceRNA_list,cand.ceRNA, c("ceRNA1", "ceRNA2"), " ")
@@ -52,11 +48,11 @@ ceRNAValidate <- function(path_prefix = NULL,
     candidate_ceRNA_list$miRNA_short1 <- gsub('[[:alpha:]]{1}$', '', candidate_ceRNA_list$miRNA_short)
     candidate_ceRNA_list
   }
-  pair <-datapreparing(paste0(project_name,'-',disease_name,'/',project_name,'-',disease_name,'_finalpairs.csv'))
+  pair <-datapreparing(paste0(path_prefix, '/', project_name,'-',disease_name,'/',project_name,'-',disease_name,'_finalpairs.csv'))
   total_findings <- dim(pair)[1]
   pair_lst <-  dplyr::group_split(pair,miRNA_short)
   # miRSponge clean data
-  miRSponge_exp <- ceRNAR:::ext_val
+  miRSponge_exp <- get0("ext_val", envir = asNamespace("ceRNAR"))
   miRSponge_exp$all <- paste0(miRSponge_exp$miRNA.Name, '|', miRSponge_exp$Target.Name, '|', miRSponge_exp$Experimental.method)
   miRSponge_exp$miRNA_short <- gsub('-3p|-5p','',miRSponge_exp$miRNA)
   miRSponge_exp <- miRSponge_exp[,c(1,3,6,7)]
@@ -89,13 +85,13 @@ ceRNAValidate <- function(path_prefix = NULL,
     df <- as.data.frame(cancer_df[[as.numeric(idx[j])]])
     exp <- final[final$index==as.numeric(idx[j]),]
     for (i in 1:dim(df)[1]){
-      if (df[i,'ceRNA2']%in%exp$Target.Name & df[i,'ceRNA1']%in%exp$Target.Name){
+      if (df[i,'ceRNA2'] %in% exp$Target.Name & df[i,'ceRNA1'] %in% exp$Target.Name){
         df$evidence[i] <- 'exp_proof_inboth'
         df$evidence1[i] <- 'ceRNA1|ceRNA2'
-      }else if (df[i,'ceRNA1']%in%exp$Target.Name){
+      }else if (df[i,'ceRNA1'] %in% exp$Target.Name){
         df$evidence[i] <- 'exp_proof_inceRNA1'
         df$evidence1[i] <- 'ceRNA1'
-      }else if (df[i,'ceRNA2']%in%exp$Target.Name){
+      }else if (df[i,'ceRNA2'] %in% exp$Target.Name){
         df$evidence[i] <- 'exp_proof_inceRNA2'
         df$evidence1[i] <- 'ceRNA2'
       }else{
@@ -152,7 +148,7 @@ ceRNAValidate <- function(path_prefix = NULL,
   }
   with_evidence[is.na(with_evidence)] <- '-'
   common_pairs <- dim(with_evidence)[1]
-  write.csv(with_evidence, paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/',project_name,'-',disease_name,'_with_target_exp_evidence.csv'), row.names = F)
+  utils::write.csv(with_evidence, paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/',project_name,'-',disease_name,'_with_target_exp_evidence.csv'), row.names = F)
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')

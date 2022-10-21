@@ -4,7 +4,7 @@
 \alias{ceRNAFunction}
 \title{Functional enrichment analysis}
 \usage{
-ceRNAFunction(path_prefix = NULL, project_name, disease_name, pairs_cutoff)
+ceRNAFunction(path_prefix, project_name, disease_name, pairs_cutoff)
 }
 \arguments{
 \item{path_prefix}{user's working directory}
@@ -25,6 +25,7 @@ Genes and Genomes (KEGG; https://www.genome.jp/kegg/).
 }
 \examples{
 ceRNAFunction(
+path_prefix = '~/',
 project_name = 'demo',
 disease_name = 'DLBC',
 pairs_cutoff = 1

@@ -5,7 +5,7 @@
 \title{two of three steps in main ceRNAR algorithm}
 \usage{
 SegmentClusteringPlusPeakMerging(
-  path_prefix = NULL,
+  path_prefix,
   project_name = "demo",
   disease_name = "DLBC",
   cor_threshold_peak = 0.85,
@@ -30,6 +30,7 @@ A function to conduct two of three steps in algorithm, that is, segment clusteri
 }
 \examples{
 SegmentClusteringPlusPeakMerging(
+path_prefix =  '~/',
 project_name = 'demo',
 disease_name = "DLBC",
 cor_threshold_peak = 0.85,

@@ -5,7 +5,7 @@
 \alias{ceRNAIntegrate}
 \title{Integration of the possible ceRNA pairs among published tools}
 \usage{
-ceRNAIntegrate(path_prefix = NULL, project_name, disease_name)
+ceRNAIntegrate(path_prefix, project_name, disease_name)
 }
 \arguments{
 \item{path_prefix}{user's working directory}
@@ -21,8 +21,9 @@ by ceRNAR algorithm with those from other tools, such as SPONGE (List et al.,
 }
 \examples{
 ceRNAIntegrate(
+path_prefix = '~/',
 project_name = 'demo',
-disease_name = 'DLBC',
+disease_name = 'DLBC'
 )
 
 }

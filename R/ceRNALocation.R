@@ -3,6 +3,9 @@
 #' @title Visualization for peak location
 #' @description A function to visualize the peak location at certain miRNA level
 #'
+#' @import utils
+#' @import grDevices
+#'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
@@ -10,57 +13,49 @@
 #' @param window_size the number of samples for each window and usually about
 #' one third of total samples
 #'
+#' @export
+#'
 #' @examples
 #' ceRNALocation(
+#' path_prefix = '~/',
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' mirna='hsa-miR-101-3p',
 #' window_size = 45/5
 #' )
 #'
-#' @export
 
-
-ceRNALocation <- function(path_prefix = NULL,
+ceRNALocation <- function(path_prefix,
                           project_name,
                           disease_name,
                           mirna,
                           window_size){
 
-  if(is.null(path_prefix)){
-    path_prefix <- getwd()
-    setwd(path_prefix)
-    message('Your current directory: ', getwd())
-  }else{
-    setwd(path_prefix)
-    message('Your current directory: ', getwd())
+  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
+    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))
   }
 
-  if(!dir.exists(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
-    dir.create(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/'))
-  }
-
-  if(!dir.exists(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/peakLocationResults/'))){
-    dir.create(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/peakLocationResults/'))
+  if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/peakLocationResults/'))){
+    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/peakLocationResults/'))
   }
 
   message('\u25CF Step4: Dowstream Analyses - Peak Location analysis for ', mirna, '.')
-  Res <- readRDS(paste0(project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name,'_finalpairs.rds'))
+  Res <- readRDS(paste0(path_prefix, '/', project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name,'_finalpairs.rds'))
 
   # get all ceRNAs
   Res_dataframe <- as.data.frame(Reduce(rbind,purrr::compact(Res)))
   a=Res_dataframe[Res_dataframe$miRNA==mirna ,2:4]
 
   # get mirna expression data
-  mirExp <- as.data.frame(data.table::fread(paste0(project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv'),header = T,stringsAsFactors = F))
+  mirExp <- as.data.frame(data.table::fread(paste0(path_prefix,'/',project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv'),header = T,stringsAsFactors = F))
   row.names(mirExp) <- mirExp[,1]
   mirExp <- mirExp[,-1]
   names(mirExp) <- substring(names(mirExp),1,12)
 
   # get location
   a_order <- a[order(unlist(lapply(a[,2], function(x) dplyr::last(x[,1]))), decreasing = TRUE),]
-  start_ls <- lapply(a_order[,2], function(x) na.omit(x[,1]))
-  end_ls <- lapply(a_order[,2], function(x) na.omit(x[,2]))
+  start_ls <- lapply(a_order[,2], function(x) stats::na.omit(x[,1]))
+  end_ls <- lapply(a_order[,2], function(x) stats::na.omit(x[,2]))
 
   start <- unlist(start_ls)
   end <- unlist(end_ls)
@@ -72,7 +67,7 @@ ceRNALocation <- function(path_prefix = NULL,
   d=data.frame(x1=start, x2=end, y1=ystart, y2=yend,
                ylab=unlist(rep(a_order[,1],unlist(lapply(location, length)))),
                yloc=rep(seq(0.5,dim(a_order)[1],by=1),unlist(lapply(location, length))),
-               Count=as.matrix(na.omit(unlist(a_order[,3]))))
+               Count=as.matrix(stats::na.omit(unlist(a_order[,3]))))
   N=dim(mirExp)[2]
   w=window_size
   tmp <- as.data.frame(t(mirExp[row.names(mirExp)==mirna,]))
@@ -99,10 +94,10 @@ ceRNALocation <- function(path_prefix = NULL,
           panel.grid.minor = ggplot2::element_blank(),axis.line = ggplot2::element_line(colour = "black"))+
     ggplot2::ylab('Count')
 
-  png(paste0(project_name,'-',disease_name,'/04_downstreamAnalyses/peakLocationResults/',project_name,'-',disease_name, '_', mirna, '_peakLocation.png'), width = 2000, height = 3500, res = 300)
+  grDevices::png(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/peakLocationResults/',project_name,'-',disease_name, '_', mirna, '_peakLocation.png'), width = 2000, height = 3500, res = 300)
   egg::ggarrange(p1,p2,
             ncol=2, nrow=2, widths=c(4, 1), heights=c(4, 0.5))
-  dev.off()
+  grDevices::dev.off()
 
 
   message('\u2605\u2605\u2605 Peak location analysis has completed! \u2605\u2605\u2605')
