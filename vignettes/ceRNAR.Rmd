@@ -110,19 +110,18 @@ ceRNAputativePairs(path_prefix = '~/', project_name = 'demo', disease_name = 'DL
 
 ```{r message=FALSE}
 ceRNApairFilering(project_name = 'demo', disease_name = "DLBC", window_size = 10)
-SegmentClusteringPlusPeakMerging(project_name = 'demo', disease_name = "DLBC",
+cernar_result <- SegmentClusteringPlusPeakMerging(project_name = 'demo', disease_name = "DLBC",
                                  window_size = 10)
 ```
 
 Alternatively, `ceRNAMethod()` which encapsulated above two functions can be used:
 
 ```{r message=FALSE}
-ceRNAMethod(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', window_size = 10)
+cernar_result <- ceRNAMethod(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', window_size = 10)
 ```
 
 The final output stores the most important ceRNA events identified by the package:
 ```{r echo=FALSE}
-cernar_result <- read.csv('~/demo-DLBC/demo-DLBC_finalpairs.csv')
 knitr::kable(cernar_result[1:5,])
 ```
 
@@ -192,12 +191,11 @@ grid.raster(img, just = "center")
 This function helps users to further check whether the findings have been validated based on the miRSponge database.
 
 ```{r,eval=FALSE}
-ceRNAValidate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
+external_val_result <- ceRNAValidate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
 ```
 
 ```{r echo=FALSE}
-cernar_result <- read.csv("/Users/ywhsiao/demo-DLBC/04_downstreamAnalyses/external_validation/demo-DLBC_with_target_exp_evidence.csv")
-knitr::kable(cernar_result[1:5,])
+knitr::kable(external_val_result[1:5,])
 ```
 
 - Data integration
@@ -205,12 +203,11 @@ knitr::kable(cernar_result[1:5,])
 This function allows users to further combine our results with other state-of-the-art tools in ceRNA biological field, including SPONGE and JAMI.
 
 ```{r,eval=FALSE}
-ceRNAIntegrate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
+integrated_result <- ceRNAIntegrate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
 ```
 
 ```{r echo=FALSE}
-cernar_result <- read.csv()
-knitr::kable(cernar_result[1:5,])
+knitr::kable(integrated_result[1:5,])
 ```
 
 # Session Information
