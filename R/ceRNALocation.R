@@ -31,6 +31,10 @@ ceRNALocation <- function(path_prefix,
                           mirna,
                           window_size){
 
+  if (!stringr::str_detect(path_prefix, '/')){
+    path_prefix <- paste0(path_prefix, '/')
+  }
+
   if(!dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))){
     dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/'))
   }

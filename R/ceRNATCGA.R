@@ -28,6 +28,9 @@ ceRNATCGA <- function(path_prefix,
                       project_name = 'TCGA',
                       disease_name = 'DLBC',
                       timeout = 500000){
+   if (!stringr::str_detect(path_prefix, '/')){
+     path_prefix <- paste0(path_prefix, '/')
+   }
 
     if (dir.exists(paste0(path_prefix, project_name,'-', disease_name)) == FALSE){
       dir.create(paste0(path_prefix, project_name,'-', disease_name))
@@ -53,16 +56,16 @@ ceRNATCGA <- function(path_prefix,
     downloadFromGDC(project,cancer)
 
     # unzip
-    temp <-  list.files(pattern="*.gz")
-    for (i in 1:length(temp)) R.utils::gunzip(temp[i], remove=TRUE)
+    temp <-  list.files(path = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), pattern=".gz")
+    for (i in 1:length(temp)) R.utils::gunzip(paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',temp[i]), remove=TRUE)
     message('(\u2714) All files have been and downloaded and uncompressed!')
 
     # match sample id
     # Tumor types range from 01 - 09, normal types from 10 - 19 and control samples from 20 - 29.
     # ignore GBM because its mirna data only contain 5 samples
-    temp <-  list.files(pattern="*.tsv")
+    temp <-  list.files(path = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), pattern="*.tsv")
     temp_name <- gsub(".*\\.","",gsub(".tsv", "", temp))
-    for (i in 1:length(temp)) assign(temp_name[i], data.frame(data.table::fread(temp[i], sep = '\t',header = TRUE, dec = ".", fill = TRUE), row.names = 1))
+    for (i in 1:length(temp)) assign(temp_name[i], data.frame(data.table::fread(paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/', temp[i]), sep = '\t',header = TRUE, dec = ".", fill = TRUE), row.names = 1))
     # id in a column
     GDC_phenotype <- GDC_phenotype[substring(row.names(GDC_phenotype),16)=='A',]
     GDC_phenotype <- GDC_phenotype[!(substring(row.names(GDC_phenotype),14,15) %in% seq(10,29,1)),]
@@ -86,6 +89,7 @@ ceRNATCGA <- function(path_prefix,
     names(mirna) <-substring(names(mirna),1,12)
     # get union sampleID
     g1 <- list(names(mirna), names(htseq_fpkm), row.names(GDC_phenotype), row.names(survival))
+
     union_sampleID <- sort(Reduce(intersect, g1))
     message('\u2605 TCGA-', disease_name, ' cohort contains ',length(union_sampleID), ' tumor samples!')
 

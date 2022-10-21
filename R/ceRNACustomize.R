@@ -36,6 +36,10 @@ ceRNACustomize <- function(path_prefix,
                            mirna_exp = mirna_exp,
                            surv_data = surv_data){
 
+  if (!stringr::str_detect(path_prefix, '/')){
+    path_prefix <- paste0(path_prefix, '/')
+  }
+
   time1 <- Sys.time()
   message('\u25CF Step 1 for Customized data: Checking the data...')
   # check input

@@ -33,6 +33,10 @@ ceRNAIntegrate <- function(path_prefix,
                            project_name,
                            disease_name){
 
+  if (!stringr::str_detect(path_prefix, '/')){
+    path_prefix <- paste0(path_prefix, '/')
+  }
+
   time1 <- Sys.time()
   #setwd(paste0(project_name,'-',disease_name))
 

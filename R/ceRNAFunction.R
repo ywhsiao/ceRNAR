@@ -33,6 +33,10 @@ ceRNAFunction <- function(path_prefix,
                           disease_name,
                           pairs_cutoff){
 
+  if (!stringr::str_detect(path_prefix, '/')){
+    path_prefix <- paste0(path_prefix, '/')
+  }
+
   time1 <- Sys.time()
   #setwd(paste0(project_name,'-',disease_name))
 

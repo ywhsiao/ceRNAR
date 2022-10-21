@@ -28,6 +28,10 @@ ceRNASurvival <- function(path_prefix,
                           disease_name,
                           mirnas){
 
+  if (!stringr::str_detect(path_prefix, '/')){
+    path_prefix <- paste0(path_prefix, '/')
+  }
+
   time1 <- Sys.time()
   #setwd(paste0(project_name,'-',disease_name))
   if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/'))){

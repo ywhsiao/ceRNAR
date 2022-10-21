@@ -33,6 +33,11 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
                                              disease_name = 'DLBC',
                                              cor_threshold_peak = 0.85,
                                              window_size = 10){
+
+  if (!stringr::str_detect(path_prefix, '/')){
+    path_prefix <- paste0(path_prefix, '/')
+  }
+
   time1 <- Sys.time()
 
   message('\u25CF Step4: Clustering segments using CBS algorithm plus Mearging peaks')

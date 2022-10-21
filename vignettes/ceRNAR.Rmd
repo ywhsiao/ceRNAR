@@ -210,10 +210,21 @@ integrated_result <- ceRNAIntegrate(path_prefix = '~/', project_name = 'demo', d
 knitr::kable(integrated_result[1:5,])
 ```
 
+## ceRNAR is available at:
+R-package:
+https://github.com/ywhsiao/ceRNAR
+
+## Citation
+To cite your use of ceRNAR in your publication, please reference: 
+
+Hsiao, Y. W., Wang, L., & Lu, T. P. (2022). ceRNAR: An R package for identification and analysis of ceRNA-miRNA triplets. PLOS Computational Biology, 18(9), e1010497. [doi:10.1371/journal.pcbi.1010497](https://doi.org/10.1371/journal.pcbi.1010497)
+
+# References
+
+
 # Session Information
 ```{r}
 sessionInfo()
 ```
 
 
-# References

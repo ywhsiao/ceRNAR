@@ -34,6 +34,10 @@ ceRNApairFilering <- function(path_prefix,
                               window_size = 10,
                               cor_method = 'pearson'){
 
+  if (!stringr::str_detect(path_prefix, '/')){
+    path_prefix <- paste0(path_prefix, '/')
+  }
+
   time1 <- Sys.time()
   message('\u25CF Step3: Filtering putative mRNA-miRNA pairs using sliding window approach')
 

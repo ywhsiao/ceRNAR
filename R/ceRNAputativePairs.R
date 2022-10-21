@@ -25,6 +25,10 @@ ceRNAputativePairs <- function(path_prefix,
                                disease_name = 'DLBC',
                                filtering = 'less'){
 
+  if (!stringr::str_detect(path_prefix, '/')){
+    path_prefix <- paste0(path_prefix, '/')
+  }
+
   time1 <- Sys.time()
 
   ## match to interaction database

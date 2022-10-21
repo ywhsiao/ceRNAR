@@ -38,6 +38,10 @@ ceRNAMethod <- function(path_prefix,
                         cor_method = 'pearson',
                         cor_threshold_peak = 0.85){
 
+  if (!stringr::str_detect(path_prefix, '/')){
+    path_prefix <- paste0(path_prefix, '/')
+  }
+
   # ceRNApairfiltering
   ceRNApairFilering <- function(project_name = 'demo',
                                 disease_name = 'DLBC',
