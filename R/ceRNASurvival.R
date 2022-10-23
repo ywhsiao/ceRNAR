@@ -111,7 +111,6 @@ ceRNASurvival <- function(path_prefix,
                                                   title = paste0(each_mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
                                                   surv.plot.height = 0.6)
     }
-    plot_lst
   }
   if (length(mirna_uni)==1){
     all_plots <- runforeachmirna(mirna_uni)
