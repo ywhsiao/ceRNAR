@@ -122,10 +122,4 @@ ceRNASurvival <- function(path_prefix,
   message('\u2605\u2605\u2605 Survival analysis has completed! \u2605\u2605\u2605')
 }
 
-tmp<- ceRNASurvival(
-path_prefix = '~/',
-project_name = 'demo',
-disease_name = 'DLBC',
-mirnas = 'hsa-miR-101-3p'
-)
 
