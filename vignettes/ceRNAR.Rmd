@@ -197,7 +197,7 @@ knitr::kable(external_val_result[1:5,1:5], row.names = F)
 
 - **Data integration**
 
-This function allows users to further combine our results with other state-of-the-art tools in ceRNA biological field, including SPONGE [6] and JAMI [7].
+This function allows users to further combine results obtained from ceRNAR with other state-of-the-art tools in ceRNA biological field, including SPONGE [6] and JAMI [7].
 
 ```{r message=FALSE}
 integrated_result <- ceRNAIntegrate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')

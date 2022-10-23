@@ -5,7 +5,7 @@
 \alias{ceRNAIntegrate}
 \title{Integration of the possible ceRNA pairs among published tools}
 \usage{
-ceRNAIntegrate(path_prefix, project_name, disease_name)
+ceRNAIntegrate(path_prefix, project_name = "demo", disease_name = "DLBC")
 }
 \arguments{
 \item{path_prefix}{user's working directory}

@@ -69,9 +69,8 @@ ceRNASurvival <- function(path_prefix,
   message('\u2605 Total number of identified miRNA-ceRNAs in ',project_name, '-', disease_name,' cohort: ', dim(mirna_gene_pairs)[1], '.')
 
   runforeachmirna <- function(each_mirna){
-
-    if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/',mirna))){
-      dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/',mirna))
+    if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/', each_mirna))){
+      dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/', each_mirna))
     }
     df <- mirna_gene_pairs[mirna_gene_pairs$mirna == each_mirna,]
     if (dim(df)[1] !=1) {
@@ -81,7 +80,8 @@ ceRNASurvival <- function(path_prefix,
     }
 
     get_ExpSurData <- function(which_gene){
-      which_geneExp <- as.data.frame(t(geneExp[row.names(geneExp)== which_gene,]))
+      #which_gene <- as.character(each_gene[1,1])
+      which_geneExp <- as.data.frame(t(geneExp[row.names(geneExp) == which_gene,]))
       which_geneExp_sur <- merge(which_geneExp, survivalData, by = 'row.names')
       row.names(which_geneExp_sur) <- which_geneExp_sur[,1]
       which_geneExp_sur$level <- ifelse(which_geneExp_sur[,2] > stats::median(which_geneExp_sur[,2]), 1, 0)
@@ -102,13 +102,13 @@ ceRNASurvival <- function(path_prefix,
       #j =1
       which_gene <- as.character(each_gene[j,])
       surCurve_list <- purrr::map(which_gene, draw_surCurve)
-      grDevices::png(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/',mirna,'/',mirna,'_', which_gene[1],'-', which_gene[2], '_triplets.png'),height = 1500, width = 2800, res = 300)
+      grDevices::png(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/', each_mirna, '/', each_mirna,'_', which_gene[1],'-', which_gene[2], '_triplets.png'),height = 1500, width = 2800, res = 300)
       survminer::arrange_ggsurvplots(surCurve_list, print = TRUE, ncol=2, nrow=1,
                                      title = paste0(each_mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
                                      surv.plot.height = 0.6)
       grDevices::dev.off()
       # plot_lst[[j]] <- survminer::arrange_ggsurvplots(surCurve_list, print = TRUE, ncol=2, nrow=1,
-      #                                             title = paste0(mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
+      #                                             title = paste0(each_mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
       #                                             surv.plot.height = 0.6)
     }
     # plot_lst[[1]]

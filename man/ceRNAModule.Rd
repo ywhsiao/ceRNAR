@@ -6,8 +6,8 @@
 \usage{
 ceRNAModule(
   path_prefix,
-  project_name,
-  disease_name,
+  project_name = "demo",
+  disease_name = "DLBC",
   pairs_cutoff = 5,
   column_sum = 1
 )

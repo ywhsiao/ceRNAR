@@ -4,7 +4,7 @@
 \alias{ceRNAValidate}
 \title{Externally experimental validation for the potential ceRNA pairs}
 \usage{
-ceRNAValidate(path_prefix, project_name = "TCGA", disease_name)
+ceRNAValidate(path_prefix, project_name = "TCGA", disease_name = "DLBC")
 }
 \arguments{
 \item{path_prefix}{user's working directory}

@@ -4,7 +4,12 @@
 \alias{ceRNASurvival}
 \title{Survival analysis and visualization}
 \usage{
-ceRNASurvival(path_prefix, project_name, disease_name, mirnas)
+ceRNASurvival(
+  path_prefix,
+  project_name = "demo",
+  disease_name = "DLBC",
+  mirnas = "hsa-miR-101-3p"
+)
 }
 \arguments{
 \item{path_prefix}{user's working directory}

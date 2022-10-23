@@ -4,7 +4,12 @@
 \alias{ceRNAFunction}
 \title{Functional enrichment analysis}
 \usage{
-ceRNAFunction(path_prefix, project_name, disease_name, pairs_cutoff)
+ceRNAFunction(
+  path_prefix,
+  project_name = "demo",
+  disease_name = "DLBC",
+  pairs_cutoff = 1
+)
 }
 \arguments{
 \item{path_prefix}{user's working directory}
