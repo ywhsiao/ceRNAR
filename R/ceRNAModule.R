@@ -117,28 +117,33 @@ ceRNAModule <- function(path_prefix,
 
     g <- 1:length(node)
 
-    GGally::ggnet(m, label = ifelse(colSums(m)>=column_sum, colnames(m), NA), alpha = 1, color="black",
+    netplot <- GGally::ggnet(m, label = ifelse(colSums(m)>=column_sum, colnames(m), NA), alpha = 1, color="black",
           node.group = g, node.color =rep('orange',length(node)),  segment.color = "grey50",
           legend.position="none",  weight = colSums(m) ,mode="circle") # columnsum to tune
+    return(netplot)
   }
-
-  for (i in mir_unique){
-    mir_df <- Res[Res[,1]== i,]
-    if (dim(mir_df)[1] <= pairs_cutoff || is.null(dim(mir_df)[1])){
+  netplot_lst <- list()
+  for (i in 1:length(mir_unique)){
+    #print(i)
+    #i=1
+    mir_df <- Res[Res[,1] == mir_unique[[i]][1],]
+    if (dim(mir_df)[1] <= pairs_cutoff & is.null(dim(mir_df)[1])){
       #print(paste0(i, ' is skipped.'))
       next
     }else{
+      #print(i)
       # general network
       #print(paste0(i, ' is processed.'))
-      ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/',i,'_ceRNAs_network.png'), height = 10, width = 10, dpi = 300)
-      net_plot <- network_plot(mir_df[,-1], column_sum)
-      net_plot
+      netplot_lst[[i]] <- network_plot(mir_df[,-1], column_sum)
+      netplot_lst[[i]]
+      ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/',mir_unique[[i]][1],'_ceRNAs_network.png'), height = 10, width = 10, dpi = 300)
     }
   }
+  return(netplot_lst)
+
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 Network analysis has completed! \u2605\u2605\u2605')
 }
-
 

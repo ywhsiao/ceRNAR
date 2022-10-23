@@ -87,17 +87,17 @@ ceRNASurvival <- function(path_prefix,
       which_geneExp_sur$level <- ifelse(which_geneExp_sur[,2] > stats::median(which_geneExp_sur[,2]), 1, 0)
       which_geneExp_sur <- which_geneExp_sur[,-1:-2]
       names(which_geneExp_sur)[1:2] <- c('status','time')
-      which_geneExp_sur
+      return(which_geneExp_sur)
     }
     draw_surCurve <- function(which_gene){
       which_geneExp_sur <- get_ExpSurData(which_gene)
       fit<- survival::survfit(survival::Surv(time, status)~level, data = which_geneExp_sur)
-      survminer::ggsurvplot(fit, data = which_geneExp_sur, pval = TRUE, pval.coord = c(100, 0.03),
+      survplot <- survminer::ggsurvplot(fit, data = which_geneExp_sur, pval = TRUE, pval.coord = c(100, 0.03),
                             conf.int = TRUE, legend = c(0.9,0.9),
                             palette = c("#E7B800", "#2E9FDF"),
                             title = which_gene)
     }
-    #plot_lst <- list()
+    plot_lst <- list()
     for (j in 1:dim(each_gene)[1]){
       #j =1
       which_gene <- as.character(each_gene[j,])
@@ -107,15 +107,19 @@ ceRNASurvival <- function(path_prefix,
                                      title = paste0(each_mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
                                      surv.plot.height = 0.6)
       grDevices::dev.off()
-      # plot_lst[[j]] <- survminer::arrange_ggsurvplots(surCurve_list, print = TRUE, ncol=2, nrow=1,
-      #                                             title = paste0(each_mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
-      #                                             surv.plot.height = 0.6)
+      plot_lst[[j]] <- survminer::arrange_ggsurvplots(surCurve_list, print = TRUE, ncol=2, nrow=1,
+                                                  title = paste0(each_mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
+                                                  surv.plot.height = 0.6)
     }
-    # plot_lst[[1]]
+    return(plot_lst)
   }
-  purrr::map(mirna_uni, runforeachmirna)
+  if (length(mirna_uni)==1){
+    all_plots <- runforeachmirna(mirna_uni)
+  }else{
+    tmp <- purrr::map(mirna_uni, runforeachmirna)
+  }
 
-
+  return(all_plots)
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))

@@ -104,7 +104,7 @@ ceRNALocation <- function(path_prefix,
   merged_p
   grDevices::dev.off()
 
-  merged_p
+  return(merged_p)
 
   message('\u2605\u2605\u2605 Peak location analysis has completed! \u2605\u2605\u2605')
 

@@ -144,6 +144,7 @@ ceRNAFunction <- function(path_prefix,
 
   # return as a list object
   function_plots <- list(gg_babble, gg_bar)
+  return(function_plots)
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
