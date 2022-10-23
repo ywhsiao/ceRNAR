@@ -144,12 +144,12 @@ ceRNAFunction <- function(path_prefix,
 
   # return as a list object
   function_plots <- list(gg_babble, gg_bar)
-  return(function_plots)
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
-
   message('\u2605\u2605\u2605 All analyses has completed! \u2605\u2605\u2605')
+
+  return(function_plots)
 }
 

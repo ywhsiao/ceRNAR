@@ -292,12 +292,13 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
     tidyr::unnest(location) %>%
     tidyr::unnest(numOfseg)
   data.table::fwrite(flat_df, paste0(path_prefix, project_name,'-', disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = F)
-  flat_df
+
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
 
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
 
+  return(as.data.frame(flat_df))
 }
 

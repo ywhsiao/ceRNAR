@@ -111,7 +111,7 @@ ceRNASurvival <- function(path_prefix,
                                                   title = paste0(each_mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
                                                   surv.plot.height = 0.6)
     }
-    return(plot_lst)
+    plot_lsts
   }
   if (length(mirna_uni)==1){
     all_plots <- runforeachmirna(mirna_uni)
@@ -119,11 +119,13 @@ ceRNASurvival <- function(path_prefix,
     tmp <- purrr::map(mirna_uni, runforeachmirna)
   }
 
-  return(all_plots)
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 Survival analysis has completed! \u2605\u2605\u2605')
+
+  return(all_plots)
+
 }
 
 

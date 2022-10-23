@@ -120,7 +120,7 @@ ceRNAModule <- function(path_prefix,
     netplot <- GGally::ggnet(m, label = ifelse(colSums(m)>=column_sum, colnames(m), NA), alpha = 1, color="black",
           node.group = g, node.color =rep('orange',length(node)),  segment.color = "grey50",
           legend.position="none",  weight = colSums(m) ,mode="circle") # columnsum to tune
-    return(netplot)
+    netplot
   }
   netplot_lst <- list()
   for (i in 1:length(mir_unique)){
@@ -139,11 +139,12 @@ ceRNAModule <- function(path_prefix,
       ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/',mir_unique[[i]][1],'_ceRNAs_network.png'), height = 10, width = 10, dpi = 300)
     }
   }
-  return(netplot_lst)
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 Network analysis has completed! \u2605\u2605\u2605')
+
+  return(netplot_lst)
 }
 

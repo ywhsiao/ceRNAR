@@ -153,10 +153,10 @@ ceRNAValidate <- function(path_prefix,
   with_evidence[is.na(with_evidence)] <- '-'
   common_pairs <- dim(with_evidence)[1]
   utils::write.csv(with_evidence, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/',project_name,'-',disease_name,'_with_target_exp_evidence.csv'), row.names = F)
-  with_evidence
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
-
   message('\u2605\u2605\u2605 All analyses has completed! \u2605\u2605\u2605')
+
+  return(with_evidence)
 }

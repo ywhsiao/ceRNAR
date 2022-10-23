@@ -125,8 +125,8 @@ cernar_result <- ceRNAMethod(path_prefix = '~/', project_name = 'demo', disease_
 ```
 
 The final output stores the most important ceRNA events identified by the package:
-```{r echo=FALSE}
-knitr::kable(cernar_result[1:5,], row.names = FALSE)
+```{r echo=FALSE, message=FALSE}
+knitr::kable(cernar_result)
 ```
 
 
@@ -136,37 +136,41 @@ knitr::kable(cernar_result[1:5,], row.names = FALSE)
 
 This function allows users to explore the underlying biological pathways that the most important ceRNAs in a sepcific dataset/cohort involved. The entire analysis is based on two databases: [Kyoto Encyclopedia of Genes and Genomes (KEGG)](https://www.genome.jp/kegg/) and [Gene Ontology (GO)](http://geneontology.org/). 
 
-```{r message=FALSE}
-ceRNAFunction(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)
+```{r message=FALSE, results='hide'}
+function_results <- ceRNAFunction(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)
 ```
 
 
-```{r echo=FALSE}
-ceRNAFunction(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)[[1]]
+```{r message=FALSE, fig.dim = c(20, 30),out.width = "50%"}
+function_results[[1]]
 ```
 
-```{r echo=FALSE}
-ceRNAFunction(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)[[2]]
+```{r message=FALSE, fig.dim = c(20, 30),out.width = "50%"}
+function_results[[2]]
 ```
 
 - **Location plot**
 
 This function helps users to visualize the expression level of a specific miRNA when modulated by a specific ceRNA.
 
-```{r message=FALSE}
-ceRNALocation(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101-3p', window_size = 10)
+```{r message=FALSE, results='hide'}
+location_results <- ceRNALocation(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101-3p', window_size = 10)
 ```
 
-```{r echo=FALSE}
-ceRNALocation(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101-3p', window_size = 10)
+```{r echo=FALSE, hmessage=FALSE, fig.dim = c(20, 12)}
+location_results
 ```
 
 - **Survival analysis**
 
 This function allows users to indicate whether the ceRNAs in the discovered interaction module are associated with the survival of patients. This deponds on whether the survival information is provided in the beginning.
 
-```{r message=FALSE}
-ceRNASurvival(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirnas = 'hsa-miR-101-3p')
+```{r message=FALSE, results='hide', fig.dim = c(40, 50), out.width = "50%"}
+survplot_results <- ceRNASurvival(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirnas = 'hsa-miR-101-3p')
+```
+
+```{r message=FALSE, fig.dim = c(8, 6)}
+survplot_results[[1]]
 ```
 
 
@@ -174,12 +178,12 @@ ceRNASurvival(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', 
 
 This function helps users to visualize the ceRNA modules that identified by the package from their interaction networks.
 
-```{r message=FALSE}
-ceRNAModule(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 5, column_sum = 1)
+```{r message=FALSE, results='hide'}
+network_results <- ceRNAModule(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 5, column_sum = 1)
 ```
 
-```{r echo=FALSE}
-ceRNAModule(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 5, column_sum = 1)
+```{r message=FALSE, fig.dim = c(8, 6)}
+network_results[[1]]
 ```
 
 - **External validation**
@@ -188,7 +192,6 @@ This function helps users to further check whether the findings have been valida
 
 ```{r message=FALSE, results='hide'}
 external_val_result <- ceRNAValidate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
-head(external_val_result[1:5,1:5])
 ```
 
 ```{r echo=FALSE}
@@ -201,10 +204,9 @@ This function allows users to further combine results obtained from ceRNAR with 
 
 ```{r message=FALSE, results='hide'}
 integrated_result <- ceRNAIntegrate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
-head(integrated_result[1:5,])
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 knitr::kable(integrated_result[1:5,], row.names = F)
 ```
 
