@@ -150,6 +150,6 @@ ceRNAFunction <- function(path_prefix,
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 All analyses has completed! \u2605\u2605\u2605')
 
-  return(function_plots)
+  function_plots
 }
 

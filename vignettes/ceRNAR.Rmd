@@ -126,7 +126,7 @@ cernar_result <- ceRNAMethod(path_prefix = '~/', project_name = 'demo', disease_
 
 The final output stores the most important ceRNA events identified by the package:
 ```{r echo=FALSE, message=FALSE}
-knitr::kable(cernar_result)
+knitr::kable(cernar_result[1:5,])
 ```
 
 
@@ -141,11 +141,11 @@ function_results <- ceRNAFunction(path_prefix = '~/', project_name = 'demo', dis
 ```
 
 
-```{r message=FALSE, fig.dim = c(20, 30),out.width = "50%"}
+```{r message=FALSE, fig.dim = c(10, 20),out.width = "100%"}
 function_results[[1]]
 ```
 
-```{r message=FALSE, fig.dim = c(20, 30),out.width = "50%"}
+```{r message=FALSE, fig.dim = c(10, 20),out.width = "100%"}
 function_results[[2]]
 ```
 
@@ -158,14 +158,14 @@ location_results <- ceRNALocation(path_prefix = '~/', project_name = 'demo', dis
 ```
 
 ```{r echo=FALSE, hmessage=FALSE, fig.dim = c(20, 12)}
-location_results
+location_results[[1]]
 ```
 
 - **Survival analysis**
 
 This function allows users to indicate whether the ceRNAs in the discovered interaction module are associated with the survival of patients. This deponds on whether the survival information is provided in the beginning.
 
-```{r message=FALSE, results='hide', fig.dim = c(40, 50), out.width = "50%"}
+```{r message=FALSE, results='hide' }
 survplot_results <- ceRNASurvival(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirnas = 'hsa-miR-101-3p')
 ```
 

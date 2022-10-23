@@ -145,6 +145,6 @@ ceRNAModule <- function(path_prefix,
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 Network analysis has completed! \u2605\u2605\u2605')
 
-  return(netplot_lst)
+  netplot_lst
 }
 

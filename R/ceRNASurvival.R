@@ -124,7 +124,7 @@ ceRNASurvival <- function(path_prefix,
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 Survival analysis has completed! \u2605\u2605\u2605')
 
-  return(all_plots)
+  all_plots
 
 }
 
