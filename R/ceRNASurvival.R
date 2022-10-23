@@ -67,7 +67,7 @@ ceRNASurvival <- function(path_prefix,
   mirna_uni <- mirnas
   message('\u2605 Total number of identified miRNA in ',project_name, '-', disease_name,' cohort: ', length(mirna_uni), '.')
   message('\u2605 Total number of identified miRNA-ceRNAs in ',project_name, '-', disease_name,' cohort: ', dim(mirna_gene_pairs)[1], '.')
-
+  each_mirna <-mirna_uni
   runforeachmirna <- function(each_mirna){
     if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/', each_mirna))){
       dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/', each_mirna))
@@ -102,7 +102,7 @@ ceRNASurvival <- function(path_prefix,
       #j =1
       which_gene <- as.character(each_gene[j,])
       surCurve_list <- purrr::map(which_gene, draw_surCurve)
-      surv_plot <- survminer::arrange_ggsurvplots(surCurve_list, print = TRUE, ncol=2, nrow=1,
+      surv_plot <- survminer::arrange_ggsurvplots(surCurve_list, print = FALSE, ncol=2, nrow=1,
                                                   title = paste0(each_mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
                                                   surv.plot.height = 0.6)
       plot_lst[[j]] <- surv_plot
