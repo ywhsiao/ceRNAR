@@ -29,9 +29,9 @@
 
 
 ceRNAFunction <- function(path_prefix,
-                          project_name,
-                          disease_name,
-                          pairs_cutoff){
+                          project_name = 'demo',
+                          disease_name = 'DLBC',
+                          pairs_cutoff = 1){
 
   if (!stringr::str_detect(path_prefix, '/')){
     path_prefix <- paste0(path_prefix, '/')
@@ -141,6 +141,9 @@ ceRNAFunction <- function(path_prefix,
   ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_babble.png'), height = 10, width = 20,dpi = 300)
   gg_bar <- cowplot::plot_grid(kk_bar, go_bar, labels = c('A', 'B'), label_size = 12, ncol = 2)
   ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_bar.png'), height = 8, width = 20,dpi = 300)
+
+  # return as a list object
+  function_plots <- list(gg_babble, gg_bar)
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')

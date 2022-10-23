@@ -24,9 +24,9 @@
 #'
 
 ceRNASurvival <- function(path_prefix,
-                          project_name,
-                          disease_name,
-                          mirnas){
+                          project_name = 'demo',
+                          disease_name = 'DLBC',
+                          mirnas = 'hsa-miR-101-3p'){
 
   if (!stringr::str_detect(path_prefix, '/')){
     path_prefix <- paste0(path_prefix, '/')
@@ -97,7 +97,6 @@ ceRNASurvival <- function(path_prefix,
                             title = which_gene)
     }
 
-
     for (j in 1:dim(each_gene)[1]){
       #j =1
       which_gene <- as.character(each_gene[j,])
@@ -111,8 +110,7 @@ ceRNASurvival <- function(path_prefix,
 
   }
   tmp <- purrr::map(mirna_uni, runforeachmirna)
-  time2 <- Sys.time()
-  diftime <- difftime(time2, time1, units = 'min')
+
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 Survival analysis has completed! \u2605\u2605\u2605')
 }

@@ -26,8 +26,8 @@
 #'
 
 ceRNAModule <- function(path_prefix,
-                        project_name,
-                        disease_name,
+                        project_name = 'demo',
+                        disease_name = 'DLBC',
                         pairs_cutoff = 5,
                         column_sum = 1){
 
@@ -130,8 +130,9 @@ ceRNAModule <- function(path_prefix,
     }else{
       # general network
       #print(paste0(i, ' is processed.'))
-      network_plot(mir_df[,-1], column_sum)
       ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/',i,'_ceRNAs_network.png'), height = 10, width = 10, dpi = 300)
+      net_plot <- network_plot(mir_df[,-1], column_sum)
+      net_plot
     }
   }
   time2 <- Sys.time()

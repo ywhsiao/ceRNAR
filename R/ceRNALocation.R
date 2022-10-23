@@ -99,10 +99,12 @@ ceRNALocation <- function(path_prefix,
     ggplot2::ylab('Count')
 
   grDevices::png(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/peakLocationResults/',project_name,'-',disease_name, '_', mirna, '_peakLocation.png'), width = 2000, height = 3500, res = 300)
-  egg::ggarrange(p1,p2,
+  merged_p <- egg::ggarrange(p1,p2,
             ncol=2, nrow=2, widths=c(4, 1), heights=c(4, 0.5))
+  merged_p
   grDevices::dev.off()
 
+  merged_p
 
   message('\u2605\u2605\u2605 Peak location analysis has completed! \u2605\u2605\u2605')
 

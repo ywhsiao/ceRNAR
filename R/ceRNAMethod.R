@@ -404,7 +404,7 @@ ceRNAMethod <- function(path_prefix,
       tidyr::unnest(location) %>%
       tidyr::unnest(numOfseg)
     data.table::fwrite(flat_df, paste0(path_prefix, project_name,'-', disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = F)
-    return(flat_df)
+    flat_df
     time2 <- Sys.time()
     diftime <- difftime(time2, time1, units = 'min')
 
