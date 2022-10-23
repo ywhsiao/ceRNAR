@@ -141,11 +141,11 @@ function_results <- ceRNAFunction(path_prefix = '~/', project_name = 'demo', dis
 ```
 
 
-```{r message=FALSE, fig.dim = c(30, 10), out.width="80%"}
+```{r message=FALSE, fig.dim = c(20, 10), out.width="100%"}
 function_results[[1]]
 ```
 
-```{r message=FALSE, fig.dim = c(30, 10), out.width="80%"}
+```{r message=FALSE, fig.dim = c(20, 10), out.width="100%"}
 function_results[[2]]
 ```
 
@@ -153,19 +153,19 @@ function_results[[2]]
 
 This function helps users to visualize the expression level of a specific miRNA when modulated by a specific ceRNA.
 
-```{r message=FALSE, results='hide', fig.dim = c(6, 4)}
+```{r message=FALSE, results='hide', fig.dim = c(6, 4), out.width='100%'}
 ceRNALocation(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101-3p', window_size = 10)
 ```
 
 - **Survival analysis**
 
-This function allows users to indicate whether the ceRNAs in the discovered interaction module are associated with the survival of patients. This deponds on whether the survival information is provided in the beginning.
+This function allows users to indicate whether the ceRNAs in the discovered interaction module are associated with the survival of patients. This depends on whether the survival information is provided in the beginning.
 
 ```{r message=FALSE, results='hide'}
 survplot_results <- ceRNASurvival(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirnas = 'hsa-miR-101-3p')
 ```
 
-```{r message=FALSE, fig.dim = c(6, 4)}
+```{r message=FALSE, fig.dim = c(8, 4), out.width='100%'}
 survplot_results[[1]]
 ```
 
@@ -178,7 +178,7 @@ This function helps users to visualize the ceRNA modules that identified by the 
 network_results <- ceRNAModule(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 5, column_sum = 1)
 ```
 
-```{r message=FALSE, fig.dim = c(6, 4)}
+```{r message=FALSE, fig.dim = c(8, 6), out.width= '100%'}
 network_results[[1]]
 ```
 
