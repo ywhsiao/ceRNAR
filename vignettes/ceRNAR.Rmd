@@ -141,11 +141,11 @@ function_results <- ceRNAFunction(path_prefix = '~/', project_name = 'demo', dis
 ```
 
 
-```{r message=FALSE, fig.dim = c(10, 30)}
+```{r message=FALSE, fig.dim = c(10, 30), out.width="80%"}
 function_results[[1]]
 ```
 
-```{r message=FALSE, fig.dim = c(10, 30)}
+```{r message=FALSE, fig.dim = c(10, 30), out.width="80%"}
 function_results[[2]]
 ```
 
@@ -153,7 +153,7 @@ function_results[[2]]
 
 This function helps users to visualize the expression level of a specific miRNA when modulated by a specific ceRNA.
 
-```{r message=FALSE, results='hide', fig.dim = c(10, 8)}
+```{r message=FALSE, results='hide', fig.dim = c(8, 6)}
 ceRNALocation(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101-3p', window_size = 10)
 ```
 
@@ -191,7 +191,7 @@ external_val_result <- ceRNAValidate(path_prefix = '~/', project_name = 'demo', 
 ```
 
 ```{r echo=FALSE}
-knitr::kable(external_val_result[1:5,1:5], row.names = F)
+knitr::kable(external_val_result[1:5,1:8], row.names = F)
 ```
 
 - **Data integration**

@@ -102,15 +102,16 @@ ceRNASurvival <- function(path_prefix,
       #j =1
       which_gene <- as.character(each_gene[j,])
       surCurve_list <- purrr::map(which_gene, draw_surCurve)
-      grDevices::png(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/', each_mirna, '/', each_mirna,'_', which_gene[1],'-', which_gene[2], '_triplets.png'),height = 1500, width = 2800, res = 300)
-      survminer::arrange_ggsurvplots(surCurve_list, print = TRUE, ncol=2, nrow=1,
-                                     title = paste0(each_mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
-                                     surv.plot.height = 0.6)
-      grDevices::dev.off()
-      plot_lst[[j]] <- survminer::arrange_ggsurvplots(surCurve_list, print = TRUE, ncol=2, nrow=1,
+      surv_plot <- survminer::arrange_ggsurvplots(surCurve_list, print = TRUE, ncol=2, nrow=1,
                                                   title = paste0(each_mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
                                                   surv.plot.height = 0.6)
+      plot_lst[[j]] <- surv_plot
+      grDevices::png(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/', each_mirna, '/', each_mirna,'_', which_gene[1],'-', which_gene[2], '_triplets.png'),height = 1500, width = 2800, res = 300)
+      surv_plot
+      grDevices::dev.off()
+
     }
+    plot_lst
   }
   if (length(mirna_uni)==1){
     all_plots <- runforeachmirna(mirna_uni)
