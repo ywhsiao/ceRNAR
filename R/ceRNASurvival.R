@@ -68,11 +68,12 @@ ceRNASurvival <- function(path_prefix,
   message('\u2605 Total number of identified miRNA in ',project_name, '-', disease_name,' cohort: ', length(mirna_uni), '.')
   message('\u2605 Total number of identified miRNA-ceRNAs in ',project_name, '-', disease_name,' cohort: ', dim(mirna_gene_pairs)[1], '.')
 
-  runforeachmirna <- function(mirna){
+  runforeachmirna <- function(each_mirna){
+
     if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/',mirna))){
       dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/',mirna))
     }
-    df <- mirna_gene_pairs[mirna_gene_pairs$mirna == mirna,]
+    df <- mirna_gene_pairs[mirna_gene_pairs$mirna == each_mirna,]
     if (dim(df)[1] !=1) {
       each_gene <- as.data.frame(Reduce(rbind,stringr::str_split(df[,2], " ")))
     }else{
@@ -96,24 +97,35 @@ ceRNASurvival <- function(path_prefix,
                             palette = c("#E7B800", "#2E9FDF"),
                             title = which_gene)
     }
-
+    #plot_lst <- list()
     for (j in 1:dim(each_gene)[1]){
       #j =1
       which_gene <- as.character(each_gene[j,])
       surCurve_list <- purrr::map(which_gene, draw_surCurve)
       grDevices::png(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/',mirna,'/',mirna,'_', which_gene[1],'-', which_gene[2], '_triplets.png'),height = 1500, width = 2800, res = 300)
       survminer::arrange_ggsurvplots(surCurve_list, print = TRUE, ncol=2, nrow=1,
-                                     title = paste0(mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
+                                     title = paste0(each_mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
                                      surv.plot.height = 0.6)
       grDevices::dev.off()
+      # plot_lst[[j]] <- survminer::arrange_ggsurvplots(surCurve_list, print = TRUE, ncol=2, nrow=1,
+      #                                             title = paste0(mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
+      #                                             surv.plot.height = 0.6)
     }
-
+    # plot_lst[[1]]
   }
-  tmp <- purrr::map(mirna_uni, runforeachmirna)
+  purrr::map(mirna_uni, runforeachmirna)
 
+
+  time2 <- Sys.time()
+  diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 Survival analysis has completed! \u2605\u2605\u2605')
 }
 
-
+tmp<- ceRNASurvival(
+path_prefix = '~/',
+project_name = 'demo',
+disease_name = 'DLBC',
+mirnas = 'hsa-miR-101-3p'
+)
 

@@ -19,11 +19,11 @@ knitr::opts_chunk$set(tidy = FALSE,
 The gene expression regulating mechanisms in humans are complex as many regulators are highly connected and are compensatory to each other. Many non-coding RNAs have critical roles in post-transcriptional regulation of protein-coding genes, including microRNAs [1]. microRNAs are short, non-coding, single-stranded RNAs with ~22 nucleotides. Typically, microRNAs modulate gene expression via partial complementarity with many miRNA response elements (MREs) on protein-coding genes. Recently, competitive endogenous RNA (ceRNA), including canonical protein-coding messenger RNAs (mRNAs), long non-coding RNAs (lncRNAs), circular RNAs (circRNAs), and pseudogenes, represents a novel mechanism of gene regulation that controls several biological and pathological processes [2]. Their mechanism is to compete with miRNAs for binding their regulatory sequences, as shown in Fig 1. The regulation of ceRNAs have been identified in multiple cancers [3]. Therefore, it is of importance to speed up our knowledge of the regulatory mechanisms and functions of ceRNA-miRNA triplets in the pathogenesis of cancers or other diseases.
 
 
-<img src="https://raw.githubusercontent.com/ywhsiao/ceRNAR/master/vignettes/figure/mechanism_of_ceRNA.png" alt="ceRNA principle" style="width: 600px; display: block; margin-left: auto; margin-right: auto;"/>
+<img src="https://raw.githubusercontent.com/ywhsiao/ceRNAR/master/vignettes/figure/mechanism_of_ceRNA.png" alt="ceRNA principle" style="width: 500px; display: block; margin-left: auto; margin-right: auto;"/>
 
-\begin{center}
+<center>
 ***Fig 1. Illustration of ceRNA mediated gene regulation.***
-\end{center}
+</center>
 
 
 However, it is relatively time-consuming and labor-intensive to identify such ceRNA events through biological experiment. Although an increasing number of computational methods applying into high throughput miRNA and mRNA data have been developed for identifying ceRNAs, some of the prerequest (i.e. predefined threshold for genes for further analysis), limitation of the nature of data (i.e. continuous data are sensitive to outliers or the sample size) and huge computational cost existed in the current related tools may not effectively and accurately identify ceRNA events. 
@@ -36,17 +36,17 @@ The main pipeline of ceRNAR contains three components, including: (1) data prepr
 
 <img src="https://raw.githubusercontent.com/ywhsiao/ceRNAR/master/vignettes/figure/overview_of_ceRNAR.png" alt="ceRNAR architecture" style="width: 600px; display: block; margin-left: auto; margin-right: auto;"/>
 
-\begin{center}
+<center>
 ***Fig 2. A overview of the entire of ceRNAR package.***
-\end{center}
+</center>
 
 Specifically, there are three main steps for identification of ceRNA-miRNA triplets: (1) the ceRNApairFiltering method is to adopt a sliding window approach and a running sum statistics approach to identify the correlation patterns of the two target genes within a specific range of expression values for the miRNA [4]; (2) the SegmentClustering method is to group the samples showing high correlation between the expression levels of the two target genes into one single cluster for detecting the possible signals of ceRNA-miRNA triplets [5]; (3) the PeakMerging method is designed to prevent smashed segments resulting from noise for identfing the most important ceRNA events in a given dataset (as shown in Fig 3). To characterize the biological functions and pathways of identified ceRNA pairs, six possible downstream analyses have be implemented in this package. 
 
 <img src="https://raw.githubusercontent.com/ywhsiao/ceRNAR/master/vignettes/figure/details_of_ceRNA_algorithm.png" alt="ceRNAR algorithm" style="width: 600px; display: block; margin-left: auto; margin-right: auto;"/>
 
-\begin{center}
+<center>
 ***Fig 3. Details of the algorithms used in ceRNAR package.***
-\end{center}
+</center>
 
 
 ## Data preprocessing
@@ -188,6 +188,7 @@ This function helps users to further check whether the findings have been valida
 
 ```{r message=FALSE}
 external_val_result <- ceRNAValidate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
+head(external_val_result[1:5,1:5])
 ```
 
 ```{r echo=FALSE}
@@ -200,6 +201,7 @@ This function allows users to further combine our results with other state-of-th
 
 ```{r message=FALSE}
 integrated_result <- ceRNAIntegrate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
+head(integrated_result[1:5,])
 ```
 
 ```{r echo=FALSE}
