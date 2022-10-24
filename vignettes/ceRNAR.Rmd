@@ -191,7 +191,7 @@ external_val_result <- ceRNAValidate(path_prefix = '~/', project_name = 'demo', 
 ```
 
 ```{r echo=FALSE}
-knitr::kable(external_val_result[1:5,1:8], row.names = F)
+knitr::kable(external_val_result[1:5,1:8], row.names = FALSE)
 ```
 
 - **Data integration**
@@ -203,7 +203,7 @@ integrated_result <- ceRNAIntegrate(path_prefix = '~/', project_name = 'demo', d
 ```
 
 ```{r echo=FALSE, message=FALSE}
-knitr::kable(integrated_result[1:5,], row.names = F)
+knitr::kable(integrated_result[1:5,], row.names = FALSE)
 ```
 
 ## ceRNAR is available at:

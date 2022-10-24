@@ -30,6 +30,8 @@
 #' cor_threshold_peak = 0.85
 #' )
 #'
+#' @returns a tabular output
+#'
 
 ceRNAMethod <- function(path_prefix,
                         project_name = 'demo',
@@ -69,7 +71,7 @@ ceRNAMethod <- function(path_prefix,
       #doParallel::registerDoParallel(parallel::detectCores()-3)
       chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
-      if (nzchar(chk) && chk == "TRUE") {
+      if ((nzchar(chk)) && (chk == "TRUE")) {
         # use 2 cores in CRAN/Travis/AppVeyor
         num_workers <- 2L
       } else {
@@ -177,7 +179,7 @@ ceRNAMethod <- function(path_prefix,
       #doParallel::registerDoParallel(parallel::detectCores()-3)'
       chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
-      if (nzchar(chk) && chk == "TRUE") {
+      if ((nzchar(chk)) && (chk == "TRUE")) {
         # use 2 cores in CRAN/Travis/AppVeyor
         num_workers <- 2L
       } else {
@@ -280,8 +282,8 @@ ceRNAMethod <- function(path_prefix,
               if (length(peak.loc)>2){
                 for(i in 1:(length(peak.loc)-1)){
                   #TestPeak.pval[i] <- t.test(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],triplet$corr[(num.mark[peak.loc[i+1]]+1):num.mark[peak.loc[i+1]+1]])$p.value
-                  z1 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],na.rm=T))
-                  z2 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]],na.rm=T))
+                  z1 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],na.rm=TRUE))
+                  z2 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]],na.rm=TRUE))
                   N1 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]])
                   N2 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]])
                   TestPeak.pval[i] <- 2*stats::pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
@@ -357,8 +359,8 @@ ceRNAMethod <- function(path_prefix,
           N2 <- result$output[min_seg,"num.mark"]
           Test <- 2*stats::pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
           # generate final output
-          if(!is.na(Test) && Test < 0.05){
-            if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
+          if((!is.na(Test)) && (Test < 0.05)){
+            if((sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0) && (sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2)){  ### para 0.5
               cand.ceRNA=paste(r,s)
 
               #tryCatch({
@@ -403,7 +405,7 @@ ceRNAMethod <- function(path_prefix,
     flat_df <-  final_df %>%
       tidyr::unnest(location) %>%
       tidyr::unnest(numOfseg)
-    data.table::fwrite(flat_df, paste0(path_prefix, project_name,'-', disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = F)
+    data.table::fwrite(flat_df, paste0(path_prefix, project_name,'-', disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = FALSE)
     time2 <- Sys.time()
     diftime <- difftime(time2, time1, units = 'min')
 

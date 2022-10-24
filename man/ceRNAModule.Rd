@@ -23,6 +23,9 @@ ceRNAModule(
 
 \item{column_sum}{the number of ceRNAs}
 }
+\value{
+a list of figure object
+}
 \description{
 A function to analyze and visualize potential network of
 identified ceRNAs

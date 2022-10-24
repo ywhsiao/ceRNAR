@@ -22,6 +22,9 @@ ceRNAFunction(
 \item{pairs_cutoff}{at least the number of ceRNA pairs that a mirna must have
 (default: 1)}
 }
+\value{
+a list of figure objects
+}
 \description{
 A function to conduct Functional enrichment analysis for
 biological interpretation. The databases supported in this function include

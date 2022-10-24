@@ -19,6 +19,8 @@
 #' filtering = 'less'
 #' )
 #'
+#' @returns file
+#'
 
 ceRNAputativePairs <- function(path_prefix,
                                project_name = 'demo',
@@ -42,7 +44,7 @@ ceRNAputativePairs <- function(path_prefix,
   miRNA_with_precurer <- miRNA_with_precurer[,-1]
 
   # miRNA-mRNA validation
-  target <- get0("mirna_mrna_pairsdb", envir = asNamespace("ceRNAR"))
+  target <- get0("target", envir = asNamespace("ceRNAR"))
   if (filtering == 'strict'){
     target.t.val <- target[target$evidence_levels == "Strong" & target$total_counts == 7,]
     message('\u2605 Filtering: strict')

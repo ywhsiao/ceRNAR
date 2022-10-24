@@ -14,6 +14,9 @@ ceRNAIntegrate(path_prefix, project_name = "demo", disease_name = "DLBC")
 
 \item{disease_name}{the abbreviation of disease that users are interested in}
 }
+\value{
+a tabular output
+}
 \description{
 A function to integrate the possible ceRNA pairs that are found
 by ceRNAR algorithm with those from other tools, such as SPONGE (List et al.,

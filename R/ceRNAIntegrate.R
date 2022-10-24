@@ -27,6 +27,8 @@
 #' disease_name = 'DLBC'
 #' )
 #'
+#' @returns a tabular output
+#'
 
 
 ceRNAIntegrate <- function(path_prefix,
@@ -92,7 +94,7 @@ ceRNAIntegrate <- function(path_prefix,
   sponge_result_sig <- sponge_result[sponge_result$p.adj<=0.05,]
   sponge_result_sig$genepairs_1 <- paste0(sponge_result_sig$geneA,'|',sponge_result_sig$geneB)
   sponge_result_sig$genepairs_2 <- paste0(sponge_result_sig$geneB,'|',sponge_result_sig$geneA)
-  utils::write.csv(sponge_result_sig, paste0(path_prefix,project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_sponge.csv'), row.names = F)
+  utils::write.csv(sponge_result_sig, paste0(path_prefix,project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_sponge.csv'), row.names = FALSE)
 
   #JAMI
   mir_exp <- mirna
@@ -116,7 +118,7 @@ ceRNAIntegrate <- function(path_prefix,
   rjami_result <- result$result[,1:5]
   rjami_result_sig <- rjami_result[rjami_result$p.value <=0.05,]
   rjami_result_sig$triplets <- paste0(rjami_result_sig$miRNA,'|',rjami_result_sig$Source, '|', rjami_result_sig$Target)
-  utils::write.csv(sponge_result_sig, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_jami.csv'), row.names = F)
+  utils::write.csv(sponge_result_sig, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_jami.csv'), row.names = FALSE)
 
   # our results
   our_result <- as.data.frame(utils::read.csv(paste0(path_prefix, project_name,'-',disease_name,'/',project_name,'-',disease_name,'_finalpairs.csv')))
@@ -134,7 +136,7 @@ ceRNAIntegrate <- function(path_prefix,
   our_result$rjami <- '-'
   our_result$sponge[our_result$genepairs%in%sponge_integrate] <- 'yes'
   our_result$rjami[our_result$triplets%in%rjami_integrate] <- 'yes'
-  utils::write.csv(our_result, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_integrate.csv'), row.names = F)
+  utils::write.csv(our_result, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_integrate.csv'), row.names = FALSE)
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))

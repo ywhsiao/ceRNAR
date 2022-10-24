@@ -33,14 +33,14 @@ data(gene_exp)
 data(mirna_exp)
 data(surv_data)
 
-ceRNACustomize(project_name = 'demo', disease_name = 'DLBC', gene_exp = gene_exp, 
+ceRNACustomize(path_prefix = '~', project_name = 'demo', disease_name = 'DLBC', gene_exp = gene_exp, 
                mirna_exp = mirna_exp, surv_data = surv_data)
 ```
 
 2. obtain putative mRNA-ceRNA pairs
 
 ```{r eval=FALSE}
-ceRNAputativePairs(project_name = 'demo', disease_name = 'DLBC', filtering = 'less')
+ceRNAputativePairs(path_prefix = '~', project_name = 'demo', disease_name = 'DLBC', filtering = 'less')
 ```
 
 
@@ -49,29 +49,27 @@ ceRNAputativePairs(project_name = 'demo', disease_name = 'DLBC', filtering = 'le
   + through `ceRNAMethod()` (preferred)
 
 ```{r eval=FALSE}
-ceRNAMethod(project_name = 'demo', disease_name = "DLBC", window_size = 45/5)
+ceRNAMethod(path_prefix = '~', project_name = 'demo', disease_name = "DLBC", window_size = 10)
 ```
 
   + through `ceRNApairFilering()` and `SegmentClusteringPlusPeakMerging()`
   
 ```{r eval=FALSE}
-ceRNApairFilering(project_name = 'demo', disease_name = "DLBC", window_size = 45/5)
-SegmentClusteringPlusPeakMerging(project_name = 'demo', disease_name = "DLBC", 
+ceRNApairFilering(path_prefix = '~', project_name = 'demo', disease_name = "DLBC", window_size = 10)
+SegmentClusteringPlusPeakMerging(path_prefix = '~', project_name = 'demo', disease_name = "DLBC", 
                                  window_size = 45/5)
 ```
 
 4. conduct downstream analysis
 
 ```{r eval=FALSE}
-ceRNAFunction(project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)
-ceRNALocation(project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101-3p', 
-              window_size = 45/5)
-ceRNAModule(project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 5, 
+ceRNAFunction(path_prefix = '~', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)
+ceRNALocation(path_prefix = '~', project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101-3p', window_size = 45/5)
+ceRNAModule(path_prefix = '~', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 5, 
             column_sum = 1)
-ceRNASurvival(project_name = 'demo', disease_name = 'DLBC', mirnas = 'hsa-miR-101-3p')
-ceRNAValidate(project_name = 'demo', disease_name = 'DLBC')
-library(SPONGE)
-ceRNAIntegrate(project_name = 'demo', disease_name = 'DLBC')
+ceRNASurvival(path_prefix = '~', project_name = 'demo', disease_name = 'DLBC', mirnas = 'hsa-miR-101-3p')
+ceRNAValidate(path_prefix = '~', project_name = 'demo', disease_name = 'DLBC')
+ceRNAIntegrate(path_prefix = '~', project_name = 'demo', disease_name = 'DLBC')
 
 ```
 
@@ -80,7 +78,7 @@ ceRNAIntegrate(project_name = 'demo', disease_name = 'DLBC')
 1. retrieve TCGA data, and check the data
 
 ```{r eval=FALSE}
-ceRNATCGA(project_name = 'TCGA',disease_name = 'DLBC', timeout = 5000000)
+ceRNATCGA(path_prefix = '~', project_name = 'TCGA',disease_name = 'DLBC', timeout = 5000000)
 ```
 
 

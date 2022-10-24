@@ -29,6 +29,9 @@ spearman (default: pearson)}
 \item{cor_threshold_peak}{peak threshold of correlation value between 0 and 1
 (default: 0.85)}
 }
+\value{
+a tabular output
+}
 \description{
 A function to conduct three steps in algorithm, including pairs
 filtering, segment clustering and peak merging

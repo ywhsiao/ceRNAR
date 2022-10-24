@@ -28,6 +28,8 @@
 #' surv_data = surv_data
 #' )
 #'
+#' @returns no
+#'
 
 ceRNACustomize <- function(path_prefix,
                            project_name = 'demo',
@@ -49,12 +51,12 @@ ceRNACustomize <- function(path_prefix,
     if ('gene_exp' %in% ls()){
       exp <- gene_exp
     }else{
-      exp <- as.data.frame(data.table::fread(gene_exp,header = T))
+      exp <- as.data.frame(data.table::fread(gene_exp,header = TRUE))
     }
     if ('mirna_exp' %in% ls()){
       mirna <- mirna_exp
     }else{
-      mirna <- as.data.frame(data.table::fread(mirna_exp,header = T))
+      mirna <- as.data.frame(data.table::fread(mirna_exp,header = TRUE))
     }
 
   }
@@ -62,7 +64,7 @@ ceRNACustomize <- function(path_prefix,
     if ('surv_data' %in% ls()){
       surv <- surv_data
     }else{
-      surv <- as.data.frame(data.table::fread(surv_data,header = T))
+      surv <- as.data.frame(data.table::fread(surv_data,header = TRUE))
     }
 
     message('(\u2714) Input data involve mRNA, miRNA and survival data.')
@@ -116,9 +118,9 @@ ceRNACustomize <- function(path_prefix,
   if (dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata')) == FALSE){
     dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata'))
   }
-  data.table::fwrite(as.data.frame(exp),paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mrna.csv'), row.names = T)
-  data.table::fwrite(as.data.frame(mirna),paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mirna.csv'), row.names = T)
-  data.table::fwrite(surv, paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_survival.csv'), row.names = T)
+  data.table::fwrite(as.data.frame(exp),paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mrna.csv'), row.names = TRUE)
+  data.table::fwrite(as.data.frame(mirna),paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mirna.csv'), row.names = TRUE)
+  data.table::fwrite(surv, paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_survival.csv'), row.names = TRUE)
 
   CatchupPause <- function(Secs){
     Sys.sleep(Secs) #pause to let connection work

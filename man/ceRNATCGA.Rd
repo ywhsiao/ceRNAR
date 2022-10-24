@@ -22,6 +22,9 @@ ceRNATCGA(
 \item{timeout}{the allowance time for downloading TCGA data
 (default = 1000)}
 }
+\value{
+no
+}
 \description{
 A function to retrieve TCGA data from GDC Xena Hub
 (https://xenabrowser.net/datapages/)

@@ -20,6 +20,9 @@ ceRNASurvival(
 
 \item{mirnas}{a list of mirna name}
 }
+\value{
+a list of figure object
+}
 \description{
 A function to analyze the survival outcome when people carry the
 identified ceRNAs and visualize the results using Kaplan-Meier plot

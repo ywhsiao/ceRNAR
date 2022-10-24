@@ -23,6 +23,8 @@
 #' timeout = 500000
 #' )
 #'
+#' @returns no
+#'
 
 
 ceRNATCGA <- function(path_prefix,
@@ -54,7 +56,7 @@ ceRNATCGA <- function(path_prefix,
       HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.htseq_fpkm.tsv.gz'), destfile = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.htseq_fpkm.tsv.gz'))
     }
 
-    downloadFromGDC(project,cancer)
+    downloadFromGDC(project, cancer, timeout)
 
     # unzip
     temp <-  list.files(path = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), pattern=".gz")
@@ -107,19 +109,17 @@ ceRNATCGA <- function(path_prefix,
     # id in names()
     htseq_fpkm <- htseq_fpkm[,names(htseq_fpkm) %in% union_sampleID]
     htseq_fpkm <- htseq_fpkm[ , order(names(htseq_fpkm))]
-    htseq_fpkm <- as.data.frame(scale(log(htseq_fpkm+1,2), center = T, scale = T))
+    htseq_fpkm <- as.data.frame(scale(log(htseq_fpkm+1,2), center = TRUE, scale = TRUE))
     mirna <- mirna[,names(mirna) %in% union_sampleID]
     mirna <- mirna[ , order(names(mirna))]
-    mirna <- as.data.frame(scale(log(mirna+1,2), center = T, scale = T))
+    mirna <- as.data.frame(scale(log(mirna+1,2), center = TRUE, scale = TRUE))
 
     # mRNA:log2(fpkm+1)，miRNA:log2(RPM+1)
     # mirna <- (2^mirna-1)*1000  #RPKM: X1000
     # htseq_fpkm <- 2^htseq_fpkm -1
 
     # focus on protein coding RNA because downloaded mRNA expression matrix includes both codingRNA and lncRNA
-    gtf_df <- get0("gencode_v22_annot", envir = asNamespace("ceRNAR"))
-    ensem2symbol <- gtf_df[gtf_df$type == 'gene',c('gene_id', 'gene_type', 'gene_name')]
-
+    ensem2symbol <- get0("ensem2symbol", envir = asNamespace("ceRNAR"))
     rownames(ensem2symbol) <- ensem2symbol$gene_id
     cdRNA <- htseq_fpkm[rownames(htseq_fpkm) %in% ensem2symbol$gene_id[ensem2symbol$gene_type=="protein_coding"],]
     annot_cdRNA <- merge(ensem2symbol, cdRNA, by = 'row.names')
@@ -130,8 +130,7 @@ ceRNATCGA <- function(path_prefix,
     annot_cdRNA_unique <- annot_cdRNA_unique[,-1]
 
     #miRNA id conversion
-    #ID_converter <- ceRNAR:::hsa_pre_mature_matching
-    ID_converter <- get0("hsa_pre_mature_matching", envir = asNamespace("ceRNAR"))
+    ID_converter <- get0("ID_converter", envir = asNamespace("ceRNAR"))
     mirna$ID <- row.names(mirna)
     miRNA_with_precurer <- merge(ID_converter, mirna, by='ID')[,-1]
     miRNA_with_precurer <- stats::aggregate(. ~ Mature_ID, data = miRNA_with_precurer, mean)
@@ -139,13 +138,13 @@ ceRNATCGA <- function(path_prefix,
     miRNA_with_precurer <- miRNA_with_precurer[,-1]
 
     # store processed data
-    data.table::fwrite(as.data.frame(annot_cdRNA_unique),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mrna.csv'), row.names = T)
-    data.table::fwrite(as.data.frame(miRNA_with_precurer),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mirna.csv'), row.names = T)
-    data.table::fwrite(as.data.frame(GDC_phenotype),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_phenotype.csv'), row.names = T)
-    data.table::fwrite(as.data.frame(survival), paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_survival.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(annot_cdRNA_unique),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mrna.csv'), row.names = TRUE)
+    data.table::fwrite(as.data.frame(miRNA_with_precurer),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mirna.csv'), row.names = TRUE)
+    data.table::fwrite(as.data.frame(GDC_phenotype),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_phenotype.csv'), row.names = TRUE)
+    data.table::fwrite(as.data.frame(survival), paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_survival.csv'), row.names = TRUE)
     message('(\u2714) All files have been preprocessed!')
     time2 <- Sys.time()
     diftime <- difftime(time2, time1, units = 'min')
     message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' minutes.'))
     message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
-  }
+}
