@@ -30,7 +30,8 @@ A function to retrieve TCGA data from GDC Xena Hub
 ceRNATCGA(
 path_prefix = '~/',
 project_name = 'TCGA',
-disease_name = 'DLBC'
+disease_name = 'DLBC',
+timeout = 500000
 )
 
 }

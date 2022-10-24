@@ -19,7 +19,8 @@
 #' ceRNATCGA(
 #' path_prefix = '~/',
 #' project_name = 'TCGA',
-#' disease_name = 'DLBC'
+#' disease_name = 'DLBC',
+#' timeout = 500000
 #' )
 #'
 
@@ -40,13 +41,13 @@ ceRNATCGA <- function(path_prefix,
       dir.create(paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'))
     }
 
-
     time1 <- Sys.time()
 
     # download cancer files (phenotype, survival, miRNA and mRNA) from gdc resource
     downloadFromGDC <- function(project, cancer, timeout=5000000){
       message('\u25CF Step1 for TCGA data: Downloading the data ...')
       options(timeout=timeout) # to test the largest data
+      HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'), destfile = paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'))
       HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'), destfile = paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'))
       HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.survival.tsv'), destfile = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.survival.tsv'))
       HelpersMG::wget(paste0('https://gdc.xenahubs.net/download/',project_name,'-', disease_name,'.mirna.tsv.gz'), destfile = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.mirna.tsv.gz'))
@@ -57,7 +58,7 @@ ceRNATCGA <- function(path_prefix,
 
     # unzip
     temp <-  list.files(path = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), pattern=".gz")
-    for (i in 1:length(temp)) R.utils::gunzip(paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',temp[i]), remove=TRUE)
+    for (i in 1:length(temp)) R.utils::gunzip(paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',temp[i]), remove=TRUE, overwrite = TRUE)
     message('(\u2714) All files have been and downloaded and uncompressed!')
 
     # match sample id
@@ -138,15 +139,13 @@ ceRNATCGA <- function(path_prefix,
     miRNA_with_precurer <- miRNA_with_precurer[,-1]
 
     # store processed data
-    data.table::fwrite(as.data.frame(annot_cdRNA_unique),paste0(path_prefix, project_name,'-', disease_name,'_mrna.csv'), row.names = T)
-    data.table::fwrite(as.data.frame(miRNA_with_precurer),paste0(path_prefix, project_name,'-', disease_name,'_mirna.csv'), row.names = T)
-    data.table::fwrite(as.data.frame(GDC_phenotype),paste0(path_prefix, project_name,'-', disease_name,'_phenotype.csv'), row.names = T)
-    data.table::fwrite(as.data.frame(survival), paste0(path_prefix, project_name,'-', disease_name,'_survival.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(annot_cdRNA_unique),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mrna.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(miRNA_with_precurer),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mirna.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(GDC_phenotype),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_phenotype.csv'), row.names = T)
+    data.table::fwrite(as.data.frame(survival), paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_survival.csv'), row.names = T)
     message('(\u2714) All files have been preprocessed!')
     time2 <- Sys.time()
     diftime <- difftime(time2, time1, units = 'min')
     message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' minutes.'))
     message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
   }
-
-

@@ -34,6 +34,7 @@ Imports:
     parallel,
     utils,
     grDevices
+VignetteBuilder: knitr
 RoxygenNote: 7.2.1
 Suggests: 
   rmarkdown,
@@ -54,3 +55,4 @@ BugReports:
   https://github.com/ywhsiao/ceRNAR/issues
 URL: 
   https://github.com/ywhsiao/ceRNAR
+
