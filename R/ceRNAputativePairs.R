@@ -9,6 +9,7 @@
 #' @param filtering three different filtering criteria, including strict,
 #' moderate and less. (Default: less)
 #'
+#' @returns a file
 #' @export
 #'
 #' @examples
@@ -18,6 +19,7 @@
 #' disease_name = 'DLBC',
 #' filtering = 'less'
 #' )
+#'
 #'
 
 ceRNAputativePairs <- function(path_prefix,

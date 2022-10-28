@@ -27,6 +27,9 @@ ceRNACustomize(
 
 \item{surv_data}{location of survival data (default: surv_data)}
 }
+\value{
+a file
+}
 \description{
 A function to allow users to upload their own data
 }
@@ -42,5 +45,6 @@ gene_exp = gene_exp,
 mirna_exp = mirna_exp,
 surv_data = surv_data
 )
+
 
 }

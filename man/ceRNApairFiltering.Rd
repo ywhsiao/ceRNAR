@@ -26,6 +26,9 @@ ceRNApairFilering(
 \item{cor_method}{selection of correlation methods, including pearson and
 spearman (default: pearson)}
 }
+\value{
+a file
+}
 \description{
 A function to conduct one of three steps in algorithm,
 that is, pairs filtering
@@ -38,5 +41,6 @@ disease_name = 'DLBC',
 window_size = 10,
 cor_method = 'pearson'
 )
+
 
 }

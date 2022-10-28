@@ -18,6 +18,9 @@ ceRNALocation(path_prefix, project_name, disease_name, mirna, window_size)
 \item{window_size}{the number of samples for each window and usually about
 one third of total samples}
 }
+\value{
+a list of figure object
+}
 \description{
 A function to visualize the peak location at certain miRNA level
 }
@@ -29,5 +32,6 @@ disease_name = 'DLBC',
 mirna='hsa-miR-101-3p',
 window_size = 45/5
 )
+
 
 }

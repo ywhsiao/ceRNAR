@@ -10,6 +10,7 @@
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
 #'
+#' @returns a tabular output
 #' @export
 #'
 #' @examples
@@ -18,6 +19,7 @@
 #' project_name = 'demo',
 #' disease_name = 'DLBC'
 #' )
+#'
 #'
 
 ceRNAValidate <- function(path_prefix,
@@ -77,8 +79,8 @@ ceRNAValidate <- function(path_prefix,
     miRNA_df
   }
   miRNA <- search_based_on_miRNA(pair_lst)
-  matched1 <- merge(miRNA, miRSponge_exp, by='miRNA_short', all.x = T)
-  matched2 <- merge(miRNA, miRSponge_exp, by.x='miRNA_short1', by.y = 'miRNA_short', all.x = T)
+  matched1 <- merge(miRNA, miRSponge_exp, by='miRNA_short', all.x = TRUE)
+  matched2 <- merge(miRNA, miRSponge_exp, by.x='miRNA_short1', by.y = 'miRNA_short', all.x = TRUE)
   final <- unique(rbind(matched1, matched2))
   final_lst <- dplyr::group_split(final, index)
   # search for each gene
@@ -152,7 +154,7 @@ ceRNAValidate <- function(path_prefix,
   }
   with_evidence[is.na(with_evidence)] <- '-'
   common_pairs <- dim(with_evidence)[1]
-  utils::write.csv(with_evidence, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/',project_name,'-',disease_name,'_with_target_exp_evidence.csv'), row.names = F)
+  utils::write.csv(with_evidence, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/',project_name,'-',disease_name,'_with_target_exp_evidence.csv'), row.names = FALSE)
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))

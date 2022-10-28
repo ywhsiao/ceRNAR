@@ -21,6 +21,9 @@ ceRNAputativePairs(
 \item{filtering}{three different filtering criteria, including strict,
 moderate and less. (Default: less)}
 }
+\value{
+a file
+}
 \description{
 A function to obtain putative mRNA-miRNA pairs from several databases
 }
@@ -31,5 +34,6 @@ project_name ='demo',
 disease_name = 'DLBC',
 filtering = 'less'
 )
+
 
 }

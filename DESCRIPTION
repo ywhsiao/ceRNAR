@@ -1,11 +1,25 @@
 Package: ceRNAR
 Type: Package
 Title: ceRNAR: An R Package for Identification and Analysis of ceRNAs-miRNA Triplets
-Version: 1.1.0
-Author: Yi-Wen Hsiao†, Lin Wang† and Tzu-Pin Lu
-Maintainer: Yi-Wen Hsiao <d08849010@ntu.edu.tw>
+Version: 1.2.0
+Authors@R: c(person(given = "Yi-Wen",
+           family = "Hsiao",
+           role = c("aut", "cre"),
+           email = "d08849010@ntu.edu.tw"),
+           person(given = "Lin",
+           family = "Wang",
+           role = c("aut")),
+           person(given = "Tzu-Pin",
+           family = "Lu",
+           role = c("aut"))
+          )
 Description: This R package is designed for identification and analysis of ceRNA-miRNA triplets via integration of miRNA and RNA expression data at specific miRNA expression level. CeRNAR integrates three main steps: identification of ceRNA pairs, segment clustering, and peak merging. In addition, it also provides some downstream analyses of identified ceRNA-miRNA triplets, including network analysis, functional annotation, and survival analysis.
 License: MIT + file LICENSE
+biocViews: GeneExpression,
+    Transcription,
+    GeneRegulation,
+    NetworkInference,
+    Survival
 Encoding: UTF-8
 Depends: 
   R(>= 4.2.0),
@@ -15,8 +29,7 @@ Depends:
   ggplot2,
   magrittr,
   rlang,
-  foreach,
-  SPONGE
+  foreach
 Imports: 
     cowplot,
     data.table,
@@ -33,7 +46,8 @@ Imports:
     zoo,
     parallel,
     utils,
-    grDevices
+    grDevices,
+    biomaRt
 VignetteBuilder: knitr
 RoxygenNote: 7.2.1
 Suggests: 
@@ -55,4 +69,3 @@ BugReports:
   https://github.com/ywhsiao/ceRNAR/issues
 URL: 
   https://github.com/ywhsiao/ceRNAR
-

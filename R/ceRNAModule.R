@@ -13,6 +13,7 @@
 #' @param pairs_cutoff at least the number of ceRNA pairs that a mirna must have
 #' @param column_sum the number of ceRNAs
 #'
+#' @returns a list of figure object
 #' @export
 #'
 #' @examples
@@ -23,6 +24,7 @@
 #' pairs_cutoff = 5,
 #' column_sum = 1
 #' )
+#'
 #'
 
 ceRNAModule <- function(path_prefix,
@@ -67,7 +69,7 @@ ceRNAModule <- function(path_prefix,
   }
 
   # save miR summary table
-  utils::write.csv(summary_miR, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/miR_summary_', project_name, '-', disease_name, '.csv'), row.names = F)
+  utils::write.csv(summary_miR, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/miR_summary_', project_name, '-', disease_name, '.csv'), row.names = FALSE)
 
   # Average ceRNA pairs of overall miRNAs
   message('\u2605 Average ceRNA pairs of overall miRNAs: ', sum(unlist(summary_miR[,2]))/dim(summary_miR)[1], '.')
@@ -87,14 +89,14 @@ ceRNAModule <- function(path_prefix,
     hubgene_name[[i]] <- tmp
   }
 
-  utils::write.csv(matrix(unlist(hubgene_name),ncol=2,byrow=TRUE),paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/hubgene_miR_', project_name, '-', disease_name, '.csv'), row.names = F)
+  utils::write.csv(matrix(unlist(hubgene_name),ncol=2,byrow=TRUE),paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/hubgene_miR_', project_name, '-', disease_name, '.csv'), row.names = FALSE)
   hubg_onlyname <- unlist(sapply(hubgene_name, function(x) x[,1]))
 
   # get all ceRNAs (Res list => Res dataframe)
   Res <- as.data.frame(Reduce(rbind,purrr::compact(Res)))
 
   hubgene_all <- sort(table(unlist(strsplit(as.character(Res[,2])," "))), decreasing = TRUE)
-  utils::write.csv(hubgene_all, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/hubgene_all_', project_name, '-', disease_name, '.csv'), row.names = F)
+  utils::write.csv(hubgene_all, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults/hubgene_all_', project_name, '-', disease_name, '.csv'), row.names = FALSE)
 
   # average number of coexpressed gene
   message('\u2605 Average number of coexpressed gene: ', sum(hubgene_all)/length(hubgene_all), '.')

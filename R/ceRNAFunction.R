@@ -16,6 +16,7 @@
 #' @param pairs_cutoff at least the number of ceRNA pairs that a mirna must have
 #'  (default: 1)
 #'
+#' @returns a list of figure objects
 #' @export
 #'
 #' @examples
@@ -25,6 +26,7 @@
 #' disease_name = 'DLBC',
 #' pairs_cutoff = 1
 #' )
+#'
 #'
 
 
@@ -91,7 +93,7 @@ ceRNAFunction <- function(path_prefix,
                                     pvalueCutoff = 0.01)
 
   kk_df <- kk@result
-  utils::write.csv(kk_df,paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name,'-',disease_name,'_kegg_ora.csv'), row.names = F)
+  utils::write.csv(kk_df,paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name,'-',disease_name,'_kegg_ora.csv'), row.names = FALSE)
   kk_babble <- enrichplot::dotplot(kk, showCategory=10,orderBy = "x")+ ggplot2::ggtitle('Dotplot for ORA based on KEGG')
   kk_bar <- graphics::barplot(kk,showCategory = 10)+ ggplot2::ggtitle('Barplot for ORA based on KEGG')
 
@@ -125,7 +127,7 @@ ceRNAFunction <- function(path_prefix,
   go_bp <- go[[3]]@result
   go_bp$GOLevel <- 'BP'
   go_all <- rbind(go_cc, go_mf, go_bp)
-  utils::write.csv(go_all,paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name, '-',disease_name, '_go_ora.csv'), row.names = F)
+  utils::write.csv(go_all,paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name, '-',disease_name, '_go_ora.csv'), row.names = FALSE)
   go_tobarplot <- rbind(utils::head(go_cc, n=10), utils::head(go_mf, n=10), utils::head(go_bp, n=10))
   go_tobarplot$p.adjust.convert <- -log10(go_tobarplot$p.adjust)
   go_bar <- ggpubr::ggbarplot(go_tobarplot, x = "Description", y = "p.adjust.convert",

@@ -1,4 +1,4 @@
-# ceRNAR 1.1.0
+# ceRNAR 1.2.0
 
 This is a major release adding a range of substantial new features and fixing large number of bugs
 

@@ -16,15 +16,16 @@
 #' (default: 0.85)
 #' @param window_size the number of samples for each window (default:10)
 #'
+#' @returns a tabular output
 #' @export
 #'
 #' @examples
 #' SegmentClusteringPlusPeakMerging(
 #' path_prefix =  '~/',
 #' project_name = 'demo',
-#' disease_name = "DLBC",
+#' disease_name = 'DLBC',
 #' cor_threshold_peak = 0.85,
-#' window_size = 9
+#' window_size = 10
 #' )
 #'
 
@@ -33,10 +34,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
                                              disease_name = 'DLBC',
                                              cor_threshold_peak = 0.85,
                                              window_size = 10){
-
-  if (!stringr::str_detect(path_prefix, '/')){
-    path_prefix <- paste0(path_prefix, '/')
-  }
 
   time1 <- Sys.time()
 
@@ -51,7 +48,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
 
   ## create a cluster
   message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
-  sigCernaPeak <- function(index, d, cor_threshold_peak, window_size){
+  sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
     #index=1
     #print(paste0('microRNA:', index))
     w <- window_size
@@ -59,25 +56,14 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
     gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
     gene <- intersect(gene,rownames(mrna))
 
-    gene_pair <- utils::combn(gene,2)
+    gene_pair <- combn(gene,2)
     total_pairs <- choose(length(gene),2)
     #tmp <- NULL
-    #doParallel::registerDoParallel(parallel::detectCores()-3)
-    chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
-
-    if (nzchar(chk) && chk == "TRUE") {
-      # use 2 cores in CRAN/Travis/AppVeyor
-      num_workers <- 2L
-    } else {
-      # use all cores in devtools::test()
-      num_workers <- parallel::detectCores()-3
-    }
-
-    doParallel::registerDoParallel(num_workers)
+    doParallel::registerDoParallel(parallel::detectCores()-3)
     #tmp <- tryCatch({
-    tmp <- foreach::foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
-    #lst <- list()
-    #for (p in 1:total_pairs){ # test foreach
+    tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
+      #lst <- list()
+      #for (p in 1:total_pairs){ # test foreach
       #p=1
       print(paste0("no_of_index:", index,"|", "no_of_pairs:",p))
       cand.ceRNA=c()
@@ -172,7 +158,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
                 z2 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]],na.rm=T))
                 N1 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]])
                 N2 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]])
-                TestPeak.pval[i] <- 2*stats::pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
+                TestPeak.pval[i] <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
                 #TestPeak.pval[i] <- t.test(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]])$p.value
 
               }
@@ -184,7 +170,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
               distance <- c()
               if (length(peak.loc)>2){
                 for(i in 1:(length(peak.loc)-1)){
-                distance[i] <- sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"])
+                  distance[i] <- sum(result$output[(peak.loc[i]+1):(peak.loc[i+1]-1),"num.mark"])
                 }
               }
               peak_min <- mergp.loc[distance[mergp.loc]==min(distance[mergp.loc])]
@@ -208,10 +194,10 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
               no_merg_count <- 1
               if(length(peak.loc.new)>=2){
                 for(i in 1:(length(peak.loc.new)-1)){
-                if (is.na(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"]))) {break}
-                if(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"])> w){
-                  no_merg_loc[no_merg_count] <- peak.loc.new[i]
-                }
+                  if (is.na(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"]))) {break}
+                  if(sum(result$output[(peak.loc.new[i]+1):(peak.loc.new[i+1]-1),"num.mark"])> w){
+                    no_merg_loc[no_merg_count] <- peak.loc.new[i]
+                  }
                 }
               }
               peak.loc.new <- peak.loc.new[-as.numeric(no_merg_loc)]
@@ -243,7 +229,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
         z2 <- psych::fisherz(result$output$seg.mean[min_seg])
         N1 <- result$output[max_seg,"num.mark"]
         N2 <- result$output[min_seg,"num.mark"]
-        Test <- 2*stats::pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
+        Test <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)
         # generate final output
         if(!is.na(Test) && Test < 0.05){
           if(sum(cand.corr[peak.loc+1] > cor_threshold_peak) >0 && sum(cand.corr[peak.loc+1] > cor_threshold_peak) <=2){  ### para 0.5
@@ -278,7 +264,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
   # }
   # txt_final <- do.call(rbind, txt)
 
-  #future::plan("future::cluster", workers=parallel::detectCores()-3)
   testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(path_prefix,project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),cor_threshold_peak,window_size)
   FinalResult <- purrr::compact(testfunction)
 
@@ -291,14 +276,13 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
   flat_df <-  final_df %>%
     tidyr::unnest(location) %>%
     tidyr::unnest(numOfseg)
-  data.table::fwrite(flat_df, paste0(path_prefix, project_name,'-', disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = F)
+  data.table::fwrite(flat_df, paste0(path_prefix, project_name,'-', disease_name,'/',project_name,'-', disease_name, '_finalpairs.csv'), row.names = FALSE)
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
 
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
-
-  return(as.data.frame(flat_df))
+  flat_df
 }
 

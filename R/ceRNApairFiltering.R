@@ -16,6 +16,7 @@
 #' @param cor_method selection of correlation methods, including pearson and
 #' spearman (default: pearson)
 #'
+#' @returns a file
 #' @export
 #'
 #' @examples
@@ -26,6 +27,7 @@
 #' window_size = 10,
 #' cor_method = 'pearson'
 #' )
+#'
 #'
 
 ceRNApairFilering <- function(path_prefix,
@@ -57,7 +59,7 @@ ceRNApairFilering <- function(path_prefix,
   slidingWindow <- function(window_size, mirna_total, cor_method){
     chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
-    if (nzchar(chk) && chk == "TRUE") {
+    if ((nzchar(chk)) && (chk == "TRUE")) {
       # use 2 cores in CRAN/Travis/AppVeyor
       num_workers <- 2L
     } else {
@@ -127,4 +129,5 @@ ceRNApairFilering <- function(path_prefix,
   message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
 
 }
+
 

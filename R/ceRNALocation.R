@@ -13,6 +13,7 @@
 #' @param window_size the number of samples for each window and usually about
 #' one third of total samples
 #'
+#' @returns a list of figure object
 #' @export
 #'
 #' @examples
@@ -23,6 +24,7 @@
 #' mirna='hsa-miR-101-3p',
 #' window_size = 45/5
 #' )
+#'
 #'
 
 ceRNALocation <- function(path_prefix,
@@ -51,7 +53,7 @@ ceRNALocation <- function(path_prefix,
   a=Res_dataframe[Res_dataframe$miRNA==mirna ,2:4]
 
   # get mirna expression data
-  mirExp <- as.data.frame(data.table::fread(paste0(path_prefix,'/',project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv'),header = T,stringsAsFactors = F))
+  mirExp <- as.data.frame(data.table::fread(paste0(path_prefix,'/',project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv'),header = TRUE,stringsAsFactors = FALSE))
   row.names(mirExp) <- mirExp[,1]
   mirExp <- mirExp[,-1]
   names(mirExp) <- substring(names(mirExp),1,12)
@@ -76,7 +78,7 @@ ceRNALocation <- function(path_prefix,
   w=window_size
   tmp <- as.data.frame(t(mirExp[row.names(mirExp)==mirna,]))
   tmp$sample <- row.names(tmp)
-  mirExp_subset <- tmp[order(tmp[,1], decreasing = T),]
+  mirExp_subset <- tmp[order(tmp[,1], decreasing = TRUE),]
 
   #x_range <- c(mean(mirExp_subset[1:w,1]),mean(mirExp_subset[N:(N-w+1),1]))
   # to customize based on the total pairs

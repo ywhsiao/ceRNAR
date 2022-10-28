@@ -12,6 +12,7 @@
 #' @param disease_name the abbreviation of disease that users are interested in
 #' @param mirnas a list of mirna name
 #'
+#' @returns a list of figure object
 #' @export
 #'
 #' @examples
@@ -21,6 +22,7 @@
 #' disease_name = 'DLBC',
 #' mirnas = 'hsa-miR-101-3p'
 #' )
+#'
 #'
 
 ceRNASurvival <- function(path_prefix,
@@ -45,13 +47,13 @@ ceRNASurvival <- function(path_prefix,
   message('\u25CF Step5: Dowstream Analyses - Survival analysis')
 
   # expression data
-  geneExp <- as.data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv'),header = T, stringsAsFactors = F))
+  geneExp <- as.data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv'),header = TRUE, stringsAsFactors = FALSE))
   row.names(geneExp) <- geneExp[,1]
   geneExp <- geneExp[,-1]
   names(geneExp) <- substring(names(geneExp),1,12)
 
   # survival data
-  survivalData <- as.data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_survival.csv'),header = T, stringsAsFactors = F))
+  survivalData <- as.data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_survival.csv'),header = TRUE, stringsAsFactors = FALSE))
   row.names(survivalData) <- survivalData[,1]
   survivalData <- survivalData[,-1]
   survivalData <- survivalData[,colnames(survivalData)%in%c('OS', 'OS.time')]

@@ -3,29 +3,28 @@
 #' @title Integration of the possible ceRNA pairs among published tools
 #' @description A function to integrate the possible ceRNA pairs that are found
 #' by ceRNAR algorithm with those from other tools, such as SPONGE (List et al.,
-#' 2019) and RJAMI (Hornakova et al.,2018.)
+#' 2019) and RJAMI (Hornakova et al.,2018)
 #'
-#' @import SPONGE
 #' @import utils
-#' @rawNamespace import(Biobase, except = c(select, exprs))
-#' @rawNamespace import(cvms, except = font)
-#' @rawNamespace import(ggplot2, except = margin)
-#' @rawNamespace import(dplyr, except = combine)
-#' @rawNamespace import(rlang, except = exprs)
-#'
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
 #'
+#' @returns a tabular output
 #' @export
 #'
 #' @examples
+#' if (!require("BiocManager", quietly = TRUE))
+#' install.packages("BiocManager")
+#' BiocManager::install("SPONGE")
+#' library(SPONGE)
 #' ceRNAIntegrate(
 #' path_prefix = '~/',
 #' project_name = 'demo',
 #' disease_name = 'DLBC'
 #' )
+#'
 #'
 
 
@@ -76,23 +75,23 @@ ceRNAIntegrate <- function(path_prefix,
   doParallel::registerDoParallel(num_workers)
   mir_expr <- t(mirna)
   gene_expr <- t(mrna)
-  genes_miRNA_candidates <- SPONGE::sponge_gene_miRNA_interaction_filter(
+  genes_miRNA_candidates <- sponge_gene_miRNA_interaction_filter(
     gene_expr = gene_expr,
     mir_expr = mir_expr,
     mir_predicted_targets = as.matrix(d))
 
-  ceRNA_interactions <- SPONGE::sponge(gene_expr = gene_expr,
+  ceRNA_interactions <- sponge(gene_expr = gene_expr,
                                mir_expr = mir_expr,
                                mir_interactions = genes_miRNA_candidates)
-  precomputed_cov_matrices <- SPONGE::precomputed_cov_matrices
-  mscor_null_model <- SPONGE::sponge_build_null_model(number_of_datasets = 100,
+  precomputed_cov_matrices <- precomputed_cov_matrices
+  mscor_null_model <- sponge_build_null_model(number_of_datasets = 100,
                                               number_of_samples = dim(gene_expr)[1])
-  sponge_result <- SPONGE::sponge_compute_p_values(sponge_result = ceRNA_interactions,
+  sponge_result <- sponge_compute_p_values(sponge_result = ceRNA_interactions,
                                                    null_model = mscor_null_model)
   sponge_result_sig <- sponge_result[sponge_result$p.adj<=0.05,]
   sponge_result_sig$genepairs_1 <- paste0(sponge_result_sig$geneA,'|',sponge_result_sig$geneB)
   sponge_result_sig$genepairs_2 <- paste0(sponge_result_sig$geneB,'|',sponge_result_sig$geneA)
-  utils::write.csv(sponge_result_sig, paste0(path_prefix,project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_sponge.csv'), row.names = F)
+  utils::write.csv(sponge_result_sig, paste0(path_prefix,project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_sponge.csv'), row.names = FALSE)
 
   #JAMI
   mir_exp <- mirna
@@ -116,7 +115,7 @@ ceRNAIntegrate <- function(path_prefix,
   rjami_result <- result$result[,1:5]
   rjami_result_sig <- rjami_result[rjami_result$p.value <=0.05,]
   rjami_result_sig$triplets <- paste0(rjami_result_sig$miRNA,'|',rjami_result_sig$Source, '|', rjami_result_sig$Target)
-  utils::write.csv(sponge_result_sig, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_jami.csv'), row.names = F)
+  utils::write.csv(sponge_result_sig, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_jami.csv'), row.names = FALSE)
 
   # our results
   our_result <- as.data.frame(utils::read.csv(paste0(path_prefix, project_name,'-',disease_name,'/',project_name,'-',disease_name,'_finalpairs.csv')))
@@ -134,7 +133,7 @@ ceRNAIntegrate <- function(path_prefix,
   our_result$rjami <- '-'
   our_result$sponge[our_result$genepairs%in%sponge_integrate] <- 'yes'
   our_result$rjami[our_result$triplets%in%rjami_integrate] <- 'yes'
-  utils::write.csv(our_result, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_integrate.csv'), row.names = F)
+  utils::write.csv(our_result, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_integrate.csv'), row.names = FALSE)
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
