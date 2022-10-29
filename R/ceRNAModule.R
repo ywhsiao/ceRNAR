@@ -18,7 +18,6 @@
 #'
 #' @examples
 #' ceRNAModule(
-#' path_prefix = '~/',
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' pairs_cutoff = 5,
@@ -27,16 +26,21 @@
 #'
 #'
 
-ceRNAModule <- function(path_prefix,
+ceRNAModule <- function(path_prefix = NULL,
                         project_name = 'demo',
                         disease_name = 'DLBC',
                         pairs_cutoff = 5,
                         column_sum = 1){
 
-  if (!stringr::str_detect(path_prefix, '/')){
-    path_prefix <- paste0(path_prefix, '/')
+  if (is.null(path_prefix)){
+    path_prefix <- fs::path_home()
+  }else{
+    path_prefix <- path_prefix
   }
 
+  if (!stringr::str_detect(path_prefix, '/$')){
+    path_prefix <- paste0(path_prefix, '/')
+  }
   time1 <- Sys.time()
   # setwd(paste0(project_name,'-',disease_name))
   if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/'))){

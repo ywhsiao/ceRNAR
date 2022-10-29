@@ -6,7 +6,7 @@
 \title{one of three steps in main ceRNAR algorithm}
 \usage{
 ceRNApairFilering(
-  path_prefix,
+  path_prefix = NULL,
   project_name = "demo",
   disease_name = "DLBC",
   window_size = 10,
@@ -35,7 +35,6 @@ that is, pairs filtering
 }
 \examples{
 ceRNApairFilering(
-path_prefix = '~/',
 project_name = 'demo',
 disease_name = 'DLBC',
 window_size = 10,

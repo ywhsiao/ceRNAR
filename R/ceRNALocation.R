@@ -18,22 +18,27 @@
 #'
 #' @examples
 #' ceRNALocation(
-#' path_prefix = '~/',
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' mirna='hsa-miR-101-3p',
-#' window_size = 45/5
+#' window_size = 10
 #' )
 #'
 #'
 
-ceRNALocation <- function(path_prefix,
-                          project_name,
-                          disease_name,
-                          mirna,
-                          window_size){
+ceRNALocation <- function(path_prefix = NULL,
+                          project_name = 'demo',
+                          disease_name = 'DLBC',
+                          mirna = 'hsa-miR-101-3p',
+                          window_size = 10){
 
-  if (!stringr::str_detect(path_prefix, '/')){
+  if (is.null(path_prefix)){
+    path_prefix <- fs::path_home()
+  }else{
+    path_prefix <- path_prefix
+  }
+
+  if (!stringr::str_detect(path_prefix, '/$')){
     path_prefix <- paste0(path_prefix, '/')
   }
 

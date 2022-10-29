@@ -21,7 +21,6 @@
 #' data(mirna_exp)
 #' data(surv_data)
 #' ceRNACustomize(
-#' path_prefix = '~/',
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' gene_exp = gene_exp,
@@ -31,14 +30,19 @@
 #'
 #'
 
-ceRNACustomize <- function(path_prefix,
+ceRNACustomize <- function(path_prefix = NULL,
                            project_name = 'demo',
                            disease_name = 'DLBC',
                            gene_exp = gene_exp,
                            mirna_exp = mirna_exp,
                            surv_data = surv_data){
+  if (is.null(path_prefix)){
+    path_prefix <- fs::path_home()
+  }else{
+    path_prefix <- path_prefix
+  }
 
-  if (!stringr::str_detect(path_prefix, '/')){
+  if (!stringr::str_detect(path_prefix, '/$')){
     path_prefix <- paste0(path_prefix, '/')
   }
 

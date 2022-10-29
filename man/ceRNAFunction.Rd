@@ -5,7 +5,7 @@
 \title{Functional enrichment analysis}
 \usage{
 ceRNAFunction(
-  path_prefix,
+  path_prefix = NULL,
   project_name = "demo",
   disease_name = "DLBC",
   pairs_cutoff = 1

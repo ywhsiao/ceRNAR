@@ -30,12 +30,18 @@
 #'
 
 
-ceRNAFunction <- function(path_prefix,
+ceRNAFunction <- function(path_prefix = NULL,
                           project_name = 'demo',
                           disease_name = 'DLBC',
                           pairs_cutoff = 1){
 
-  if (!stringr::str_detect(path_prefix, '/')){
+  if (is.null(path_prefix)){
+    path_prefix <- fs::path_home()
+  }else{
+    path_prefix <- path_prefix
+  }
+
+  if (!stringr::str_detect(path_prefix, '/$')){
     path_prefix <- paste0(path_prefix, '/')
   }
 

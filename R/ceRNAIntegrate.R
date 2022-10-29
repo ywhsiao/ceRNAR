@@ -5,6 +5,13 @@
 #' by ceRNAR algorithm with those from other tools, such as SPONGE (List et al.,
 #' 2019) and RJAMI (Hornakova et al.,2018)
 #'
+#' @rawNamespace import(biomaRt, except = select)
+#' @rawNamespace import(Biobase, except = c(combine, exprs))
+#' @rawNamespace import(cvms, except = font)
+#' @rawNamespace import(ggplot2, except = margin)
+#' @rawNamespace import(dplyr, except = combine)
+#' @import rlang
+#' @import SPONGE
 #' @import utils
 #'
 #' @param path_prefix user's working directory
@@ -15,24 +22,24 @@
 #' @export
 #'
 #' @examples
-#' if (!require("BiocManager", quietly = TRUE))
-#' install.packages("BiocManager")
-#' BiocManager::install("SPONGE")
 #' library(SPONGE)
 #' ceRNAIntegrate(
-#' path_prefix = '~/',
 #' project_name = 'demo',
 #' disease_name = 'DLBC'
 #' )
 #'
-#'
 
-
-ceRNAIntegrate <- function(path_prefix,
+ceRNAIntegrate <- function(path_prefix = NULL,
                            project_name = 'demo',
                            disease_name = 'DLBC'){
 
-  if (!stringr::str_detect(path_prefix, '/')){
+  if (is.null(path_prefix)){
+    path_prefix <- fs::path_home()
+  }else{
+    path_prefix <- path_prefix
+  }
+
+  if (!stringr::str_detect(path_prefix, '/$')){
     path_prefix <- paste0(path_prefix, '/')
   }
 
@@ -80,13 +87,13 @@ ceRNAIntegrate <- function(path_prefix,
     mir_expr = mir_expr,
     mir_predicted_targets = as.matrix(d))
 
-  ceRNA_interactions <- sponge(gene_expr = gene_expr,
+  ceRNA_interactions <- SPONGE::sponge(gene_expr = gene_expr,
                                mir_expr = mir_expr,
                                mir_interactions = genes_miRNA_candidates)
-  precomputed_cov_matrices <- precomputed_cov_matrices
-  mscor_null_model <- sponge_build_null_model(number_of_datasets = 100,
+  precomputed_cov_matrices <- SPONGE::precomputed_cov_matrices
+  mscor_null_model <- SPONGE::sponge_build_null_model(number_of_datasets = 100,
                                               number_of_samples = dim(gene_expr)[1])
-  sponge_result <- sponge_compute_p_values(sponge_result = ceRNA_interactions,
+  sponge_result <- SPONGE::sponge_compute_p_values(sponge_result = ceRNA_interactions,
                                                    null_model = mscor_null_model)
   sponge_result_sig <- sponge_result[sponge_result$p.adj<=0.05,]
   sponge_result_sig$genepairs_1 <- paste0(sponge_result_sig$geneA,'|',sponge_result_sig$geneB)

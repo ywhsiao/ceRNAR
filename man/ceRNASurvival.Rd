@@ -5,7 +5,7 @@
 \title{Survival analysis and visualization}
 \usage{
 ceRNASurvival(
-  path_prefix,
+  path_prefix = NULL,
   project_name = "demo",
   disease_name = "DLBC",
   mirnas = "hsa-miR-101-3p"
@@ -29,7 +29,6 @@ identified ceRNAs and visualize the results using Kaplan-Meier plot
 }
 \examples{
 ceRNASurvival(
-path_prefix = '~/',
 project_name = 'demo',
 disease_name = 'DLBC',
 mirnas = 'hsa-miR-101-3p'

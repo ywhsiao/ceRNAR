@@ -5,7 +5,11 @@
 \alias{ceRNAIntegrate}
 \title{Integration of the possible ceRNA pairs among published tools}
 \usage{
-ceRNAIntegrate(path_prefix, project_name = "demo", disease_name = "DLBC")
+ceRNAIntegrate(
+  path_prefix = NULL,
+  project_name = "demo",
+  disease_name = "DLBC"
+)
 }
 \arguments{
 \item{path_prefix}{user's working directory}
@@ -23,15 +27,10 @@ by ceRNAR algorithm with those from other tools, such as SPONGE (List et al.,
 2019) and RJAMI (Hornakova et al.,2018)
 }
 \examples{
-if (!require("BiocManager", quietly = TRUE))
-install.packages("BiocManager")
-BiocManager::install("SPONGE")
 library(SPONGE)
 ceRNAIntegrate(
-path_prefix = '~/',
 project_name = 'demo',
 disease_name = 'DLBC'
 )
-
 
 }

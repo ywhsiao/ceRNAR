@@ -35,6 +35,16 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
                                              cor_threshold_peak = 0.85,
                                              window_size = 10){
 
+  if (is.null(path_prefix)){
+    path_prefix <- fs::path_home()
+  }else{
+    path_prefix <- path_prefix
+  }
+
+  if (!stringr::str_detect(path_prefix, '/$')){
+    path_prefix <- paste0(path_prefix, '/')
+  }
+
   time1 <- Sys.time()
 
   message('\u25CF Step4: Clustering segments using CBS algorithm plus Mearging peaks')
@@ -59,7 +69,17 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
     gene_pair <- combn(gene,2)
     total_pairs <- choose(length(gene),2)
     #tmp <- NULL
-    doParallel::registerDoParallel(parallel::detectCores()-3)
+    chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+
+    if ((nzchar(chk)) && (chk == "TRUE")) {
+      # use 2 cores in CRAN/Travis/AppVeyor
+      num_workers <- 2L
+    } else {
+      # use all cores in devtools::test()
+      num_workers <- parallel::detectCores()-3
+    }
+
+    doParallel::registerDoParallel(num_workers)
     #tmp <- tryCatch({
     tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
       #lst <- list()
@@ -154,8 +174,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
             if (length(peak.loc)>2){
               for(i in 1:(length(peak.loc)-1)){
                 #TestPeak.pval[i] <- t.test(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],triplet$corr[(num.mark[peak.loc[i+1]]+1):num.mark[peak.loc[i+1]+1]])$p.value
-                z1 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],na.rm=T))
-                z2 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]],na.rm=T))
+                z1 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]],na.rm=TRUE))
+                z2 <- psych::fisherz(mean(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]],na.rm=TRUE))
                 N1 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i]+1]])
                 N2 <- length(triplet$corr[(num.mark[peak.loc[i]]+1):num.mark[peak.loc[i+1]+1]])
                 TestPeak.pval[i] <- 2*pnorm(abs(z1-z2)/sqrt(1/(N1-3)+1/(N2-3)),lower.tail = FALSE)

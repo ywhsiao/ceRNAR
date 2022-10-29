@@ -101,7 +101,7 @@ ceRNATCGA(path_prefix = '~/', project_name = 'TCGA', disease_name = 'DLBC', time
 
 ## Putative miRNA-gene interaction
 
-Here, ceRNAR comes with 2 experimentally validated miRNA-target databases ([miRTarBase](https://mirtarbase.cuhk.edu.cn/~miRTarBase/miRTarBase_2022/php/index.php) and miRecords[6]) and 7 computationally predicted miRNA-target databases ([DIANA-micro T-CDS](https://dianalab.e-ce.uth.gr/html/dianauniverse/index.php?r=microT_CDS), EIMMO [7], [miRDB](https://mirdb.org/), [miRanda](https://bioweb.pasteur.fr/packages/pack@miRanda@3.3a), [PITA](https://genie.weizmann.ac.il/pubs/mir07/mir07_prediction.html), [RNA22](https://cm.jefferson.edu/rna22/) and [TargetScan](https://www.targetscan.org/vert_80/)) for only considering genes with shared miRNAs. Three options for filtering putative miRNA-gene pairs:
+Here, ceRNAR comes with 2 experimentally validated miRNA-target databases ([miRTarBase](https://mirtarbase.cuhk.edu.cn/~miRTarBase/miRTarBase_2022/php/index.php) and miRecords[6]) and 7 computationally predicted miRNA-target databases DIANA-micro T-CDS [7], EIMMO [8], [miRDB](https://mirdb.org/), [miRanda](https://bioweb.pasteur.fr/packages/pack@miRanda@3.3a), [PITA](https://genie.weizmann.ac.il/pubs/mir07/mir07_prediction.html), [RNA22](https://cm.jefferson.edu/rna22/) and [TargetScan](https://www.targetscan.org/vert_80/)) for only considering genes with shared miRNAs. Three options for filtering putative miRNA-gene pairs:
 
 - `strict`: experimentally validated by 2 databases and predicted by 7 databaes 
 - `moderate`: experimentally validated by 2 databases or predicted by 7 databaes
@@ -196,9 +196,10 @@ knitr::kable(external_val_result[1:5,1:8], row.names = FALSE)
 
 - **Data integration**
 
-This function allows users to further combine results obtained from ceRNAR with other state-of-the-art tools in ceRNA biological field, including SPONGE [8] and JAMI [9].
+This function allows users to further combine results obtained from ceRNAR with other state-of-the-art tools in ceRNA biological field, including SPONGE [9] and JAMI [10].
 
 ```{r message=FALSE, results='hide'}
+library(SPONGE)
 integrated_result <- ceRNAIntegrate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
 ```
 
@@ -228,11 +229,13 @@ To cite your use of ceRNAR in your publication, please reference:
 
 [6] Xiao F, Zuo Z, Cai G, Kang S, Gao X, Li T. miRecords: an integrated resource for microRNA–target interactions. Nucleic acids research. 2009;37(suppl_1):D105-D10.
 
-[7] Gaidatzis D, van Nimwegen E, Hausser J, Zavolan M. Inference of miRNA targets using evolutionary conservation and pathway analysis. BMC bioinformatics. 2007;8(1):1-22.
+[7] Paraskevopoulou MD, Georgakilas G, Kostoulas N, Vlachos IS, Vergoulis T, Reczko M, et al. DIANA-microT web server v5. 0: service integration into miRNA functional analysis workflows. Nucleic acids research. 2013;41(W1):W169-W73.
 
-[8] List M, Dehghani Amirabad A, Kostka D, Schulz MH. Large-scale inference of competing endogenous RNA networks with sparse partial correlation. Bioinformatics. 2019;35(14):i596-i604.
+[8] Gaidatzis D, van Nimwegen E, Hausser J, Zavolan M. Inference of miRNA targets using evolutionary conservation and pathway analysis. BMC bioinformatics. 2007;8(1):1-22.
 
-[9] Hornakova A, List M, Vreeken J, Schulz MH. JAMI: fast computation of conditional mutual information for ceRNA network analysis. Bioinformatics. 2018;34(17):3050-1.
+[9] List M, Dehghani Amirabad A, Kostka D, Schulz MH. Large-scale inference of competing endogenous RNA networks with sparse partial correlation. Bioinformatics. 2019;35(14):i596-i604.
+
+[10] Hornakova A, List M, Vreeken J, Schulz MH. JAMI: fast computation of conditional mutual information for ceRNA network analysis. Bioinformatics. 2018;34(17):3050-1.
 
 # Session Information
 ```{r}

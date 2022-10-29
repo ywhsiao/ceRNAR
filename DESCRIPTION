@@ -22,14 +22,7 @@ biocViews: GeneExpression,
     Survival
 Encoding: UTF-8
 Depends: 
-  R(>= 4.2.0),
-  Biobase,
-  cvms,
-  dplyr,
-  ggplot2,
-  magrittr,
-  rlang,
-  foreach
+  R(>= 4.2.0)
 Imports: 
     cowplot,
     data.table,
@@ -47,7 +40,17 @@ Imports:
     parallel,
     utils,
     grDevices,
-    biomaRt
+    SPONGE,
+    fs,
+    foreach,
+    Biobase,
+    cvms,
+    dplyr,
+    ggplot2,
+    magrittr,
+    rlang,
+    biomaRt,
+    stats
 VignetteBuilder: knitr
 RoxygenNote: 7.2.1
 Suggests: 
