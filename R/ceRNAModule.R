@@ -5,6 +5,7 @@
 #' identified ceRNAs
 #'
 #' @import utils
+#' @import parallel
 #' @import grDevices
 #'
 #' @param path_prefix user's working directory
@@ -13,7 +14,7 @@
 #' @param pairs_cutoff at least the number of ceRNA pairs that a mirna must have
 #' @param column_sum the number of ceRNAs
 #'
-#' @returns a list of figure object
+#' @returns a list object
 #' @export
 #'
 #' @examples

@@ -13,7 +13,7 @@
 #' @param window_size the number of samples for each window and usually about
 #' one third of total samples
 #'
-#' @returns a list of figure object
+#' @returns a list object
 #' @export
 #'
 #' @examples

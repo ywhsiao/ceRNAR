@@ -19,7 +19,7 @@ ceRNAIntegrate(
 \item{disease_name}{the abbreviation of disease that users are interested in}
 }
 \value{
-a tabular output
+a dataframe object
 }
 \description{
 A function to integrate the possible ceRNA pairs that are found

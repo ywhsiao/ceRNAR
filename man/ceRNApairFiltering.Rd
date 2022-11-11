@@ -19,15 +19,15 @@ ceRNApairFilering(
 \item{project_name}{the project name that users can assign (default: demo)}
 
 \item{disease_name}{the abbreviation of disease that users are interested in
-(defaut: DLBC)}
+(default: DLBC)}
 
-\item{window_size}{the number of samples for each window (default:10)}
+\item{window_size}{the number of samples for each window (default: 10)}
 
 \item{cor_method}{selection of correlation methods, including pearson and
 spearman (default: pearson)}
 }
 \value{
-a file
+file
 }
 \description{
 A function to conduct one of three steps in algorithm,

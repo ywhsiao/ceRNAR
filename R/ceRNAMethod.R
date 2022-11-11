@@ -7,6 +7,7 @@
 #' @import foreach
 #' @import parallel
 #' @import utils
+#' @import future
 #' @importFrom stats pnorm
 #'
 #' @param path_prefix user's working directory
@@ -19,7 +20,7 @@
 #' @param cor_threshold_peak peak threshold of correlation value between 0 and 1
 #' (default: 0.85)
 #'
-#' @returns a tabular output
+#' @returns a dataframe object
 #' @export
 #'
 #' @examples
@@ -51,11 +52,12 @@ ceRNAMethod <- function(path_prefix = NULL,
   }
 
   # ceRNApairfiltering
-  ceRNApairFilering <- function(path_prefix,
+  ceRNApairFilering <- function(path_prefix = NULL,
                                 project_name = 'demo',
                                 disease_name = 'DLBC',
                                 window_size = 10,
                                 cor_method = 'pearson'){
+
     if (is.null(path_prefix)){
       path_prefix <- fs::path_home()
     }else{
@@ -78,24 +80,20 @@ ceRNAMethod <- function(path_prefix = NULL,
     mirna_total <- unlist(dict[,1])
     message(paste0('\u2605 total miRNA: ', length(mirna_total)))
 
-    # create a cluster
-    message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
-
 
     slidingWindow <- function(window_size, mirna_total, cor_method){
-      #doParallel::registerDoParallel(parallel::detectCores()-3)
       chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
       if ((nzchar(chk)) && (chk == "TRUE")) {
-        # use 2 cores in CRAN/Travis/AppVeyor
-        num_workers <- 2L
+        # use 1 cores in CRAN/Travis/AppVeyor
+        num_workers <- 1L
       } else {
         # use all cores in devtools::test()
-        num_workers <- parallel::detectCores()-3
+        num_workers <- future::availableCores()-3
       }
-
+      # create a cluster
+      message('\u2605 Number of computational cores: ', num_workers, '.')
       doParallel::registerDoParallel(num_workers)
-
       parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
         #mir = 50
         mir = mirna_total[mir]
@@ -165,7 +163,7 @@ ceRNAMethod <- function(path_prefix = NULL,
                     cor_method = cor_method)
 
   # SegmentClustering + PeakMerging
-  SegmentClusteringPlusPeakMerging <- function(path_prefix,
+  SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                                                project_name = 'demo',
                                                disease_name = 'DLBC',
                                                cor_threshold_peak = 0.85,
@@ -192,8 +190,6 @@ ceRNAMethod <- function(path_prefix = NULL,
     mirna_total <- unlist(dict[,1])
     d <- readRDS(paste0(path_prefix, project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
 
-    ## create a cluster
-    message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
     sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
       #index=1
       #print(paste0('microRNA:', index))
@@ -202,19 +198,20 @@ ceRNAMethod <- function(path_prefix = NULL,
       gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
       gene <- intersect(gene,rownames(mrna))
 
-      gene_pair <- combn(gene,2)
+      gene_pair <- utils::combn(gene,2)
       total_pairs <- choose(length(gene),2)
       #tmp <- NULL
       chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
       if ((nzchar(chk)) && (chk == "TRUE")) {
-        # use 2 cores in CRAN/Travis/AppVeyor
-        num_workers <- 2L
+        # use 1 cores in CRAN/Travis/AppVeyor
+        num_workers <- 1L
       } else {
         # use all cores in devtools::test()
-        num_workers <- parallel::detectCores()-3
+        num_workers <- future::availableCores()-3
       }
-
+      ## create a cluster
+      message('\u2605 Number of computational cores: ', num_workers, '.')
       doParallel::registerDoParallel(num_workers)
       #tmp <- tryCatch({
       tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
@@ -412,13 +409,6 @@ ceRNAMethod <- function(path_prefix = NULL,
       #tmp <- do.call(rbind,lst)
       tmp
     }
-    # seed=NULL
-    # txt=list()
-    # for (i in 1:length(mirna_total)){
-    #   print(i)
-    #   txt[[i]] <- sigCernaPeak(i,d, cor_threshold_peak, window_size)
-    # }
-    # txt_final <- do.call(rbind, txt)
 
     testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(path_prefix,project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),cor_threshold_peak,window_size)
     FinalResult <- purrr::compact(testfunction)
@@ -439,7 +429,6 @@ ceRNAMethod <- function(path_prefix = NULL,
 
     message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
     message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
-
     flat_df
   }
 
@@ -448,6 +437,7 @@ ceRNAMethod <- function(path_prefix = NULL,
                                                     disease_name = disease_name,
                                                     cor_threshold_peak = cor_threshold_peak,
                                                     window_size = window_size)
+
 
   as.data.frame(final_results)
 

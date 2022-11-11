@@ -89,14 +89,14 @@ knitr::kable(surv_data[1:5,1:2])
 
 Then, `ceRNACustomize()` is used to further preprocess and check the data
 
-```{r, eval=FALSE}
-ceRNACustomize(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', gene_exp = gene_exp,  mirna_exp = mirna_exp, surv_data = surv_data)
+```{r}
+ceRNACustomize(project_name = 'demo', disease_name = 'DLBC', gene_exp = gene_exp,  mirna_exp = mirna_exp, surv_data = surv_data)
 ```
 
 Alternatively, `ceRNATCGA()` can be used to retrieve TCGA data
 
 ```{r}
-ceRNATCGA(path_prefix = '~/', project_name = 'TCGA', disease_name = 'DLBC', timeout = 5000000)
+ceRNATCGA(project_name = 'TCGA', disease_name = 'DLBC', timeout = 5000000)
 ```
 
 ## Putative miRNA-gene interaction
@@ -108,20 +108,20 @@ Here, ceRNAR comes with 2 experimentally validated miRNA-target databases ([miRT
 - `less`: experimentally validated by 2 databases or predicted by more than 6 databaes
 
 ```{r}
-ceRNAputativePairs(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', filtering = 'less')
+ceRNAputativePairs(project_name = 'demo', disease_name = 'DLBC', filtering = 'less')
 ```
 
 ## ceRNA interaction
 
 ```{r message=FALSE, warning=FALSE, results='hide'}
-ceRNApairFilering(path_prefix = '~/', project_name = 'demo', disease_name = "DLBC", window_size = 10)
-cernar_result <- SegmentClusteringPlusPeakMerging(path_prefix = '~/', project_name = 'demo', disease_name = "DLBC", window_size = 10)
+ceRNApairFilering(project_name = 'demo', disease_name = "DLBC", window_size = 10)
+cernar_result <- SegmentClusteringPlusPeakMerging(project_name = 'demo', disease_name = "DLBC", window_size = 10)
 ```
 
 Alternatively, `ceRNAMethod()` which encapsulated above two functions can be used:
 
 ```{r message=FALSE, warning=FALSE, results='hide'}
-cernar_result <- ceRNAMethod(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', window_size = 10)
+cernar_result <- ceRNAMethod(project_name = 'demo', disease_name = 'DLBC', window_size = 10)
 ```
 
 The final output stores the most important ceRNA events identified by the package:
@@ -137,7 +137,7 @@ knitr::kable(cernar_result[1:5,])
 This function allows users to explore the underlying biological pathways that the most important ceRNAs in a sepcific dataset/cohort involved. The entire analysis is based on two databases: [Kyoto Encyclopedia of Genes and Genomes (KEGG)](https://www.genome.jp/kegg/) and [Gene Ontology (GO)](http://geneontology.org/). 
 
 ```{r message=FALSE, results='hide'}
-function_results <- ceRNAFunction(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)
+function_results <- ceRNAFunction(project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)
 ```
 
 
@@ -154,7 +154,7 @@ function_results[[2]]
 This function helps users to visualize the expression level of a specific miRNA when modulated by a specific ceRNA.
 
 ```{r message=FALSE, results='hide', fig.dim = c(6, 4), out.width='100%'}
-ceRNALocation(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101-3p', window_size = 10)
+ceRNALocation(project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101-3p', window_size = 10)
 ```
 
 - **Survival analysis**
@@ -162,7 +162,7 @@ ceRNALocation(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', 
 This function allows users to indicate whether the ceRNAs in the discovered interaction module are associated with the survival of patients. This depends on whether the survival information is provided in the beginning.
 
 ```{r message=FALSE, results='hide'}
-survplot_results <- ceRNASurvival(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', mirnas = 'hsa-miR-101-3p')
+survplot_results <- ceRNASurvival(project_name = 'demo', disease_name = 'DLBC', mirnas = 'hsa-miR-101-3p')
 ```
 
 ```{r message=FALSE, fig.dim = c(8, 4), out.width='100%'}
@@ -175,7 +175,7 @@ survplot_results[[1]]
 This function helps users to visualize the ceRNA modules that identified by the package from their interaction networks.
 
 ```{r message=FALSE, results='hide'}
-network_results <- ceRNAModule(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 5, column_sum = 1)
+network_results <- ceRNAModule(project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 5, column_sum = 1)
 ```
 
 ```{r message=FALSE, fig.dim = c(8, 6), out.width= '100%'}
@@ -187,7 +187,7 @@ network_results[[1]]
 This function helps users to further check whether the findings have been validated based on the miRSponge database.
 
 ```{r message=FALSE, results='hide'}
-external_val_result <- ceRNAValidate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
+external_val_result <- ceRNAValidate(project_name = 'demo', disease_name = 'DLBC')
 ```
 
 ```{r echo=FALSE}
@@ -200,7 +200,7 @@ This function allows users to further combine results obtained from ceRNAR with 
 
 ```{r message=FALSE, results='hide'}
 library(SPONGE)
-integrated_result <- ceRNAIntegrate(path_prefix = '~/', project_name = 'demo', disease_name = 'DLBC')
+integrated_result <- ceRNAIntegrate(project_name = 'demo', disease_name = 'DLBC')
 ```
 
 ```{r echo=FALSE, message=FALSE}

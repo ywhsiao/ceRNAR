@@ -12,7 +12,7 @@
 #' @param disease_name the abbreviation of disease that users are interested in
 #' @param mirnas a list of mirna name
 #'
-#' @returns a list of figure object
+#' @returns a list object
 #' @export
 #'
 #' @examples

@@ -6,6 +6,7 @@
 #' @import foreach
 #' @import parallel
 #' @import utils
+#' @import future
 #' @rawNamespace import(magrittr, except = set_names)
 #'
 #' @param path_prefix user's working directory
@@ -14,14 +15,13 @@
 #' (default: DLBC)
 #' @param cor_threshold_peak peak threshold of correlation value between 0 and 1
 #' (default: 0.85)
-#' @param window_size the number of samples for each window (default:10)
+#' @param window_size the number of samples for each window (default: 10)
 #'
-#' @returns a tabular output
+#' @returns a dataframe object
 #' @export
 #'
 #' @examples
 #' SegmentClusteringPlusPeakMerging(
-#' path_prefix =  '~/',
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' cor_threshold_peak = 0.85,
@@ -29,7 +29,7 @@
 #' )
 #'
 
-SegmentClusteringPlusPeakMerging <- function(path_prefix,
+SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                                              project_name = 'demo',
                                              disease_name = 'DLBC',
                                              cor_threshold_peak = 0.85,
@@ -56,8 +56,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
   mirna_total <- unlist(dict[,1])
   d <- readRDS(paste0(path_prefix, project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
 
-  ## create a cluster
-  message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
   sigCernaPeak <- function(index,d, cor_threshold_peak, window_size){
     #index=1
     #print(paste0('microRNA:', index))
@@ -66,19 +64,20 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
     gene <- as.character(data.frame(dict[dict[,1]==mir,][[2]])[,1])
     gene <- intersect(gene,rownames(mrna))
 
-    gene_pair <- combn(gene,2)
+    gene_pair <- utils::combn(gene,2)
     total_pairs <- choose(length(gene),2)
     #tmp <- NULL
     chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
     if ((nzchar(chk)) && (chk == "TRUE")) {
-      # use 2 cores in CRAN/Travis/AppVeyor
-      num_workers <- 2L
+      # use 1 cores in CRAN/Travis/AppVeyor
+      num_workers <- 1L
     } else {
       # use all cores in devtools::test()
-      num_workers <- parallel::detectCores()-3
+      num_workers <- future::availableCores()-3
     }
-
+    ## create a cluster
+    message('\u2605 Number of computational cores: ', num_workers, '.')
     doParallel::registerDoParallel(num_workers)
     #tmp <- tryCatch({
     tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
@@ -276,13 +275,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix,
     #tmp <- do.call(rbind,lst)
     tmp
   }
-  # seed=NULL
-  # txt=list()
-  # for (i in 1:length(mirna_total)){
-  #   print(i)
-  #   txt[[i]] <- sigCernaPeak(i,d, cor_threshold_peak, window_size)
-  # }
-  # txt_final <- do.call(rbind, txt)
 
   testfunction <- purrr::map(1:length(mirna_total), sigCernaPeak,readRDS(paste0(path_prefix,project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds')),cor_threshold_peak,window_size)
   FinalResult <- purrr::compact(testfunction)

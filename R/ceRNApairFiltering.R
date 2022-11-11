@@ -7,16 +7,17 @@
 #' @import foreach
 #' @import parallel
 #' @import utils
+#' @import future
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign (default: demo)
 #' @param disease_name the abbreviation of disease that users are interested in
-#' (defaut: DLBC)
-#' @param window_size the number of samples for each window (default:10)
+#' (default: DLBC)
+#' @param window_size the number of samples for each window (default: 10)
 #' @param cor_method selection of correlation methods, including pearson and
 #' spearman (default: pearson)
 #'
-#' @returns a file
+#' @returns file
 #' @export
 #'
 #' @examples
@@ -57,21 +58,19 @@ ceRNApairFilering <- function(path_prefix = NULL,
   mirna_total <- unlist(dict[,1])
   message(paste0('\u2605 total miRNA: ', length(mirna_total)))
 
-  # create a cluster
-  message('\u2605 Number of computational cores: ',parallel::detectCores()-3,'/',parallel::detectCores(), '.')
-
 
   slidingWindow <- function(window_size, mirna_total, cor_method){
     chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
     if ((nzchar(chk)) && (chk == "TRUE")) {
-      # use 2 cores in CRAN/Travis/AppVeyor
-      num_workers <- 2L
+      # use 1 cores in CRAN/Travis/AppVeyor
+      num_workers <- 1L
     } else {
       # use all cores in devtools::test()
-      num_workers <- parallel::detectCores()-3
+      num_workers <- future::availableCores()-3
     }
-
+    # create a cluster
+    message('\u2605 Number of computational cores: ', num_workers, '.')
     doParallel::registerDoParallel(num_workers)
     parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
       #mir = 50
@@ -134,5 +133,3 @@ ceRNApairFilering <- function(path_prefix = NULL,
   message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
 
 }
-
-

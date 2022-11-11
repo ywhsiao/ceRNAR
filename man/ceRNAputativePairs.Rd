@@ -22,7 +22,7 @@ ceRNAputativePairs(
 moderate and less. (Default: less)}
 }
 \value{
-a file
+file
 }
 \description{
 A function to obtain putative mRNA-miRNA pairs from several databases

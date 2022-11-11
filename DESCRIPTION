@@ -50,7 +50,9 @@ Imports:
     magrittr,
     rlang,
     biomaRt,
-    stats
+    stats,
+    future,
+    gRbase
 VignetteBuilder: knitr
 RoxygenNote: 7.2.1
 Suggests: 

@@ -25,7 +25,7 @@ ceRNALocation(
 one third of total samples}
 }
 \value{
-a list of figure object
+a list object
 }
 \description{
 A function to visualize the peak location at certain miRNA level

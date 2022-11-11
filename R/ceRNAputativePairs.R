@@ -9,7 +9,7 @@
 #' @param filtering three different filtering criteria, including strict,
 #' moderate and less. (Default: less)
 #'
-#' @returns a file
+#' @returns file
 #' @export
 #'
 #' @examples
@@ -41,10 +41,10 @@ ceRNAputativePairs <- function(path_prefix = NULL,
   ## match to interaction database
   message('\u25CF Step 2: Obtaining putative mRNA-miRNA pairs')
   # load processed mRNA and miRNA data
-  annot_cdRNA_unique <- as.data.frame(data.table::fread(paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mrna.csv')))
+  annot_cdRNA_unique <- as.data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mrna.csv')))
   row.names(annot_cdRNA_unique) <- annot_cdRNA_unique[,1]
   annot_cdRNA_unique <- annot_cdRNA_unique[,-1]
-  miRNA_with_precurer <- as.data.frame(data.table::fread(paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mirna.csv')))
+  miRNA_with_precurer <- as.data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mirna.csv')))
   row.names(miRNA_with_precurer) <- miRNA_with_precurer[,1]
   miRNA_with_precurer <- miRNA_with_precurer[,-1]
 
@@ -68,8 +68,8 @@ ceRNAputativePairs <- function(path_prefix = NULL,
 
   message('\u2605 Total putative mRNA-miRNA pairs are ', sum(rownames(annot_cdRNA_unique) %in% target.t.val$gene_names), '!')
 
-  if (dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/02_potentialPairs')) == FALSE){
-    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/02_potentialPairs'))
+  if (dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/02_potentialPairs')) == FALSE){
+    dir.create(paste0(path_prefix, project_name,'-',disease_name,'/02_potentialPairs'))
   }
 
   # input for ceRNA identification step
@@ -81,7 +81,7 @@ ceRNAputativePairs <- function(path_prefix = NULL,
       dictionary <- rbind(dictionary,c(mirna,tmp_list))
     }
   }
-  saveRDS(dictionary, paste0(path_prefix, '/', project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
+  saveRDS(dictionary, paste0(path_prefix, project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
   message('(\u2714) Putative results have been created and stored!')
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')

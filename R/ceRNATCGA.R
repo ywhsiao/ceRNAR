@@ -13,7 +13,7 @@
 #' @param timeout the allowance time for downloading TCGA data
 #' (default = 1000)
 #'
-#' @returns a file
+#' @returns file
 #' @export
 #'
 #' @examples
@@ -53,7 +53,7 @@ ceRNATCGA <- function(path_prefix = NULL,
 
   # download cancer files (phenotype, survival, miRNA and mRNA) from gdc resource
   downloadFromGDC <- function(project, cancer, timeout=5000000){
-    message('\u25CF Step1 for TCGA data: Downloading the data ...')
+    message('\u25CF TCGA data: Downloading the data ...')
     options(timeout=timeout) # to test the largest data
     HelpersMG::wget(paste0('https://gdc-hub.s3.us-east-1.amazonaws.com/download/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'), destfile = paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'))
     HelpersMG::wget(paste0('https://gdc-hub.s3.us-east-1.amazonaws.com/download/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'), destfile = paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'))

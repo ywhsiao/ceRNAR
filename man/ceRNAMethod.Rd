@@ -30,7 +30,7 @@ spearman (default: pearson)}
 (default: 0.85)}
 }
 \value{
-a tabular output
+a dataframe object
 }
 \description{
 A function to conduct three steps in algorithm, including pairs

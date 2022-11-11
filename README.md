@@ -55,24 +55,22 @@ ceRNAputativePairs(project_name = 'demo', disease_name = 'DLBC', filtering = 'le
 -   through `ceRNAMethod()`
 
 ``` r
-ceRNAMethod(project_name = 'demo', disease_name = "DLBC", window_size = 45/5)
+ceRNAMethod(project_name = 'demo', disease_name = "DLBC", window_size = 10, num_workers = 1)
 ```
 
 -   through `ceRNApairFilering()` and
     `SegmentClusteringPlusPeakMerging()`
 
 ``` r
-ceRNApairFilering(project_name = 'demo', disease_name = "DLBC", window_size = 45/5)
-SegmentClusteringPlusPeakMerging(project_name = 'demo', disease_name = "DLBC", 
-                                 window_size = 45/5)
+ceRNApairFilering(project_name = 'demo', disease_name = "DLBC", window_size = 10, num_workers = 1)
+SegmentClusteringPlusPeakMerging(project_name = 'demo', disease_name = "DLBC", window_size = 10, num_workers = 1)
 ```
 
 4.  conduct downstream analysis
 
 ``` r
 ceRNAFunction(project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)
-ceRNALocation(project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101-3p', 
-              window_size = 45/5)
+ceRNALocation(project_name = 'demo', disease_name = 'DLBC', mirna = 'hsa-miR-101-3p', window_size = 10)
 ceRNAModule(project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 5, 
             column_sum = 1)
 ceRNASurvival(project_name = 'demo', disease_name = 'DLBC', mirnas = 'hsa-miR-101-3p')

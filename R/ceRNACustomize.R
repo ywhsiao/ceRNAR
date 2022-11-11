@@ -13,7 +13,7 @@
 #' @param mirna_exp location of miRNA expression data (default: mirna_exp)
 #' @param surv_data location of survival data (default: surv_data)
 #'
-#' @returns a file
+#' @returns file
 #' @export
 #'
 #' @examples
@@ -44,6 +44,14 @@ ceRNACustomize <- function(path_prefix = NULL,
 
   if (!stringr::str_detect(path_prefix, '/$')){
     path_prefix <- paste0(path_prefix, '/')
+  }
+
+  if (dir.exists(paste0(path_prefix, project_name,'-',disease_name)) == FALSE){
+    dir.create(paste0(path_prefix, project_name,'-',disease_name))
+  }
+
+  if (dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata')) == FALSE){
+    dir.create(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata'))
   }
 
   time1 <- Sys.time()
@@ -115,26 +123,15 @@ ceRNACustomize <- function(path_prefix = NULL,
   }else{
     message("(\u2714) Sample ids are matched!")
   }
-  dirname <- paste0(path_prefix, '/', project_name,'-',disease_name)
-  if (dir.exists(dirname) == FALSE){
-    dir.create(dirname)
-  }
-  if (dir.exists(paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata')) == FALSE){
-    dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata'))
-  }
-  data.table::fwrite(as.data.frame(exp),paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mrna.csv'), row.names = TRUE)
-  data.table::fwrite(as.data.frame(mirna),paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mirna.csv'), row.names = TRUE)
-  data.table::fwrite(surv, paste0(path_prefix, '/', project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_survival.csv'), row.names = TRUE)
 
-  CatchupPause <- function(Secs){
-    Sys.sleep(Secs) #pause to let connection work
-    closeAllConnections()
-  }
-  CatchupPause(50)
+  data.table::fwrite(as.data.frame(exp),paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mrna.csv'), row.names = TRUE)
+  data.table::fwrite(as.data.frame(mirna),paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_mirna.csv'), row.names = TRUE)
+  data.table::fwrite(surv, paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-', disease_name,'_survival.csv'), row.names = TRUE)
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' minutes.'))
   message('\u2605\u2605\u2605 All the files are checked for further next step! \u2605\u2605\u2605')
 }
+
 

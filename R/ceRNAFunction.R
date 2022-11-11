@@ -16,12 +16,11 @@
 #' @param pairs_cutoff at least the number of ceRNA pairs that a mirna must have
 #'  (default: 1)
 #'
-#' @returns a list of figure objects
+#' @returns a list object
 #' @export
 #'
 #' @examples
 #' ceRNAFunction(
-#' path_prefix = '~/',
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' pairs_cutoff = 1

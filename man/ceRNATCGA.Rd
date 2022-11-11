@@ -23,7 +23,7 @@ ceRNATCGA(
 (default = 1000)}
 }
 \value{
-a file
+file
 }
 \description{
 A function to retrieve TCGA data from GDC Xena Hub

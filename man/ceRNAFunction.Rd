@@ -23,7 +23,7 @@ ceRNAFunction(
 (default: 1)}
 }
 \value{
-a list of figure objects
+a list object
 }
 \description{
 A function to conduct Functional enrichment analysis for
@@ -33,7 +33,6 @@ Genes and Genomes (KEGG; https://www.genome.jp/kegg/).
 }
 \examples{
 ceRNAFunction(
-path_prefix = '~/',
 project_name = 'demo',
 disease_name = 'DLBC',
 pairs_cutoff = 1

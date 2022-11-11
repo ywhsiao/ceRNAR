@@ -21,7 +21,7 @@ ceRNASurvival(
 \item{mirnas}{a list of mirna name}
 }
 \value{
-a list of figure object
+a list object
 }
 \description{
 A function to analyze the survival outcome when people carry the

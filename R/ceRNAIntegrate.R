@@ -10,6 +10,7 @@
 #' @rawNamespace import(cvms, except = font)
 #' @rawNamespace import(ggplot2, except = margin)
 #' @rawNamespace import(dplyr, except = combine)
+#' @importFrom gRbase combn_prim
 #' @import rlang
 #' @import SPONGE
 #' @import utils
@@ -18,7 +19,7 @@
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
 #'
-#' @returns a tabular output
+#' @returns a dataframe object
 #' @export
 #'
 #' @examples
@@ -72,8 +73,8 @@ ceRNAIntegrate <- function(path_prefix = NULL,
   chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
   if (nzchar(chk) && chk == "TRUE") {
-    # use 2 cores in CRAN/Travis/AppVeyor
-    num_workers <- 2L
+    # use 1 cores in CRAN/Travis/AppVeyor
+    num_workers <- 1L
   } else {
     # use all cores in devtools::test()
     num_workers <- parallel::detectCores()-3
@@ -87,13 +88,19 @@ ceRNAIntegrate <- function(path_prefix = NULL,
     mir_expr = mir_expr,
     mir_predicted_targets = as.matrix(d))
 
-  ceRNA_interactions <- SPONGE::sponge(gene_expr = gene_expr,
+  ## copy from SPONGE due to the change of function name in gRbase package
+  genes_pairwise_combinations <- function(number.of.genes){
+    #t(combnPrim(number.of.genes, 2))
+    t(gRbase::combn_prim(number.of.genes, 2))
+  }
+
+  ceRNA_interactions <- sponge(gene_expr = gene_expr,
                                mir_expr = mir_expr,
                                mir_interactions = genes_miRNA_candidates)
-  precomputed_cov_matrices <- SPONGE::precomputed_cov_matrices
-  mscor_null_model <- SPONGE::sponge_build_null_model(number_of_datasets = 100,
+  precomputed_cov_matrices <- precomputed_cov_matrices
+  mscor_null_model <- sponge_build_null_model(number_of_datasets = 100,
                                               number_of_samples = dim(gene_expr)[1])
-  sponge_result <- SPONGE::sponge_compute_p_values(sponge_result = ceRNA_interactions,
+  sponge_result <- sponge_compute_p_values(sponge_result = ceRNA_interactions,
                                                    null_model = mscor_null_model)
   sponge_result_sig <- sponge_result[sponge_result$p.adj<=0.05,]
   sponge_result_sig$genepairs_1 <- paste0(sponge_result_sig$geneA,'|',sponge_result_sig$geneB)
