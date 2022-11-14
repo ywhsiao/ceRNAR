@@ -15,6 +15,7 @@
 #'
 #' @examples
 #' ceRNAValidate(
+#' path_prefix = NULL,
 #' project_name = 'demo',
 #' disease_name = 'DLBC'
 #' )

@@ -5,8 +5,8 @@
 #'
 #' @import foreach
 #' @import utils
+#' @import tidyverse
 #' @importFrom stats pnorm
-#' @import future
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign (default: demo)
@@ -22,8 +22,10 @@
 #' spearman (default: pearson)
 #' @param cor_threshold_peak peak threshold of correlation value between 0 and 1
 #' (default: 0.85)
+#' @param num_workers the number of CPU
 #'
 #' @returns a dataframe object
+#' @export
 #' @export
 #'
 #' @examples
@@ -31,6 +33,7 @@
 #' data(mirna_exp)
 #' data(surv_data)
 #' All_steps_interface(
+#' path_prefix = NULL,
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' gene_exp = gene_exp,
@@ -39,7 +42,8 @@
 #' filtering = 'less',
 #' window_size = 10,
 #' cor_method = 'pearson',
-#' cor_threshold_peak = 0.85)
+#' cor_threshold_peak = 0.85,
+#' num_workers = 1)
 
 All_steps_interface <- function(path_prefix = NULL,
                                 project_name = 'demo',
@@ -50,7 +54,8 @@ All_steps_interface <- function(path_prefix = NULL,
                                 filtering = 'less',
                                 window_size = 10,
                                 cor_method = 'pearson',
-                                cor_threshold_peak = 0.85){
+                                cor_threshold_peak = 0.85,
+                                num_workers = 1){
   if (is.null(path_prefix)){
     path_prefix <- fs::path_home()
   }else{
@@ -242,7 +247,8 @@ All_steps_interface <- function(path_prefix = NULL,
                           disease_name = 'DLBC',
                           window_size = 10,
                           cor_method = 'pearson',
-                          cor_threshold_peak = 0.85){
+                          cor_threshold_peak = 0.85,
+                          num_workers = 1){
 
     if (is.null(path_prefix)){
       path_prefix <- fs::path_home()
@@ -259,7 +265,8 @@ All_steps_interface <- function(path_prefix = NULL,
                                   project_name = 'demo',
                                   disease_name = 'DLBC',
                                   window_size = 10,
-                                  cor_method = 'pearson'){
+                                  cor_method = 'pearson',
+                                  num_workers = 1){
 
       if (is.null(path_prefix)){
         path_prefix <- fs::path_home()
@@ -287,16 +294,19 @@ All_steps_interface <- function(path_prefix = NULL,
       slidingWindow <- function(window_size, mirna_total, cor_method){
         chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
-        if ((nzchar(chk)) && (chk == "TRUE")) {
-          # use 1 cores in CRAN/Travis/AppVeyor
-          num_workers <- 1L
-        } else {
-          # use all cores in devtools::test()
-          num_workers <- future::availableCores()-3
-        }
-        # create a cluster
+        # if ((nzchar(chk)) && (chk == "TRUE")) {
+        #   # use 1 cores in CRAN/Travis/AppVeyor
+        #   num_workers <- 1L
+        # } else {
+        #   # use all cores in devtools::test()
+        #   num_workers <- future::availableCores()-3
+        # }
+        # # create a cluster
         message('\u2605 Number of computational cores: ', num_workers, '.')
-        doParallel::registerDoParallel(num_workers)
+        if (num_workers != 1){
+          doParallel::registerDoParallel(num_workers)
+        }
+
         parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
           #mir = 50
           mir = mirna_total[mir]
@@ -363,14 +373,16 @@ All_steps_interface <- function(path_prefix = NULL,
                       project_name = project_name,
                       disease_name = disease_name,
                       window_size = window_size,
-                      cor_method = cor_method)
+                      cor_method = cor_method,
+                      num_workers = num_workers)
 
     # SegmentClustering + PeakMerging
     SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                                                  project_name = 'demo',
                                                  disease_name = 'DLBC',
                                                  cor_threshold_peak = 0.85,
-                                                 window_size = 10){
+                                                 window_size = 10,
+                                                 num_workers = 1){
 
       if (is.null(path_prefix)){
         path_prefix <- fs::path_home()
@@ -404,18 +416,21 @@ All_steps_interface <- function(path_prefix = NULL,
         gene_pair <- utils::combn(gene,2)
         total_pairs <- choose(length(gene),2)
         #tmp <- NULL
-        chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
-
-        if ((nzchar(chk)) && (chk == "TRUE")) {
-          # use 1 cores in CRAN/Travis/AppVeyor
-          num_workers <- 1L
-        } else {
-          # use all cores in devtools::test()
-          num_workers <- future::availableCores()-3
-        }
+        # chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+        #
+        # if ((nzchar(chk)) && (chk == "TRUE")) {
+        #   # use 1 cores in CRAN/Travis/AppVeyor
+        #   num_workers <- 1L
+        # } else {
+        #   # use all cores in devtools::test()
+        #   num_workers <- future::availableCores()-3
+        # }
         ## create a cluster
         message('\u2605 Number of computational cores: ', num_workers, '.')
-        doParallel::registerDoParallel(num_workers)
+        if (num_workers != 1){
+          doParallel::registerDoParallel(num_workers)
+        }
+
         #tmp <- tryCatch({
         tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
           #lst <- list()
@@ -639,12 +654,14 @@ All_steps_interface <- function(path_prefix = NULL,
                                                       project_name = project_name,
                                                       disease_name = disease_name,
                                                       cor_threshold_peak = cor_threshold_peak,
-                                                      window_size = window_size)
+                                                      window_size = window_size,
+                                                      num_workers = num_workers)
 
 
     as.data.frame(final_results)
 
   }
+
   final_results <- ceRNAMethod(path_prefix = path_prefix,
                                project_name = 'demo',
                                disease_name = 'DLBC',

@@ -22,6 +22,7 @@ A function to validate the potential ceRNA pairs based on the miRSponge database
 }
 \examples{
 ceRNAValidate(
+path_prefix = NULL,
 project_name = 'demo',
 disease_name = 'DLBC'
 )

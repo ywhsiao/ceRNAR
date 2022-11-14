@@ -9,7 +9,8 @@ SegmentClusteringPlusPeakMerging(
   project_name = "demo",
   disease_name = "DLBC",
   cor_threshold_peak = 0.85,
-  window_size = 10
+  window_size = 10,
+  num_workers = 1
 )
 }
 \arguments{
@@ -24,6 +25,8 @@ SegmentClusteringPlusPeakMerging(
 (default: 0.85)}
 
 \item{window_size}{the number of samples for each window (default: 10)}
+
+\item{num_workers}{the number of CPU}
 }
 \value{
 a dataframe object
@@ -36,7 +39,8 @@ SegmentClusteringPlusPeakMerging(
 project_name = 'demo',
 disease_name = 'DLBC',
 cor_threshold_peak = 0.85,
-window_size = 10
+window_size = 10,
+num_workers = 1
 )
 
 }

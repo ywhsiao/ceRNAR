@@ -32,6 +32,7 @@ identified ceRNAs
 }
 \examples{
 ceRNAModule(
+path_prefix = NULL,
 project_name = 'demo',
 disease_name = 'DLBC',
 pairs_cutoff = 5,

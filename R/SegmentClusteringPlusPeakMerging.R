@@ -6,7 +6,7 @@
 #' @import foreach
 #' @import parallel
 #' @import utils
-#' @import future
+#' @import tidyverse
 #' @rawNamespace import(magrittr, except = set_names)
 #'
 #' @param path_prefix user's working directory
@@ -16,6 +16,7 @@
 #' @param cor_threshold_peak peak threshold of correlation value between 0 and 1
 #' (default: 0.85)
 #' @param window_size the number of samples for each window (default: 10)
+#' @param num_workers the number of CPU
 #'
 #' @returns a dataframe object
 #' @export
@@ -25,7 +26,8 @@
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' cor_threshold_peak = 0.85,
-#' window_size = 10
+#' window_size = 10,
+#' num_workers = 1
 #' )
 #'
 
@@ -33,7 +35,8 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                                              project_name = 'demo',
                                              disease_name = 'DLBC',
                                              cor_threshold_peak = 0.85,
-                                             window_size = 10){
+                                             window_size = 10,
+                                             num_workers = 1){
 
   if (is.null(path_prefix)){
     path_prefix <- fs::path_home()
@@ -67,18 +70,21 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     gene_pair <- utils::combn(gene,2)
     total_pairs <- choose(length(gene),2)
     #tmp <- NULL
-    chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
-
-    if ((nzchar(chk)) && (chk == "TRUE")) {
-      # use 1 cores in CRAN/Travis/AppVeyor
-      num_workers <- 1L
-    } else {
-      # use all cores in devtools::test()
-      num_workers <- future::availableCores()-3
-    }
+    # chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+    #
+    # if ((nzchar(chk)) && (chk == "TRUE")) {
+    #   # use 1 cores in CRAN/Travis/AppVeyor
+    #   num_workers <- 1L
+    # } else {
+    #   # use all cores in devtools::test()
+    #   num_workers <- future::availableCores()-3
+    # }
     ## create a cluster
     message('\u2605 Number of computational cores: ', num_workers, '.')
-    doParallel::registerDoParallel(num_workers)
+    if (num_workers != 1){
+      doParallel::registerDoParallel(num_workers)
+    }
+
     #tmp <- tryCatch({
     tmp <- foreach(p=1:total_pairs, .combine = "rbind")  %dopar%  {
       #lst <- list()
@@ -297,4 +303,3 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
   flat_df
 }
-

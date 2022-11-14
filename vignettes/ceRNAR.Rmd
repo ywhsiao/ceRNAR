@@ -1,6 +1,6 @@
 ---
 title: "ceRNAR: An R Package for Identification and Analysis of ceRNAs-miRNA Triplets"
-author: "Yi-Wen Hsiao†, Lin Wang† and Tzu-Pin Lu"
+author: "Yi-Wen Hsiao, Lin Wang and Tzu-Pin Lu"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -101,11 +101,11 @@ ceRNATCGA(project_name = 'TCGA', disease_name = 'DLBC', timeout = 5000000)
 
 ## Putative miRNA-gene interaction
 
-Here, ceRNAR comes with 2 experimentally validated miRNA-target databases ([miRTarBase](https://mirtarbase.cuhk.edu.cn/~miRTarBase/miRTarBase_2022/php/index.php) and miRecords[6]) and 7 computationally predicted miRNA-target databases DIANA-micro T-CDS [7], EIMMO [8], [miRDB](https://mirdb.org/), [miRanda](https://bioweb.pasteur.fr/packages/pack@miRanda@3.3a), [PITA](https://genie.weizmann.ac.il/pubs/mir07/mir07_prediction.html), [RNA22](https://cm.jefferson.edu/rna22/) and [TargetScan](https://www.targetscan.org/vert_80/)) for only considering genes with shared miRNAs. Three options for filtering putative miRNA-gene pairs:
+Here, ceRNAR comes with 2 experimentally validated miRNA-target databases ([miRTarBase](https://mirtarbase.cuhk.edu.cn/~miRTarBase/miRTarBase_2022/php/index.php) and miRecords[6]) and 7 computationally predicted miRNA-target databases DIANA-micro T-CDS [7], EIMMO [8], [miRDB](https://mirdb.org/), [miRanda](https://bioweb.pasteur.fr/packages/pack@miRanda@3.3a), [PITA](https://genie.weizmann.ac.il/pubs/mir07/mir07_prediction.html), [RNA22](https://cm.jefferson.edu/rna22/) and TargetScan [9] for only considering genes with shared miRNAs. Three options for filtering putative miRNA-gene pairs:
 
-- `strict`: experimentally validated by 2 databases and predicted by 7 databaes 
-- `moderate`: experimentally validated by 2 databases or predicted by 7 databaes
-- `less`: experimentally validated by 2 databases or predicted by more than 6 databaes
+- `strict`: experimentally validated by 2 databases and predicted by 7 databases 
+- `moderate`: experimentally validated by 2 databases or predicted by 7 databases
+- `less`: experimentally validated by 2 databases or predicted by more than 6 databases
 
 ```{r}
 ceRNAputativePairs(project_name = 'demo', disease_name = 'DLBC', filtering = 'less')
@@ -137,16 +137,16 @@ knitr::kable(cernar_result[1:5,])
 This function allows users to explore the underlying biological pathways that the most important ceRNAs in a sepcific dataset/cohort involved. The entire analysis is based on two databases: [Kyoto Encyclopedia of Genes and Genomes (KEGG)](https://www.genome.jp/kegg/) and [Gene Ontology (GO)](http://geneontology.org/). 
 
 ```{r message=FALSE, results='hide'}
-function_results <- ceRNAFunction(project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)
+ceFunction_results <- ceRNAFunction(project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)
 ```
 
 
 ```{r message=FALSE, fig.dim = c(20, 10), out.width="100%"}
-function_results[[1]]
+ceFunction_results[[1]]
 ```
 
 ```{r message=FALSE, fig.dim = c(20, 10), out.width="100%"}
-function_results[[2]]
+cefFunction_results[[2]]
 ```
 
 - **Location plot**
@@ -196,7 +196,7 @@ knitr::kable(external_val_result[1:5,1:8], row.names = FALSE)
 
 - **Data integration**
 
-This function allows users to further combine results obtained from ceRNAR with other state-of-the-art tools in ceRNA biological field, including SPONGE [9] and JAMI [10].
+This function allows users to further combine results obtained from ceRNAR with other state-of-the-art tools in ceRNA biological field, including SPONGE [10] and GDCRNATools [11]. (Note: Unfortunately, we discarded JAMI R package for this part in final version because this package is not presented on either CRAN or Bioconductor. But we kept our source code on github.)
 
 ```{r message=FALSE, results='hide'}
 library(SPONGE)
@@ -233,9 +233,11 @@ To cite your use of ceRNAR in your publication, please reference:
 
 [8] Gaidatzis D, van Nimwegen E, Hausser J, Zavolan M. Inference of miRNA targets using evolutionary conservation and pathway analysis. BMC bioinformatics. 2007;8(1):1-22.
 
-[9] List M, Dehghani Amirabad A, Kostka D, Schulz MH. Large-scale inference of competing endogenous RNA networks with sparse partial correlation. Bioinformatics. 2019;35(14):i596-i604.
+[9] Agarwal V, Bell GW, Nam J-W, Bartel DP. Predicting effective microRNA target sites in mammalian mRNAs. elife. 2015;4:e05005.
 
-[10] Hornakova A, List M, Vreeken J, Schulz MH. JAMI: fast computation of conditional mutual information for ceRNA network analysis. Bioinformatics. 2018;34(17):3050-1.
+[10] List M, Dehghani Amirabad A, Kostka D, Schulz MH. Large-scale inference of competing endogenous RNA networks with sparse partial correlation. Bioinformatics. 2019;35(14):i596-i604.
+
+[11] Li R, Qu H, Wang S, Wei J, Zhang L, Ma R, et al. GDCRNATools: an R/Bioconductor package for integrative analysis of lncRNA, miRNA and mRNA data in GDC. Bioinformatics. 2018;34(14):2515-7.
 
 # Session Information
 ```{r}

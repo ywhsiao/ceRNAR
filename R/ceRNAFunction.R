@@ -8,6 +8,7 @@
 #'
 #' @import utils
 #' @import grDevices
+#' @import org.Hs.eg.db
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign (default: demo)
@@ -21,6 +22,7 @@
 #'
 #' @examples
 #' ceRNAFunction(
+#' path_prefix = NULL,
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' pairs_cutoff = 1
@@ -97,7 +99,7 @@ ceRNAFunction <- function(path_prefix = NULL,
                                     organism = 'hsa',
                                     pvalueCutoff = 0.01)
 
-  kk_df <- kk@result
+  kk_df <- as.data.frame(kk@result)
   utils::write.csv(kk_df,paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name,'-',disease_name,'_kegg_ora.csv'), row.names = FALSE)
   kk_babble <- enrichplot::dotplot(kk, showCategory=10,orderBy = "x")+ ggplot2::ggtitle('Dotplot for ORA based on KEGG')
   kk_bar <- graphics::barplot(kk,showCategory = 10)+ ggplot2::ggtitle('Barplot for ORA based on KEGG')
@@ -125,15 +127,28 @@ ceRNAFunction <- function(path_prefix = NULL,
   names(go) <- go_level
   go_babble <- purrr::map2(go_level, go, plotGOora_babble)
 
-  go_cc <- go[[1]]@result
-  go_cc$GOLevel <- 'CC'
-  go_mf <- go[[2]]@result
-  go_mf$GOLevel <- 'MF'
-  go_bp <- go[[3]]@result
-  go_bp$GOLevel <- 'BP'
-  go_all <- rbind(go_cc, go_mf, go_bp)
+  if (dim(go[[1]]@result)[1] != 0){
+    GO_cc <- as.data.frame(go[[1]]@result)
+    GO_cc$GOLevel <- 'CC'
+  }
+  if (dim(go[[2]]@result)[1] != 0){
+    GO_mf <- as.data.frame(go[[2]]@result)
+    GO_mf$GOLevel <- 'MF'
+  }
+  if (dim(go[[3]]@result)[1] != 0){
+    GO_bp <- as.data.frame(go[[3]]@result)
+    GO_bp$GOLevel <- 'BP'
+  }
+  GloEnv <- ls(pattern = '^GO_')
+  go_lst <- list()
+  go_lst_tobar <- list()
+  for (i in 1:length(GloEnv)){
+      go_lst[[i]] <- get(GloEnv[i])
+      go_lst_tobar[[i]] <- utils::head(get(GloEnv[i]), n=10)
+  }
+  go_all <- as.data.frame(Reduce(rbind, go_lst))
   utils::write.csv(go_all,paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name, '-',disease_name, '_go_ora.csv'), row.names = FALSE)
-  go_tobarplot <- rbind(utils::head(go_cc, n=10), utils::head(go_mf, n=10), utils::head(go_bp, n=10))
+  go_tobarplot <- as.data.frame(Reduce(rbind, go_lst_tobar))
   go_tobarplot$p.adjust.convert <- -log10(go_tobarplot$p.adjust)
   go_bar <- ggpubr::ggbarplot(go_tobarplot, x = "Description", y = "p.adjust.convert",
                               fill = "GOLevel",

@@ -38,6 +38,7 @@ data(gene_exp)
 data(mirna_exp)
 data(surv_data)
 ceRNACustomize(
+path_prefix = NULL,
 project_name = 'demo',
 disease_name = 'DLBC',
 gene_exp = gene_exp,

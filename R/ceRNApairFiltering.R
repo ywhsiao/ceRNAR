@@ -7,7 +7,6 @@
 #' @import foreach
 #' @import parallel
 #' @import utils
-#' @import future
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign (default: demo)
@@ -16,16 +15,19 @@
 #' @param window_size the number of samples for each window (default: 10)
 #' @param cor_method selection of correlation methods, including pearson and
 #' spearman (default: pearson)
+#' @param num_workers the number of CPU
 #'
 #' @returns file
 #' @export
 #'
 #' @examples
 #' ceRNApairFilering(
+#' path_prefix = NULL,
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' window_size = 10,
-#' cor_method = 'pearson'
+#' cor_method = 'pearson',
+#' num_workers = 1
 #' )
 #'
 #'
@@ -34,7 +36,8 @@ ceRNApairFilering <- function(path_prefix = NULL,
                               project_name = 'demo',
                               disease_name = 'DLBC',
                               window_size = 10,
-                              cor_method = 'pearson'){
+                              cor_method = 'pearson',
+                              num_workers = 1){
 
   if (is.null(path_prefix)){
     path_prefix <- fs::path_home()
@@ -62,16 +65,19 @@ ceRNApairFilering <- function(path_prefix = NULL,
   slidingWindow <- function(window_size, mirna_total, cor_method){
     chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
-    if ((nzchar(chk)) && (chk == "TRUE")) {
-      # use 1 cores in CRAN/Travis/AppVeyor
-      num_workers <- 1L
-    } else {
-      # use all cores in devtools::test()
-      num_workers <- future::availableCores()-3
-    }
-    # create a cluster
+    # if ((nzchar(chk)) && (chk == "TRUE")) {
+    #   # use 1 cores in CRAN/Travis/AppVeyor
+    #   num_workers <- 1L
+    # } else {
+    #   # use all cores in devtools::test()
+    #   num_workers <- future::availableCores()-3
+    # }
+    # # create a cluster
     message('\u2605 Number of computational cores: ', num_workers, '.')
-    doParallel::registerDoParallel(num_workers)
+    if (num_workers != 1){
+      doParallel::registerDoParallel(num_workers)
+    }
+
     parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
       #mir = 50
       mir = mirna_total[mir]
@@ -133,3 +139,5 @@ ceRNApairFilering <- function(path_prefix = NULL,
   message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
 
 }
+
+

@@ -8,7 +8,8 @@
 ceRNAIntegrate(
   path_prefix = NULL,
   project_name = "demo",
-  disease_name = "DLBC"
+  disease_name = "DLBC",
+  num_workers = 1
 )
 }
 \arguments{
@@ -17,6 +18,8 @@ ceRNAIntegrate(
 \item{project_name}{the project name that users can assign}
 
 \item{disease_name}{the abbreviation of disease that users are interested in}
+
+\item{num_workers}{the number of CPU}
 }
 \value{
 a dataframe object
@@ -29,8 +32,10 @@ by ceRNAR algorithm with those from other tools, such as SPONGE (List et al.,
 \examples{
 library(SPONGE)
 ceRNAIntegrate(
+path_prefix = NULL,
 project_name = 'demo',
-disease_name = 'DLBC'
+disease_name = 'DLBC',
+num_workers = 1
 )
 
 }

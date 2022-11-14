@@ -14,7 +14,8 @@ All_steps_interface(
   filtering = "less",
   window_size = 10,
   cor_method = "pearson",
-  cor_threshold_peak = 0.85
+  cor_threshold_peak = 0.85,
+  num_workers = 1
 )
 }
 \arguments{
@@ -41,6 +42,8 @@ spearman (default: pearson)}
 
 \item{cor_threshold_peak}{peak threshold of correlation value between 0 and 1
 (default: 0.85)}
+
+\item{num_workers}{the number of CPU}
 }
 \value{
 a dataframe object
@@ -53,6 +56,7 @@ data(gene_exp)
 data(mirna_exp)
 data(surv_data)
 All_steps_interface(
+path_prefix = NULL,
 project_name = 'demo',
 disease_name = 'DLBC',
 gene_exp = gene_exp,
@@ -61,5 +65,6 @@ surv_data = surv_data,
 filtering = 'less',
 window_size = 10,
 cor_method = 'pearson',
-cor_threshold_peak = 0.85)
+cor_threshold_peak = 0.85,
+num_workers = 1)
 }

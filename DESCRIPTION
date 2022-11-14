@@ -51,8 +51,11 @@ Imports:
     rlang,
     biomaRt,
     stats,
-    future,
-    gRbase
+    gRbase,
+    tidyverse,
+    org.Hs.eg.db,
+    SPONGE,
+    GDCRNATools
 VignetteBuilder: knitr
 RoxygenNote: 7.2.1
 Suggests: 
@@ -66,8 +69,7 @@ Suggests:
   egg,
   enrichplot,
   AnnotationDbi,
-  clusterProfiler,
-  RJAMI
+  clusterProfiler
 SystemRequirements: 
   ceRNAR supports Linux, macOS and Window
 BugReports: 

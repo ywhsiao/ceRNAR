@@ -14,10 +14,12 @@
 #' @import rlang
 #' @import SPONGE
 #' @import utils
+#' @import GDCRNATools
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
+#' @param num_workers the number of CPU
 #'
 #' @returns a dataframe object
 #' @export
@@ -25,14 +27,17 @@
 #' @examples
 #' library(SPONGE)
 #' ceRNAIntegrate(
+#' path_prefix = NULL,
 #' project_name = 'demo',
-#' disease_name = 'DLBC'
+#' disease_name = 'DLBC',
+#' num_workers = 1
 #' )
 #'
 
 ceRNAIntegrate <- function(path_prefix = NULL,
                            project_name = 'demo',
-                           disease_name = 'DLBC'){
+                           disease_name = 'DLBC',
+                           num_workers = 1){
 
   if (is.null(path_prefix)){
     path_prefix <- fs::path_home()
@@ -69,67 +74,78 @@ ceRNAIntegrate <- function(path_prefix = NULL,
     d[gene_pair,i] <- 1
   }
 
-  # SPONGE
-  chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
-
-  if (nzchar(chk) && chk == "TRUE") {
-    # use 1 cores in CRAN/Travis/AppVeyor
-    num_workers <- 1L
-  } else {
-    # use all cores in devtools::test()
-    num_workers <- parallel::detectCores()-3
+  if (num_workers != 1){
+    doParallel::registerDoParallel(num_workers)
   }
 
-  doParallel::registerDoParallel(num_workers)
   mir_expr <- t(mirna)
   gene_expr <- t(mrna)
-  genes_miRNA_candidates <- sponge_gene_miRNA_interaction_filter(
+  genes_miRNA_candidates <- SPONGE::sponge_gene_miRNA_interaction_filter(
     gene_expr = gene_expr,
     mir_expr = mir_expr,
     mir_predicted_targets = as.matrix(d))
 
-  ## copy from SPONGE due to the change of function name in gRbase package
-  genes_pairwise_combinations <- function(number.of.genes){
-    #t(combnPrim(number.of.genes, 2))
-    t(gRbase::combn_prim(number.of.genes, 2))
-  }
-
-  ceRNA_interactions <- sponge(gene_expr = gene_expr,
+  ceRNA_interactions <- SPONGE::sponge(gene_expr = gene_expr,
                                mir_expr = mir_expr,
                                mir_interactions = genes_miRNA_candidates)
   precomputed_cov_matrices <- precomputed_cov_matrices
-  mscor_null_model <- sponge_build_null_model(number_of_datasets = 100,
+  mscor_null_model <- SPONGE::sponge_build_null_model(number_of_datasets = 100,
                                               number_of_samples = dim(gene_expr)[1])
-  sponge_result <- sponge_compute_p_values(sponge_result = ceRNA_interactions,
+  sponge_result <- SPONGE::sponge_compute_p_values(sponge_result = ceRNA_interactions,
                                                    null_model = mscor_null_model)
   sponge_result_sig <- sponge_result[sponge_result$p.adj<=0.05,]
-  sponge_result_sig$genepairs_1 <- paste0(sponge_result_sig$geneA,'|',sponge_result_sig$geneB)
-  sponge_result_sig$genepairs_2 <- paste0(sponge_result_sig$geneB,'|',sponge_result_sig$geneA)
-  utils::write.csv(sponge_result_sig, paste0(path_prefix,project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_sponge.csv'), row.names = FALSE)
+  sponge_result_sig$genepairs_1 <- paste0(sponge_result_sig$geneA, '|', sponge_result_sig$geneB)
+  sponge_result_sig$genepairs_2 <- paste0(sponge_result_sig$geneB, '|', sponge_result_sig$geneA)
+  utils::write.csv(sponge_result_sig, paste0(path_prefix, project_name, '-', disease_name, '/04_downstreamAnalyses/integration/', project_name, '-', disease_name, '_sponge.csv'), row.names = FALSE)
 
-  #JAMI
+  # JAMI (not on CRAN or Bioconductor)
+  # mir_exp <- mirna
+  # gene_exp <- mrna
+  # df_lst <- list()
+  # for (i in 1:dim(dict)[1]){
+  #   #i=1
+  #   gene_pair <- dict[i,][[2]]
+  #   tmp <- as.data.frame(t(utils::combn(gene_pair,2)))
+  #   tmp$V3<- dict[i,][[1]]
+  #   df_lst[[i]] <- tmp
+  # }
+  # gene_mir_interactions_triplets <- Reduce(rbind, df_lst)
+  # names(gene_mir_interactions_triplets) <- c('geneA','geneB','mirnas')
+  # RJAMI::test_jvm()
+  # RJAMI::jami_settings(pvalueCutOff = 0.05)
+  # RJAMI::jami_settings(tripleFormat = FALSE)
+  # result <- RJAMI::jami(gene_miRNA_interactions = gene_mir_interactions_triplets,
+  #                       gene_expr = gene_exp,
+  #                       mir_expr = mir_exp)
+  # rjami_result <- result$result[,1:5]
+  # rjami_result_sig <- rjami_result[rjami_result$p.value <=0.05,]
+  # rjami_result_sig$triplets <- paste0(rjami_result_sig$miRNA,'|',rjami_result_sig$Source, '|', rjami_result_sig$Target)
+  # utils::write.csv(sponge_result_sig, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_jami.csv'), row.names = FALSE)
+
+  # GDCRNATools
   mir_exp <- mirna
   gene_exp <- mrna
-  df_lst <- list()
+  tmp <- list()
   for (i in 1:dim(dict)[1]){
     #i=1
+
     gene_pair <- dict[i,][[2]]
-    tmp <- as.data.frame(t(utils::combn(gene_pair,2)))
-    tmp$V3<- dict[i,][[1]]
-    df_lst[[i]] <- tmp
+    tmp1 <- as.list(rep(dict[i,][[1]],times=length(gene_pair)))
+    names(tmp1) <- gene_pair
+    tmp <- append(tmp, tmp1)
   }
-  gene_mir_interactions_triplets <- Reduce(rbind, df_lst)
-  names(gene_mir_interactions_triplets) <- c('geneA','geneB','mirnas')
-  RJAMI::test_jvm()
-  RJAMI::jami_settings(pvalueCutOff = 0.05)
-  RJAMI::jami_settings(tripleFormat = FALSE)
-  result <- RJAMI::jami(gene_miRNA_interactions = gene_mir_interactions_triplets,
-                        gene_expr = gene_exp,
-                        mir_expr = mir_exp)
-  rjami_result <- result$result[,1:5]
-  rjami_result_sig <- rjami_result[rjami_result$p.value <=0.05,]
-  rjami_result_sig$triplets <- paste0(rjami_result_sig$miRNA,'|',rjami_result_sig$Source, '|', rjami_result_sig$Target)
-  utils::write.csv(sponge_result_sig, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_jami.csv'), row.names = FALSE)
+
+  gene_target_lst <- tmp
+  ceOutput_list <- list()
+  for (k in 1:dim(gene_exp)[1]){
+    ceOutput_tmp <- GDCRNATools::gdcCEAnalysis(lnc = row.names(gene_exp)[k],pc  = row.names(gene_exp)[-k], lnc.targets = gene_target_lst, pc.targets = gene_target_lst, rna.expr = gene_exp, mir.expr = mir_exp)
+    ceOutput_list[[k]] <- ceOutput_tmp
+  }
+
+  ceOutput <- Reduce(rbind,ceOutput_list)
+  ceOutput_sig <- ceOutput[ceOutput$hyperPValue<0.05,]
+  ceOutput_sig$genepairs_1 <- paste0(ceOutput_sig$lncRNAs, '|', ceOutput_sig$Genes)
+  ceOutput_sig$genepairs_2 <- paste0(ceOutput_sig$Genes, '|', ceOutput_sig$lncRNAs)
 
   # our results
   our_result <- as.data.frame(utils::read.csv(paste0(path_prefix, project_name,'-',disease_name,'/',project_name,'-',disease_name,'_finalpairs.csv')))
@@ -142,11 +158,15 @@ ceRNAIntegrate <- function(path_prefix = NULL,
 
   # integrate
   sponge_integrate <- c(intersect(our_result$genepairs,sponge_result_sig$genepairs_1),intersect(our_result$genepairs,sponge_result_sig$genepairs_2))
-  rjami_integrate <- intersect(our_result$triplets,rjami_result_sig$triplets)
   our_result$sponge <- '-'
-  our_result$rjami <- '-'
   our_result$sponge[our_result$genepairs%in%sponge_integrate] <- 'yes'
-  our_result$rjami[our_result$triplets%in%rjami_integrate] <- 'yes'
+  # rjami_integrate <- intersect(our_result$triplets,rjami_result_sig$triplets)
+  # our_result$rjami <- '-'
+  # our_result$rjami[our_result$triplets%in%rjami_integrate] <- 'yes'
+  GDCRNATools_integrate <- c(intersect(our_result$genepairs,ceOutput_sig$genepairs_1),intersect(our_result$genepairs,ceOutput_sig$genepairs_2))
+  our_result$GDCRNATools <- '-'
+  our_result$GDCRNATools[our_result$genepairs%in%GDCRNATools_integrate] <- 'yes'
+
   utils::write.csv(our_result, paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/integration/',project_name,'-',disease_name,'_integrate.csv'), row.names = FALSE)
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')

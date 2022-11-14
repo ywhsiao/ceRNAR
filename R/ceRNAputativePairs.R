@@ -14,6 +14,7 @@
 #'
 #' @examples
 #' ceRNAputativePairs(
+#' path_prefix = NULL,
 #' project_name ='demo',
 #' disease_name = 'DLBC',
 #' filtering = 'less'

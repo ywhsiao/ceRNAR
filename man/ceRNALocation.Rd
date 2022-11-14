@@ -32,6 +32,7 @@ A function to visualize the peak location at certain miRNA level
 }
 \examples{
 ceRNALocation(
+path_prefix = NULL,
 project_name = 'demo',
 disease_name = 'DLBC',
 mirna='hsa-miR-101-3p',

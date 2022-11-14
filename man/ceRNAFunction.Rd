@@ -33,6 +33,7 @@ Genes and Genomes (KEGG; https://www.genome.jp/kegg/).
 }
 \examples{
 ceRNAFunction(
+path_prefix = NULL,
 project_name = 'demo',
 disease_name = 'DLBC',
 pairs_cutoff = 1
