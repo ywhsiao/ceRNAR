@@ -7,9 +7,7 @@
 #' Genes and Genomes (KEGG; https://www.genome.jp/kegg/).
 #'
 #' @import org.Hs.eg.db
-#' @importFrom biomaRt select
 #' @import grDevices
-#' @rawNamespace import(dplyr, except = select)
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign (default: demo)
