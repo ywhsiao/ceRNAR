@@ -77,7 +77,7 @@ ceRNAIntegrate(project_name = 'demo', disease_name = 'DLBC')
 1. retrieve TCGA data, and check the data
 
 ```{r eval=FALSE}
-ceRNATCGA(project_name = 'TCGA',disease_name = 'DLBC', timeout = 5000000)
+ceRNATCGA(project_name = 'TCGA', disease_name = 'DLBC', timeout = 5000000)
 ```
 
 

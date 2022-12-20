@@ -61,20 +61,24 @@ ceRNACustomize <- function(path_prefix = NULL,
   if (is.null(project_name)|is.null(disease_name)|is.null(gene_exp)|is.null(mirna_exp)){
     stop("project_name/disease_name/gene_exp/mirna_exp has not provided!")
   }else{
-    if ('gene_exp' %in% ls()){
+    if (!is(gene_exp, "character")){
       exp <- gene_exp
     }else{
       exp <- as.data.frame(data.table::fread(gene_exp,header = TRUE))
+      row.names(exp) <- exp[,1]
+      exp <- exp[,-1]
     }
-    if ('mirna_exp' %in% ls()){
+    if (!is(mirna_exp, "character")){
       mirna <- mirna_exp
     }else{
       mirna <- as.data.frame(data.table::fread(mirna_exp,header = TRUE))
+      row.names(mirna) <- mirna[,1]
+      mirna <- mirna[,-1]
     }
 
   }
   if (!is.null(surv_data)){
-    if ('surv_data' %in% ls()){
+    if (!is(surv_data, "character")){
       surv <- surv_data
     }else{
       surv <- as.data.frame(data.table::fread(surv_data,header = TRUE))
@@ -134,5 +138,4 @@ ceRNACustomize <- function(path_prefix = NULL,
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' minutes.'))
   message('\u2605\u2605\u2605 All the files are checked for further next step! \u2605\u2605\u2605')
 }
-
 

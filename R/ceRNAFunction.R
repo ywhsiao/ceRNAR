@@ -6,9 +6,10 @@
 #' Gene Ontology (GO; http://geneontology.org/) and Kyoto Encyclopedia of
 #' Genes and Genomes (KEGG; https://www.genome.jp/kegg/).
 #'
-#' @import utils
-#' @import grDevices
 #' @import org.Hs.eg.db
+#' @importFrom biomaRt select
+#' @import grDevices
+#' @rawNamespace import(dplyr, except = select)
 #'
 #' @param path_prefix user's working directory
 #' @param project_name the project name that users can assign (default: demo)
@@ -106,6 +107,7 @@ ceRNAFunction <- function(path_prefix = NULL,
 
   # go ora
   message('\u2605 Running GO ORA analysis ...')
+
   go_level <- c('CC','MF','BP')
 
   runGOora <- function(go_level){
@@ -171,7 +173,7 @@ ceRNAFunction <- function(path_prefix = NULL,
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 All analyses has completed! \u2605\u2605\u2605')
-
   function_plots
 }
+
 

@@ -60,7 +60,7 @@ ceRNAIntegrate <- function(path_prefix = NULL,
     dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/integration/'))
   }
 
-  message('\u25CF Step5: Dowstream Analyses - Integration')
+  message('\u25CF Step 5: Dowstream Analyses - Integration')
 
   dict <- readRDS(paste0(path_prefix, project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_MirnaTarget_dictionary.rds'))
   mirna <- data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mirna.csv')),row.names = 1)
@@ -96,7 +96,6 @@ ceRNAIntegrate <- function(path_prefix = NULL,
   sponge_result_sig <- sponge_result[sponge_result$p.adj<=0.05,]
   sponge_result_sig$genepairs_1 <- paste0(sponge_result_sig$geneA, '|', sponge_result_sig$geneB)
   sponge_result_sig$genepairs_2 <- paste0(sponge_result_sig$geneB, '|', sponge_result_sig$geneA)
-  utils::write.csv(sponge_result_sig, paste0(path_prefix, project_name, '-', disease_name, '/04_downstreamAnalyses/integration/', project_name, '-', disease_name, '_sponge.csv'), row.names = FALSE)
 
   # JAMI (not on CRAN or Bioconductor)
   # mir_exp <- mirna
@@ -138,7 +137,8 @@ ceRNAIntegrate <- function(path_prefix = NULL,
   gene_target_lst <- tmp
   ceOutput_list <- list()
   for (k in 1:dim(gene_exp)[1]){
-    ceOutput_tmp <- GDCRNATools::gdcCEAnalysis(lnc = row.names(gene_exp)[k],pc  = row.names(gene_exp)[-k], lnc.targets = gene_target_lst, pc.targets = gene_target_lst, rna.expr = gene_exp, mir.expr = mir_exp)
+    ceOutput_tmp <- GDCRNATools::gdcCEAnalysis(lnc = row.names(gene_exp)[k],pc  = row.names(gene_exp)[-k], lnc.targets = gene_target_lst, pc.targets = gene_target_lst, rna.expr = gene_exp, mir.expr = mir_exp)%>%
+      suppressMessages()
     ceOutput_list[[k]] <- ceOutput_tmp
   }
 
@@ -175,3 +175,4 @@ ceRNAIntegrate <- function(path_prefix = NULL,
 
   return(our_result)
 }
+

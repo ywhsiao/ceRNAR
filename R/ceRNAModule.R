@@ -26,7 +26,6 @@
 #' column_sum = 1
 #' )
 #'
-#'
 
 ceRNAModule <- function(path_prefix = NULL,
                         project_name = 'demo',
@@ -52,7 +51,7 @@ ceRNAModule <- function(path_prefix = NULL,
   if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults'))){
     dir.create(paste0(path_prefix,project_name,'-',disease_name,'/04_downstreamAnalyses/moduleResults'))
   }
-  message('\u25CF Step4: Dowstream Analyses - Network analysis')
+  message('\u25CF Step 5: Dowstream Analyses - Network analysis')
   Dict <- readRDS(paste0(path_prefix, project_name,'-',disease_name,'/02_potentialPairs/', project_name, '-', disease_name, '_MirnaTarget_dictionary.rds'))
   Res <- readRDS(paste0(path_prefix, project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name, '_finalpairs.rds'))
   # total number of putative genes (targeted gene not data gene)
@@ -155,4 +154,3 @@ ceRNAModule <- function(path_prefix = NULL,
 
   netplot_lst
 }
-

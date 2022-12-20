@@ -14,8 +14,7 @@ All_steps_interface(
   filtering = "less",
   window_size = 10,
   cor_method = "pearson",
-  cor_threshold_peak = 0.85,
-  num_workers = 1
+  cor_threshold_peak = 0.85
 )
 }
 \arguments{
@@ -42,8 +41,6 @@ spearman (default: pearson)}
 
 \item{cor_threshold_peak}{peak threshold of correlation value between 0 and 1
 (default: 0.85)}
-
-\item{num_workers}{the number of CPU}
 }
 \value{
 a dataframe object
@@ -65,6 +62,5 @@ surv_data = surv_data,
 filtering = 'less',
 window_size = 10,
 cor_method = 'pearson',
-cor_threshold_peak = 0.85,
-num_workers = 1)
+cor_threshold_peak = 0.85)
 }

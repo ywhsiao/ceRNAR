@@ -24,12 +24,12 @@ Encoding: UTF-8
 Depends: 
   R(>= 4.2.0)
 Imports: 
+    Biobase,
     cowplot,
     data.table,
     DNAcopy,
     doParallel,
     GGally,
-    HelpersMG,
     psych,
     purrr,
     quantmod,
@@ -43,19 +43,20 @@ Imports:
     SPONGE,
     fs,
     foreach,
-    Biobase,
     cvms,
-    dplyr,
     ggplot2,
     magrittr,
     rlang,
-    biomaRt,
     stats,
     gRbase,
     tidyverse,
     org.Hs.eg.db,
     SPONGE,
-    GDCRNATools
+    GDCRNATools,
+    future,
+    UCSCXenaTools,
+    biomaRt,
+    dplyr
 VignetteBuilder: knitr
 RoxygenNote: 7.2.1
 Suggests: 

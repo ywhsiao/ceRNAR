@@ -10,8 +10,6 @@
 #' @param project_name the project name that users can assign (default = 'TCGA')
 #' @param disease_name the abbreviation of disease that users are interested in
 #' (default = 'DLBC')
-#' @param timeout the allowance time for downloading TCGA data
-#' (default = 1000)
 #'
 #' @returns file
 #' @export
@@ -20,17 +18,13 @@
 #' ceRNATCGA(
 #' path_prefix = NULL,
 #' project_name = 'TCGA',
-#' disease_name = 'DLBC',
-#' timeout = 500000
+#' disease_name = 'DLBC'
 #' )
 #'
 
-
-
 ceRNATCGA <- function(path_prefix = NULL,
                       project_name = 'TCGA',
-                      disease_name = 'DLBC',
-                      timeout = 500000){
+                      disease_name = 'DLBC'){
 
   if (is.null(path_prefix)){
     path_prefix <- fs::path_home()
@@ -53,18 +47,11 @@ ceRNATCGA <- function(path_prefix = NULL,
   time1 <- Sys.time()
 
   # download cancer files (phenotype, survival, miRNA and mRNA) from gdc resource
-  downloadFromGDC <- function(project, cancer, timeout=5000000){
-    message('\u25CF TCGA data: Downloading the data ...')
-    options(timeout=timeout) # to test the largest data
-    HelpersMG::wget(paste0('https://gdc-hub.s3.us-east-1.amazonaws.com/download/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'), destfile = paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'))
-    HelpersMG::wget(paste0('https://gdc-hub.s3.us-east-1.amazonaws.com/download/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'), destfile = paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.GDC_phenotype.tsv.gz'))
-    HelpersMG::wget(paste0('https://gdc-hub.s3.us-east-1.amazonaws.com/download/',project_name,'-', disease_name,'.survival.tsv'), destfile = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.survival.tsv'))
-    HelpersMG::wget(paste0('https://gdc-hub.s3.us-east-1.amazonaws.com/download/',project_name,'-', disease_name,'.mirna.tsv.gz'), destfile = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.mirna.tsv.gz'))
-    HelpersMG::wget(paste0('https://gdc-hub.s3.us-east-1.amazonaws.com/download/',project_name,'-', disease_name,'.htseq_fpkm.tsv.gz'), destfile = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',project_name,'-', disease_name,'.htseq_fpkm.tsv.gz'))
-  }
-
-  downloadFromGDC(project,cancer)
-
+  UCSCXenaTools::XenaData %>%
+    tidyverse::filter(XenaHostNames == "gdcHub", grepl(disease_name, XenaCohorts), grepl("gene expression|phenotype", DataSubtype), grepl(".htseq_fpkm.tsv|.GDC_phenotype.tsv|.survival.tsv|.mirna.tsv",XenaDatasets)) %>%
+    UCSCXenaTools::XenaGenerate() %>%
+    UCSCXenaTools::XenaQuery() %>%
+    UCSCXenaTools::XenaDownload(destdir = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/'), force = TRUE)
   # unzip
   temp <-  list.files(path = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), pattern=".gz")
   for (i in 1:length(temp)) R.utils::gunzip(paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',temp[i]), remove=TRUE, overwrite = TRUE)

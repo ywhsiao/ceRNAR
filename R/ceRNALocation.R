@@ -51,7 +51,7 @@ ceRNALocation <- function(path_prefix = NULL,
     dir.create(paste0(path_prefix, '/', project_name,'-',disease_name,'/04_downstreamAnalyses/peakLocationResults/'))
   }
 
-  message('\u25CF Step4: Dowstream Analyses - Peak Location analysis for ', mirna, '.')
+  message('\u25CF Step 5: Dowstream Analyses - Peak Location analysis for ', mirna, '.')
   Res <- readRDS(paste0(path_prefix, '/', project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name,'_finalpairs.rds'))
 
   # get all ceRNAs
@@ -115,5 +115,4 @@ ceRNALocation <- function(path_prefix = NULL,
 
   egg::ggarrange(p1,p2,ncol=2, nrow=2, widths=c(4, 1), heights=c(4, 0.5))
 }
-
 

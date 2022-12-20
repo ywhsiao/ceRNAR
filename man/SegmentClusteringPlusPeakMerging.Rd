@@ -9,8 +9,7 @@ SegmentClusteringPlusPeakMerging(
   project_name = "demo",
   disease_name = "DLBC",
   cor_threshold_peak = 0.85,
-  window_size = 10,
-  num_workers = 1
+  window_size = 10
 )
 }
 \arguments{
@@ -39,8 +38,6 @@ SegmentClusteringPlusPeakMerging(
 project_name = 'demo',
 disease_name = 'DLBC',
 cor_threshold_peak = 0.85,
-window_size = 10,
-num_workers = 1
-)
+window_size = 10)
 
 }

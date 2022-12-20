@@ -10,7 +10,7 @@
 #' @param project_name the project name that users can assign
 #' @param disease_name the abbreviation of disease that users are interested in
 #'
-#' @returns a dataframe output
+#' @returns a dataframe object
 #' @export
 #'
 #' @examples
@@ -47,7 +47,7 @@ ceRNAValidate <- function(path_prefix = NULL,
     dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/external_validation/'))
   }
 
-  message('\u25CF Step5: Dowstream Analyses - External validation')
+  message('\u25CF Step 5: Dowstream Analyses - External validation')
 
   datapreparing <- function(file){
     candidate_ceRNA <- as.data.frame(utils::read.csv(file))

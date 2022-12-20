@@ -10,8 +10,7 @@ ceRNApairFilering(
   project_name = "demo",
   disease_name = "DLBC",
   window_size = 10,
-  cor_method = "pearson",
-  num_workers = 1
+  cor_method = "pearson"
 )
 }
 \arguments{
@@ -42,8 +41,7 @@ path_prefix = NULL,
 project_name = 'demo',
 disease_name = 'DLBC',
 window_size = 10,
-cor_method = 'pearson',
-num_workers = 1
+cor_method = 'pearson'
 )
 
 

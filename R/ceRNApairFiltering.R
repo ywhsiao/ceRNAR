@@ -5,7 +5,6 @@
 #' that is, pairs filtering
 #'
 #' @import foreach
-#' @import parallel
 #' @import utils
 #'
 #' @param path_prefix user's working directory
@@ -26,8 +25,7 @@
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' window_size = 10,
-#' cor_method = 'pearson',
-#' num_workers = 1
+#' cor_method = 'pearson'
 #' )
 #'
 #'
@@ -36,8 +34,7 @@ ceRNApairFilering <- function(path_prefix = NULL,
                               project_name = 'demo',
                               disease_name = 'DLBC',
                               window_size = 10,
-                              cor_method = 'pearson',
-                              num_workers = 1){
+                              cor_method = 'pearson'){
 
   if (is.null(path_prefix)){
     path_prefix <- fs::path_home()
@@ -50,7 +47,7 @@ ceRNApairFilering <- function(path_prefix = NULL,
   }
 
   time1 <- Sys.time()
-  message('\u25CF Step3: Filtering putative mRNA-miRNA pairs using sliding window approach')
+  message('\u25CF Step 3: Filtering putative mRNA-miRNA pairs using sliding window approach')
 
   # setwd(paste0(project_name,'-',disease_name))
   # import example data & putative pairs
@@ -65,19 +62,15 @@ ceRNApairFilering <- function(path_prefix = NULL,
   slidingWindow <- function(window_size, mirna_total, cor_method){
     chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
 
-    # if ((nzchar(chk)) && (chk == "TRUE")) {
-    #   # use 1 cores in CRAN/Travis/AppVeyor
-    #   num_workers <- 1L
-    # } else {
-    #   # use all cores in devtools::test()
-    #   num_workers <- future::availableCores()-3
-    # }
-    # # create a cluster
-    message('\u2605 Number of computational cores: ', num_workers, '.')
-    if (num_workers != 1){
-      doParallel::registerDoParallel(num_workers)
+    if ((nzchar(chk)) && (chk == "TRUE")) {
+      # use 1 cores in CRAN/Travis/AppVeyor
+      num_workers <- 1L
+    } else {
+      # use all cores in devtools::test()
+      num_workers <- future::availableCores()-3
     }
-
+    # reate a cluster
+    #message('\u2605 Number of computational cores: ', num_workers, '.')
     parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
       #mir = 50
       mir = mirna_total[mir]
@@ -93,7 +86,7 @@ ceRNApairFilering <- function(path_prefix = NULL,
       gene_pair <- utils::combn(gene,2)
       gene_pair_index <- rbind(match(gene_pair[1,], names(gene_mir)),match(gene_pair[2,], names(gene_mir)))
       total_pairs <- choose(length(gene),2)
-      message(paste0("\u2605 ",mir,"'s total potential ceRNA-miRNA pairs: ",total_pairs))
+      #message(paste0("\u2605 ",mir,"'s total potential ceRNA-miRNA pairs: ",total_pairs))
 
       getcorr <- function(r,s){
         #r=2
@@ -106,7 +99,8 @@ ceRNApairFilering <- function(path_prefix = NULL,
         data <- data[order(data$miRNA),]
         data$corr
       }
-      cor_all <- purrr::map2_dfc(gene_pair_index[1,1:total_pairs],gene_pair_index[2,1:total_pairs],getcorr)
+      cor_all <- purrr::map2_dfc(gene_pair_index[1,1:total_pairs],gene_pair_index[2,1:total_pairs],getcorr) %>%
+        suppressMessages()
       getordermiRNA <- function(){
         y <- gene_mir[,c(1,1,1)]
         y <- y[order(y$miRNA),]

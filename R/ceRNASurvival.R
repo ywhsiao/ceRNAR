@@ -50,7 +50,7 @@ ceRNASurvival <- function(path_prefix = NULL,
     dir.create(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/'))
   }
 
-  message('\u25CF Step5: Dowstream Analyses - Survival analysis')
+  message('\u25CF Step 5: Dowstream Analyses - Survival analysis')
 
   # expression data
   geneExp <- as.data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_mrna.csv'),header = TRUE, stringsAsFactors = FALSE))
@@ -59,22 +59,24 @@ ceRNASurvival <- function(path_prefix = NULL,
   names(geneExp) <- substring(names(geneExp),1,12)
 
   # survival data
-  survivalData <- as.data.frame(data.table::fread(paste0(path_prefix, project_name,'-',disease_name,'/01_rawdata/',project_name,'-',disease_name,'_survival.csv'),header = TRUE, stringsAsFactors = FALSE))
+  survivalData <- as.data.frame(data.table::fread(paste0(path_prefix, project_name, '-', disease_name, '/01_rawdata/', project_name, '-', disease_name, '_survival.csv'), header = TRUE, stringsAsFactors = FALSE))
   row.names(survivalData) <- survivalData[,1]
   survivalData <- survivalData[,-1]
   survivalData <- survivalData[,colnames(survivalData)%in%c('OS', 'OS.time')]
 
   # mirna-gene pairs results
-  Res <- readRDS(paste0(path_prefix, project_name,'-',disease_name,'/03_identifiedPairs/', project_name, '-', disease_name,'_finalpairs.rds'))
+  Res <- readRDS(paste0(path_prefix, project_name, '-', disease_name, '/03_identifiedPairs/', project_name, '-', disease_name, '_finalpairs.rds'))
+
   Res_dataframe <- Reduce(rbind, Res)
 
   mirna <- as.data.frame(Reduce(rbind, Res_dataframe[,1]))
   gene <- as.data.frame(Reduce(rbind, Res_dataframe[,2]))
   mirna_gene_pairs <- cbind(mirna, gene)
   names(mirna_gene_pairs) <- c('mirna', 'gene')
+
   mirna_uni <- mirnas
-  message('\u2605 Total number of identified miRNA in ',project_name, '-', disease_name,' cohort: ', length(mirna_uni), '.')
-  message('\u2605 Total number of identified miRNA-ceRNAs in ',project_name, '-', disease_name,' cohort: ', dim(mirna_gene_pairs)[1], '.')
+  message('\u2605 Total number of identified miRNA in ', project_name, '-', disease_name,' cohort: ', length(mirna_uni), '.')
+  message('\u2605 Total number of identified miRNA-ceRNAs in ', project_name, '-', disease_name,' cohort: ', dim(mirna_gene_pairs)[1], '.')
   each_mirna <-mirna_uni
   runforeachmirna <- function(each_mirna){
     if(!dir.exists(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/', each_mirna))){
@@ -114,9 +116,8 @@ ceRNASurvival <- function(path_prefix = NULL,
                                                   title = paste0(each_mirna,'_', which_gene[1],'-', which_gene[2], ' triplets'),
                                                   surv.plot.height = 0.6)
       plot_lst[[j]] <- surv_plot
-      grDevices::png(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/', each_mirna, '/', each_mirna,'_', which_gene[1],'-', which_gene[2], '_triplets.png'),height = 1500, width = 2800, res = 300)
       surv_plot
-      grDevices::dev.off()
+      ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/survivalResults/', each_mirna, '/', each_mirna,'_', which_gene[1],'-', which_gene[2], '_triplets.png'),height = 15, width = 28, dpi = 300)
 
     }
     plot_lst
@@ -124,7 +125,7 @@ ceRNASurvival <- function(path_prefix = NULL,
   if (length(mirna_uni)==1){
     all_plots <- runforeachmirna(mirna_uni)
   }else{
-    tmp <- purrr::map(mirna_uni, runforeachmirna)
+    all_plots <- purrr::map(mirna_uni, runforeachmirna)
   }
 
   time2 <- Sys.time()
@@ -135,5 +136,4 @@ ceRNASurvival <- function(path_prefix = NULL,
   all_plots
 
 }
-
 

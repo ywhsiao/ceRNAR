@@ -10,8 +10,7 @@ ceRNAMethod(
   disease_name = "DLBC",
   window_size = 10,
   cor_method = "pearson",
-  cor_threshold_peak = 0.85,
-  num_workers = 1
+  cor_threshold_peak = 0.85
 )
 }
 \arguments{
@@ -46,8 +45,7 @@ project_name = 'demo',
 disease_name = 'DLBC',
 window_size = 10,
 cor_method = 'pearson',
-cor_threshold_peak = 0.85,
-num_workers = 1
+cor_threshold_peak = 0.85
 )
 
 
