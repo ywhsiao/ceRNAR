@@ -60,15 +60,16 @@ ceRNApairFilering <- function(path_prefix = NULL,
 
 
   slidingWindow <- function(window_size, mirna_total, cor_method){
-    chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
-
-    if ((nzchar(chk)) && (chk == "TRUE")) {
-      # use 1 cores in CRAN/Travis/AppVeyor
-      num_workers <- 1L
-    } else {
-      # use all cores in devtools::test()
-      num_workers <- future::availableCores()-3
+    num_core <- parallel::detectCores()
+    if (num_core <=2){
+      cl <- parallel::makeCluster(num_core)
+      message(paste0('Number of CPU used: ', num_core))
+    }else{
+      cl <- parallel::makeCluster(num_core-1)
+      message(paste0('Number of CPU used: ', num_core-1))
     }
+    doParallel::registerDoParallel(cl)
+
     # reate a cluster
     #message('\u2605 Number of computational cores: ', num_workers, '.')
     parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
@@ -121,6 +122,7 @@ ceRNApairFilering <- function(path_prefix = NULL,
       triplet
 
     }
+    parallel::stopCluster(cl)
     parallel_d
   }
   Realdata <- slidingWindow(window_size,mirna_total, 'pearson')

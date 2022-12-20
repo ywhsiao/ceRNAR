@@ -96,7 +96,7 @@ ceRNACustomize(project_name = 'demo', disease_name = 'DLBC', gene_exp = gene_exp
 Alternatively, `ceRNATCGA()` can be used to retrieve TCGA data
 
 ```{r}
-ceRNATCGA(project_name = 'TCGA', disease_name = 'DLBC', timeout = 5000000)
+ceRNATCGA(project_name = 'TCGA', disease_name = 'DLBC')
 ```
 
 ## Putative miRNA-gene interaction

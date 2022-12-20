@@ -4,7 +4,6 @@
 #' @description A function to conduct two of three steps in algorithm, that is, segment clustering and peak merging
 #'
 #' @import foreach
-#' @import future
 #' @import tidyverse
 #' @import cvms
 #' @import rlang
@@ -63,15 +62,15 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     gene_pair <- combn(gene, 2)
     total_pairs <- choose(length(gene), 2)
 
-    chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
-
-    if ((nzchar(chk)) && (chk == "TRUE")) {
-      # use 1 cores in CRAN/Travis/AppVeyor
-      num_workers <- 1L
-    } else {
-      # use all cores in devtools::test()
-      num_workers <- future::availableCores()-3
+    num_core <- parallel::detectCores()
+    if (num_core <=2){
+      cl <- parallel::makeCluster(num_core)
+      message(paste0('Number of CPU used: ', num_core))
+    }else{
+      cl <- parallel::makeCluster(num_core-1)
+      message(paste0('Number of CPU used: ', num_core-1))
     }
+    doParallel::registerDoParallel(cl)
 
     tmp <- foreach(p = 1:total_pairs, .combine = "rbind") %dopar%{
         #print(paste0("no_of_index:", index, "|", "no_of_pairs:",p))
@@ -232,7 +231,9 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
           }
         }
 
-      }
+    }
+
+    parallel::stopCluster(cl)
     tmp
   }
 

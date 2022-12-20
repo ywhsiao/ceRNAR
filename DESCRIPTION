@@ -53,7 +53,7 @@ Imports:
     org.Hs.eg.db,
     SPONGE,
     GDCRNATools,
-    future,
+    parallel,
     UCSCXenaTools,
     biomaRt,
     dplyr

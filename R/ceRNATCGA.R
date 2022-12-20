@@ -48,12 +48,12 @@ ceRNATCGA <- function(path_prefix = NULL,
 
   # download cancer files (phenotype, survival, miRNA and mRNA) from gdc resource
   UCSCXenaTools::XenaData %>%
-    tidyverse::filter(XenaHostNames == "gdcHub", grepl(disease_name, XenaCohorts), grepl("gene expression|phenotype", DataSubtype), grepl(".htseq_fpkm.tsv|.GDC_phenotype.tsv|.survival.tsv|.mirna.tsv",XenaDatasets)) %>%
+    dplyr::filter(XenaHostNames == "gdcHub", grepl(disease_name, XenaCohorts), grepl("gene expression|phenotype", DataSubtype), grepl(".htseq_fpkm.tsv|.GDC_phenotype.tsv|.survival.tsv|.mirna.tsv",XenaDatasets)) %>%
     UCSCXenaTools::XenaGenerate() %>%
     UCSCXenaTools::XenaQuery() %>%
     UCSCXenaTools::XenaDownload(destdir = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/'), force = TRUE)
   # unzip
-  temp <-  list.files(path = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), pattern=".gz")
+  temp <- list.files(path = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), pattern=".gz")
   for (i in 1:length(temp)) R.utils::gunzip(paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',temp[i]), remove=TRUE, overwrite = TRUE)
   message('(\u2714) All files have been and downloaded and uncompressed!')
 
