@@ -54,6 +54,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   mrna <- data.frame(data.table::fread(paste0(path_prefix, project_name, '-', disease_name, '/01_rawdata/', project_name, '-', disease_name, '_mrna.csv')), row.names = 1)
   mirna_total <- unlist(dict[,1])
   d <- readRDS(paste0(path_prefix, project_name,'-',disease_name,'/02_potentialPairs/', project_name,'-',disease_name,'_pairfiltering.rds'))
+
   sigCernaPeak <- function(index, d, cor_threshold_peak, window_size) {
     w <- window_size
     mir = mirna_total[index]
@@ -68,7 +69,6 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
       message(paste0('Number of CPU used: ', num_core))
     }else{
       cl <- parallel::makeCluster(num_core-1)
-      message(paste0('Number of CPU used: ', num_core-1))
     }
     doParallel::registerDoParallel(cl)
 
@@ -84,7 +84,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
           if (sum(is.na(triplet$corr)) == 0) {
             CNA.object <- DNAcopy::CNA(triplet$corr, rep(1, dim(triplet)[1]), triplet$miRNA)
             names(CNA.object) <- c("chrom", "maploc", paste("gene", r, "and", s))
-            sink(paste0(path_prefix, project_name,'-',disease_name,'/tmp.txt'))
+            sink("/dev/null")
             result <- DNAcopy::segment(CNA.object)
             sink()
             if (sum(result$output$num.mark <= 3) >= 1) {
@@ -259,4 +259,3 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
   message('\u2605\u2605\u2605 Ready to next step! \u2605\u2605\u2605')
   flat_df
 }
-
