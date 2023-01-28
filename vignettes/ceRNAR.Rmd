@@ -16,7 +16,7 @@ knitr::opts_chunk$set(tidy = FALSE,
 ```
 
 # Introduction
-The gene expression regulating mechanisms in humans are complex as many regulators are highly connected and are compensatory to each other. Many non-coding RNAs have critical roles in post-transcriptional regulation of protein-coding genes, including microRNAs [1]. microRNAs are short, non-coding, single-stranded RNAs with ~22 nucleotides. Typically, microRNAs modulate gene expression via partial complementarity with many miRNA response elements (MREs) on protein-coding genes. Recently, competitive endogenous RNA (ceRNA), including canonical protein-coding messenger RNAs (mRNAs), long non-coding RNAs (lncRNAs), circular RNAs (circRNAs), and pseudogenes, represents a novel mechanism of gene regulation that controls several biological and pathological processes [2]. Their mechanism is to compete with miRNAs for binding their regulatory sequences, as shown in Fig 1. The regulation of ceRNAs have been identified in multiple cancers [3]. Therefore, it is of importance to speed up our knowledge of the regulatory mechanisms and functions of ceRNA-miRNA triplets in the pathogenesis of cancers or other diseases.
+The gene expression regulating mechanisms in humans are complex as many regulators are highly connected and are compensatory to each other. Many non-coding RNAs have critical roles in post-transcriptional regulation of protein-coding genes, including microRNAs [1]. microRNAs are short, non-coding, single-stranded RNAs with ~22 oligonucleotide. Typically, microRNAs modulate gene expression via partial complementary with many miRNA response elements (MREs) on protein-coding genes. Recently, competitive endogenous RNA (ceRNA), including canonical protein-coding messenger RNAs (mRNAs), long non-coding RNAs (lncRNAs), circular RNAs (circRNAs), and pseudogenes, represents a novel mechanism of gene regulation that controls several biological and pathological processes [2]. Their mechanism is to compete with miRNAs for binding their regulatory sequences, as shown in Fig 1. The regulation of ceRNAs have been identified in multiple cancers [3]. Therefore, it is of importance to speed up our knowledge of the regulatory mechanisms and functions of ceRNA-miRNA triplets in the parthenogenesis of cancers or other diseases.
 
 
 <img src="https://raw.githubusercontent.com/ywhsiao/ceRNAR/master/vignettes/figure/mechanism_of_ceRNA.png" alt="ceRNA principle" style="width: 500px; display: block; margin-left: auto; margin-right: auto;"/>
@@ -146,7 +146,7 @@ ceFunction_results[[1]]
 ```
 
 ```{r message=FALSE, fig.dim = c(20, 10), out.width="100%"}
-cefFunction_results[[2]]
+ceFunction_results[[2]]
 ```
 
 - **Location plot**

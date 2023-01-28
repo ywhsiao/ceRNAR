@@ -33,7 +33,6 @@ Imports:
     psych,
     purrr,
     quantmod,
-    R.utils,
     stringr,
     tidyr,
     zoo,
@@ -54,7 +53,6 @@ Imports:
     SPONGE,
     GDCRNATools,
     parallel,
-    UCSCXenaTools,
     biomaRt,
     dplyr
 VignetteBuilder: knitr

@@ -46,46 +46,62 @@ ceRNATCGA <- function(path_prefix = NULL,
 
   time1 <- Sys.time()
 
-  # download cancer files (phenotype, survival, miRNA and mRNA) from gdc resource
-  UCSCXenaTools::XenaData %>%
-    dplyr::filter(XenaHostNames == "gdcHub", grepl(disease_name, XenaCohorts), grepl("gene expression|phenotype", DataSubtype), grepl(".htseq_fpkm.tsv|.GDC_phenotype.tsv|.survival.tsv|.mirna.tsv",XenaDatasets)) %>%
-    UCSCXenaTools::XenaGenerate() %>%
-    UCSCXenaTools::XenaQuery() %>%
-    UCSCXenaTools::XenaDownload(destdir = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/'), force = TRUE)
-  # unzip
-  temp <- list.files(path = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), pattern=".gz")
-  for (i in 1:length(temp)) R.utils::gunzip(paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',temp[i]), remove=TRUE, overwrite = TRUE)
-  message('(\u2714) All files have been and downloaded and uncompressed!')
+  # # download cancer files (phenotype, survival, miRNA and mRNA) from gdc resource
+  # UCSCXenaTools::XenaData %>%
+  #   dplyr::filter(XenaHostNames == "gdcHub", grepl(disease_name, XenaCohorts), grepl("gene expression|phenotype", DataSubtype), grepl(".htseq_fpkm.tsv|.GDC_phenotype.tsv|.survival.tsv|.mirna.tsv", XenaDatasets)) %>%
+  #   UCSCXenaTools::XenaGenerate() %>% UCSCXenaTools::XenaQuery() %>%
+  #   UCSCXenaTools::XenaDownload(destdir = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/'), force = TRUE)
+  # # unzip
+  # temp <- list.files(path = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), pattern=".gz")
+  # for (i in 1:length(temp)) R.utils::gunzip(paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',temp[i]), remove=TRUE, overwrite = TRUE)
+  # message('(\u2714) All files have been and downloaded and uncompressed!')
 
   # match sample id
   # Tumor types range from 01 - 09, normal types from 10 - 19 and control samples from 20 - 29.
   # ignore GBM because its mirna data only contain 5 samples
-  temp <-  list.files(path = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), pattern="*.tsv")
-  temp_name <- gsub(".*\\.","",gsub(".tsv", "", temp))
-  for (i in 1:length(temp)) assign(temp_name[i], data.frame(data.table::fread(paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/', temp[i]), sep = '\t',header = TRUE, dec = ".", fill = TRUE), row.names = 1))
-  # id in a column
-  GDC_phenotype <- GDC_phenotype[substring(row.names(GDC_phenotype),16)=='A',]
-  GDC_phenotype <- GDC_phenotype[!(substring(row.names(GDC_phenotype),14,15) %in% seq(10,29,1)),]
-  GDC_phenotype <- GDC_phenotype[!duplicated(GDC_phenotype$submitter_id),]
-  row.names(GDC_phenotype) <-substring(row.names(GDC_phenotype),1,12)
-  survival <- survival[substring(row.names(survival),16)=='A',]
-  survival <- survival[!(substring(row.names(GDC_phenotype),14,15) %in% seq(10,29,1)),]
-  survival <- survival[,colnames(survival)%in%c('OS', 'OS.time')]
-  survival <- survival[!duplicated(substring(row.names(survival),1,12)),]
-  row.names(survival) <-substring(row.names(survival),1,12)
+
+  (TCGA <- curatedTCGAData::curatedTCGAData(
+    disease_name, c("RNASeq*", "miRNA*"), version = "2.0.1", dry.run = FALSE
+  ))
+  exportClass(TCGA, dir = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), fmt = "csv", ext = ".csv")
+  file.rename(paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'_', disease_name,'_miRNASeqGene-20160128.csv'), paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mirna.csv'))
+  file.rename(paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'_', disease_name,'_RNASeq2Gene-20160128.csv'), paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mrna.csv'))
+
+  file.rename(paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'_colData.csv'), paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_phenotype.csv'))
+
+  junk <- dir(path=paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'),  pattern="TCGA_") # ?dir
+  file.remove(paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',junk))
+
+  temp <-  list.files(path = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), pattern="*.csv")
+  temp_name <- gsub(paste0(project_name,'-', disease_name,"_"),"",gsub(".csv", "", temp))
+
+  for (i in 1:length(temp)) assign(temp_name[i], data.frame(data.table::fread(paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/', temp[i]),header = TRUE, fill = TRUE), row.names = 1))
+
+  # extract survival information from
+  survival <- phenotype[,c("vital_status", "days_to_death", "days_to_last_followup")]
+  for (i in 1:dim(survival)[1]){
+    #i =1
+    if (is.na(survival$days_to_death[i])){
+      survival$days_to_death[i] <- survival$days_to_last_followup[i]
+    }
+  }
+  survival <- survival[,-3]
+  names(survival) <- c('OS', 'OS.time')
+
   # id in names()
+  htseq_fpkm <- mrna
   names(htseq_fpkm) <- gsub("\\.","-", names(htseq_fpkm))
-  htseq_fpkm <- htseq_fpkm[,substring(names(htseq_fpkm),16)=='A']
+  htseq_fpkm <- htseq_fpkm[,substring(names(htseq_fpkm),16,17)=='A-']
   htseq_fpkm <- htseq_fpkm[,!(substring(names(htseq_fpkm),14,15) %in% seq(10,29,1))]
   htseq_fpkm <- htseq_fpkm[,!duplicated(substring(names(htseq_fpkm),1,12))]
   names(htseq_fpkm) <-substring(names(htseq_fpkm),1,12)
   names(mirna) <- gsub("\\.","-", names(mirna))
-  mirna <- mirna[,substring(names(mirna),16)=='A']
+  mirna <- mirna[,substring(names(mirna),16,17)=='A-']
   mirna <- mirna[,!(substring(names(mirna),14,15) %in% seq(10,29,1))]
   mirna <- mirna[,!duplicated(substring(names(mirna),1,12))]
   names(mirna) <-substring(names(mirna),1,12)
   # get union sampleID
-  g1 <- list(names(mirna), names(htseq_fpkm), row.names(GDC_phenotype), row.names(survival))
+  g1 <- list(names(mirna), names(htseq_fpkm), row.names(survival))
 
   union_sampleID <- sort(Reduce(intersect, g1))
   message('\u2605 TCGA-', disease_name, ' cohort contains ',length(union_sampleID), ' tumor samples!')
@@ -98,7 +114,6 @@ ceRNATCGA <- function(path_prefix = NULL,
     df[ , -which(names(df) %in% c("rowname"))]
   }
 
-  GDC_phenotype <- clinicDataSort(GDC_phenotype)
   survival <- clinicDataSort(survival)
   # id in names()
   htseq_fpkm <- htseq_fpkm[,names(htseq_fpkm) %in% union_sampleID]
@@ -115,13 +130,7 @@ ceRNATCGA <- function(path_prefix = NULL,
   # focus on protein coding RNA because downloaded mRNA expression matrix includes both codingRNA and lncRNA
   ensem2symbol <- get0("ensem2symbol", envir = asNamespace("ceRNAR"))
   rownames(ensem2symbol) <- ensem2symbol$gene_id
-  cdRNA <- htseq_fpkm[rownames(htseq_fpkm) %in% ensem2symbol$gene_id[ensem2symbol$gene_type=="protein_coding"],]
-  annot_cdRNA <- merge(ensem2symbol, cdRNA, by = 'row.names')
-  rownames(annot_cdRNA) <- annot_cdRNA[,1]
-  annot_cdRNA <- annot_cdRNA[,-1:-3]
-  annot_cdRNA_unique <- stats::aggregate(. ~ gene_name, data = annot_cdRNA, mean) # longer time
-  row.names(annot_cdRNA_unique) <- annot_cdRNA_unique$gene_name
-  annot_cdRNA_unique <- annot_cdRNA_unique[,-1]
+  cdRNA <- htseq_fpkm[rownames(htseq_fpkm) %in% ensem2symbol$gene_name[ensem2symbol$gene_type=="protein_coding"],]
 
   #miRNA id conversion
   #ID_converter <- ceRNAR:::hsa_pre_mature_matching
@@ -133,7 +142,9 @@ ceRNATCGA <- function(path_prefix = NULL,
   miRNA_with_precurer <- miRNA_with_precurer[,-1]
 
   # store processed data
-  data.table::fwrite(as.data.frame(annot_cdRNA_unique),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mrna.csv'), row.names = TRUE)
+  junk <- dir(path=paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'),  pattern="TCGA_") # ?dir
+  file.remove(paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',junk))
+  data.table::fwrite(as.data.frame(cdRNA),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mrna.csv'), row.names = TRUE)
   data.table::fwrite(as.data.frame(miRNA_with_precurer),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mirna.csv'), row.names = TRUE)
   data.table::fwrite(as.data.frame(GDC_phenotype),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_phenotype.csv'), row.names = TRUE)
   data.table::fwrite(as.data.frame(survival), paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_survival.csv'), row.names = TRUE)
