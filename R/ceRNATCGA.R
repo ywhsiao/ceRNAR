@@ -1,8 +1,7 @@
 #'
 #' @name ceRNATCGA
 #' @title Retrieval of public TCGA data from GDC Xena Hub
-#' @description A function to retrieve TCGA data from GDC Xena Hub
-#' (https://xenabrowser.net/datapages/)
+#' @description A function to retrieve TCGA data
 #'
 #' @import utils
 #'
@@ -45,20 +44,6 @@ ceRNATCGA <- function(path_prefix = NULL,
   }
 
   time1 <- Sys.time()
-
-  # # download cancer files (phenotype, survival, miRNA and mRNA) from gdc resource
-  # UCSCXenaTools::XenaData %>%
-  #   dplyr::filter(XenaHostNames == "gdcHub", grepl(disease_name, XenaCohorts), grepl("gene expression|phenotype", DataSubtype), grepl(".htseq_fpkm.tsv|.GDC_phenotype.tsv|.survival.tsv|.mirna.tsv", XenaDatasets)) %>%
-  #   UCSCXenaTools::XenaGenerate() %>% UCSCXenaTools::XenaQuery() %>%
-  #   UCSCXenaTools::XenaDownload(destdir = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/'), force = TRUE)
-  # # unzip
-  # temp <- list.files(path = paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'), pattern=".gz")
-  # for (i in 1:length(temp)) R.utils::gunzip(paste0(path_prefix,project_name,'-', disease_name, '/01_rawdata/',temp[i]), remove=TRUE, overwrite = TRUE)
-  # message('(\u2714) All files have been and downloaded and uncompressed!')
-
-  # match sample id
-  # Tumor types range from 01 - 09, normal types from 10 - 19 and control samples from 20 - 29.
-  # ignore GBM because its mirna data only contain 5 samples
 
   (TCGA <- curatedTCGAData::curatedTCGAData(
     disease_name, c("RNASeq*", "miRNA*"), version = "2.0.1", dry.run = FALSE
@@ -146,7 +131,6 @@ ceRNATCGA <- function(path_prefix = NULL,
   file.remove(paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',junk))
   data.table::fwrite(as.data.frame(cdRNA),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mrna.csv'), row.names = TRUE)
   data.table::fwrite(as.data.frame(miRNA_with_precurer),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mirna.csv'), row.names = TRUE)
-  data.table::fwrite(as.data.frame(GDC_phenotype),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_phenotype.csv'), row.names = TRUE)
   data.table::fwrite(as.data.frame(survival), paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_survival.csv'), row.names = TRUE)
   message('(\u2714) All files have been preprocessed!')
   time2 <- Sys.time()
