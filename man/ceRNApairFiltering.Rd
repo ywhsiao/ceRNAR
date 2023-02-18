@@ -25,8 +25,6 @@ ceRNApairFilering(
 
 \item{cor_method}{selection of correlation methods, including pearson and
 spearman (default: pearson)}
-
-\item{num_workers}{the number of CPU}
 }
 \value{
 file

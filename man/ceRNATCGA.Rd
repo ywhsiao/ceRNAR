@@ -18,8 +18,7 @@ ceRNATCGA(path_prefix = NULL, project_name = "TCGA", disease_name = "DLBC")
 file
 }
 \description{
-A function to retrieve TCGA data from GDC Xena Hub
-(https://xenabrowser.net/datapages/)
+A function to retrieve TCGA data
 }
 \examples{
 ceRNATCGA(

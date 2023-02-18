@@ -14,7 +14,6 @@
 #' @param window_size the number of samples for each window (default: 10)
 #' @param cor_method selection of correlation methods, including pearson and
 #' spearman (default: pearson)
-#' @param num_workers the number of CPU
 #'
 #' @returns file
 #' @export
@@ -76,7 +75,6 @@ ceRNApairFilering <- function(path_prefix = NULL,
     doParallel::registerDoParallel(num_workers)
 
     # reate a cluster
-    #message('\u2605 Number of computational cores: ', num_workers, '.')
     parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
       #mir = 50
       mir = mirna_total[mir]

@@ -50,11 +50,11 @@ Imports:
     gRbase,
     tidyverse,
     org.Hs.eg.db,
-    SPONGE,
     GDCRNATools,
-    parallel,
     biomaRt,
-    dplyr
+    dplyr,
+    curatedTCGAData,
+    future
 VignetteBuilder: knitr
 RoxygenNote: 7.2.1
 Suggests: 

@@ -28,8 +28,6 @@ spearman (default: pearson)}
 
 \item{cor_threshold_peak}{peak threshold of correlation value between 0 and 1
 (default: 0.85)}
-
-\item{num_workers}{the number of CPU}
 }
 \value{
 a dataframe object

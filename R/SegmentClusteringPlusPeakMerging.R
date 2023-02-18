@@ -16,7 +16,6 @@
 #' @param cor_threshold_peak peak threshold of correlation value between 0 and 1
 #' (default: 0.85)
 #' @param window_size the number of samples for each window (default: 10)
-#' @param num_workers the number of CPU
 #'
 #' @returns a dataframe object
 #' @export
@@ -72,7 +71,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
       num_workers <- 1L
     } else {
       # use all cores in devtools::test()
-      num_workers <- future::availableCores()-1
+      num_workers <- future::availableCores()-3
     }
 
     # create a cluster

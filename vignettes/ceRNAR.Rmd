@@ -13,6 +13,7 @@ vignette: >
 knitr::opts_chunk$set(tidy = FALSE,
                       warning = FALSE,
                       message = FALSE)
+options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 # Introduction
@@ -134,7 +135,7 @@ knitr::kable(cernar_result[1:5,])
 
 - **Functional analysis**
 
-This function allows users to explore the underlying biological pathways that the most important ceRNAs in a sepcific dataset/cohort involved. The entire analysis is based on two databases: [Kyoto Encyclopedia of Genes and Genomes (KEGG)](https://www.genome.jp/kegg/) and [Gene Ontology (GO)](http://geneontology.org/). 
+This function allows users to explore the underlying biological pathways that the most important ceRNAs in a specific dataset/cohort involved. The entire analysis is based on two databases: [Kyoto Encyclopedia of Genes and Genomes (KEGG)](https://www.genome.jp/kegg/) and [Gene Ontology (GO)](http://geneontology.org/). 
 
 ```{r message=FALSE, results='hide'}
 ceFunction_results <- ceRNAFunction(project_name = 'demo', disease_name = 'DLBC', pairs_cutoff = 1)

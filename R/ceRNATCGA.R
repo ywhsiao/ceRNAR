@@ -127,8 +127,6 @@ ceRNATCGA <- function(path_prefix = NULL,
   miRNA_with_precurer <- miRNA_with_precurer[,-1]
 
   # store processed data
-  junk <- dir(path=paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata'),  pattern="TCGA_") # ?dir
-  file.remove(paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/',junk))
   data.table::fwrite(as.data.frame(cdRNA),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mrna.csv'), row.names = TRUE)
   data.table::fwrite(as.data.frame(miRNA_with_precurer),paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_mirna.csv'), row.names = TRUE)
   data.table::fwrite(as.data.frame(survival), paste0(path_prefix, project_name,'-', disease_name, '/01_rawdata/', project_name,'-', disease_name,'_survival.csv'), row.names = TRUE)

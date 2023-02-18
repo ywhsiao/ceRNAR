@@ -171,7 +171,7 @@ ceRNAFunction <- function(path_prefix = NULL,
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 All analyses has completed! \u2605\u2605\u2605')
-  function_plots
+  return(function_plots)
 }
 
 

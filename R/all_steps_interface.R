@@ -312,7 +312,6 @@ All_steps_interface <- function(path_prefix = NULL,
         doParallel::registerDoParallel(num_workers)
 
         # reate a cluster
-        #message('\u2605 Number of computational cores: ', num_workers, '.')
         parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
           #mir = 50
           mir = mirna_total[mir]
