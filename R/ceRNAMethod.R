@@ -42,7 +42,7 @@ ceRNAMethod <- function(path_prefix = NULL,
                         cor_threshold_peak = 0.85){
 
   if (is.null(path_prefix)){
-    path_prefix <- fs::path_home()
+    path_prefix <- tempdir()
   }else{
     path_prefix <- path_prefix
   }
@@ -59,7 +59,7 @@ ceRNAMethod <- function(path_prefix = NULL,
                                 cor_method = 'pearson'){
 
     if (is.null(path_prefix)){
-      path_prefix <- fs::path_home()
+      path_prefix <- tempdir()
     }else{
       path_prefix <- path_prefix
     }
@@ -95,7 +95,8 @@ ceRNAMethod <- function(path_prefix = NULL,
       }
 
       # create a cluster
-      doParallel::registerDoParallel(num_workers)
+      BiocParallel::register(BiocParallel::MulticoreParam(workers = num_workers), default = TRUE)
+      BiocParallel::bpstart()
 
       # reate a cluster
       parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
@@ -150,6 +151,7 @@ ceRNAMethod <- function(path_prefix = NULL,
       }
       parallel_d
     }
+    BiocParallel::bpstop()
     Realdata <- slidingWindow(window_size,mirna_total, 'pearson')
     saveRDS(Realdata,paste0(path_prefix, project_name,'-',disease_name,'/02_potentialPairs/',project_name,'-',disease_name,'_pairfiltering.rds'))
 
@@ -176,7 +178,7 @@ ceRNAMethod <- function(path_prefix = NULL,
                                                window_size = 10){
 
     if (is.null(path_prefix)){
-      path_prefix <- fs::path_home()
+      path_prefix <- tempdir()
     }else{
       path_prefix <- path_prefix
     }
@@ -216,7 +218,8 @@ ceRNAMethod <- function(path_prefix = NULL,
       }
 
       # create a cluster
-      doParallel::registerDoParallel(num_workers)
+      BiocParallel::register(BiocParallel::MulticoreParam(workers = num_workers), default = TRUE)
+      BiocParallel::bpstart()
 
       tmp <- foreach(p = 1:total_pairs, .combine = "rbind") %dopar%{
         #print(paste0("no_of_index:", index, "|", "no_of_pairs:",p))
@@ -378,6 +381,7 @@ ceRNAMethod <- function(path_prefix = NULL,
         }
 
       }
+      BiocParallel::bpstop()
       tmp
     }
 

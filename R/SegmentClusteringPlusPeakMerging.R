@@ -35,7 +35,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
                                              window_size = 10){
 
   if (is.null(path_prefix)){
-    path_prefix <- fs::path_home()
+    path_prefix <- tempdir()
   }else{
     path_prefix <- path_prefix
   }
@@ -75,7 +75,9 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
     }
 
     # create a cluster
-    doParallel::registerDoParallel(num_workers)
+    # create a cluster
+    BiocParallel::register(BiocParallel::MulticoreParam(workers = num_workers), default = TRUE)
+    BiocParallel::bpstart()
 
     tmp <- foreach(p = 1:total_pairs, .combine = "rbind") %dopar%{
         #print(paste0("no_of_index:", index, "|", "no_of_pairs:",p))
@@ -237,6 +239,7 @@ SegmentClusteringPlusPeakMerging <- function(path_prefix = NULL,
         }
 
     }
+    BiocParallel::bpstop()
     tmp
   }
 

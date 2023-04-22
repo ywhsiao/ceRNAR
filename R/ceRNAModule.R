@@ -34,7 +34,7 @@ ceRNAModule <- function(path_prefix = NULL,
                         column_sum = 1){
 
   if (is.null(path_prefix)){
-    path_prefix <- fs::path_home()
+    path_prefix <- tempdir()
   }else{
     path_prefix <- path_prefix
   }

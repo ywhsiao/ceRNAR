@@ -36,7 +36,7 @@ ceRNAFunction <- function(path_prefix = NULL,
                           pairs_cutoff = 1){
 
   if (is.null(path_prefix)){
-    path_prefix <- fs::path_home()
+    path_prefix <- tempdir()
   }else{
     path_prefix <- path_prefix
   }
@@ -96,12 +96,13 @@ ceRNAFunction <- function(path_prefix = NULL,
   message('\u2605 Running KEGG ORA analysis ...')
   kk <- clusterProfiler::enrichKEGG(gene = gene.df[,3],
                                     organism = 'hsa',
-                                    pvalueCutoff = 0.01)
-
-  kk_df <- as.data.frame(kk@result)
-  utils::write.csv(kk_df,paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name,'-',disease_name,'_kegg_ora.csv'), row.names = FALSE)
-  kk_babble <- enrichplot::dotplot(kk, showCategory=10,orderBy = "x")+ ggplot2::ggtitle('Dotplot for ORA based on KEGG')
-  kk_bar <- graphics::barplot(kk,showCategory = 10)+ ggplot2::ggtitle('Barplot for ORA based on KEGG')
+                                    pvalueCutoff = 0)
+  if (!is.null(kk)){
+    kk_df <- as.data.frame(kk@result)
+    utils::write.csv(kk_df,paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/',project_name,'-',disease_name,'_kegg_ora.csv'), row.names = FALSE)
+    kk_babble <- enrichplot::dotplot(kk, showCategory=10,orderBy = "x")+ ggplot2::ggtitle('Dotplot for ORA based on KEGG')
+    kk_bar <- graphics::barplot(kk,showCategory = 10)+ ggplot2::ggtitle('Barplot for ORA based on KEGG')
+  }
 
   # go ora
   message('\u2605 Running GO ORA analysis ...')
@@ -159,19 +160,30 @@ ceRNAFunction <- function(path_prefix = NULL,
                               x.text.angle = 0,
                               y.text.angle = 0) + ggpubr::rotate()
   # merge kegg and GO results
-  gg_babble <- cowplot::plot_grid(kk_babble, go_babble[[1]], go_babble[[2]], go_babble[[3]], labels = c('A', 'B', 'C', 'D'), label_size = 12, ncol=2)
-  ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_babble.png'), height = 10, width = 20,dpi = 300)
-  gg_bar <- cowplot::plot_grid(kk_bar, go_bar, labels = c('A', 'B'), label_size = 12, ncol = 2)
-  ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_bar.png'), height = 8, width = 20,dpi = 300)
+  if (!is.null(kk)){
+    gg_babble <- cowplot::plot_grid(kk_babble, go_babble[[1]], go_babble[[2]], go_babble[[3]], labels = c('A', 'B', 'C', 'D'), label_size = 12, ncol=2)
+    ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_babble.png'), height = 10, width = 20,dpi = 300)
+    gg_bar <- cowplot::plot_grid(kk_bar, go_bar, labels = c('A', 'B'), label_size = 12, ncol = 2)
+    ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_bar.png'), height = 8, width = 20,dpi = 300)
+
+  }else{
+    gg_babble <- cowplot::plot_grid(go_bar, go_babble[[1]], go_babble[[2]], go_babble[[3]], labels = c('A', 'B', 'C', 'D'), label_size = 12, ncol=2)
+    ggplot2::ggsave(paste0(path_prefix, project_name,'-',disease_name,'/04_downstreamAnalyses/functionResults/', project_name,'-',disease_name,'_function_babble.png'), height = 10, width = 20,dpi = 300)
+  }
+
 
   # return as a list object
-  function_plots <- list(gg_babble, gg_bar)
+  if (!is.null(kk)){
+    function_plots <- list(gg_babble, gg_bar)
+  }else{
+    function_plots <- list(gg_babble)
+  }
 
   time2 <- Sys.time()
   diftime <- difftime(time2, time1, units = 'min')
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 All analyses has completed! \u2605\u2605\u2605')
-  return(function_plots)
+  function_plots
 }
 
 

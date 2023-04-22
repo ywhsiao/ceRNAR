@@ -36,7 +36,7 @@ ceRNApairFilering <- function(path_prefix = NULL,
                               cor_method = 'pearson'){
 
   if (is.null(path_prefix)){
-    path_prefix <- fs::path_home()
+    path_prefix <- tempdir()
   }else{
     path_prefix <- path_prefix
   }
@@ -72,7 +72,8 @@ ceRNApairFilering <- function(path_prefix = NULL,
     }
 
     # create a cluster
-    doParallel::registerDoParallel(num_workers)
+    BiocParallel::register(BiocParallel::MulticoreParam(workers = num_workers), default = TRUE)
+    BiocParallel::bpstart()
 
     # reate a cluster
     parallel_d <- foreach(mir=1:length(mirna_total), .export = c('dict','mirna', 'mrna'))  %dopar%  {
@@ -125,6 +126,7 @@ ceRNApairFilering <- function(path_prefix = NULL,
       triplet
 
     }
+    BiocParallel::bpstop()
     parallel_d
   }
   Realdata <- slidingWindow(window_size,mirna_total, 'pearson')

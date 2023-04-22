@@ -18,7 +18,6 @@
 #'
 #' @examples
 #' ceRNALocation(
-#' path_prefix = NULL,
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' mirna='hsa-miR-101-3p',
@@ -34,7 +33,7 @@ ceRNALocation <- function(path_prefix = NULL,
                           window_size = 10){
 
   if (is.null(path_prefix)){
-    path_prefix <- fs::path_home()
+    path_prefix <- tempdir()
   }else{
     path_prefix <- path_prefix
   }

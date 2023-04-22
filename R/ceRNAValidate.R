@@ -15,7 +15,6 @@
 #'
 #' @examples
 #' ceRNAValidate(
-#' path_prefix = NULL,
 #' project_name = 'demo',
 #' disease_name = 'DLBC'
 #' )
@@ -27,7 +26,7 @@ ceRNAValidate <- function(path_prefix = NULL,
                           disease_name = 'DLBC'){
 
   if (is.null(path_prefix)){
-    path_prefix <- fs::path_home()
+    path_prefix <- tempdir()
   }else{
     path_prefix <- path_prefix
   }

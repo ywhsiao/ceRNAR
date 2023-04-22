@@ -38,7 +38,7 @@ ceRNACustomize <- function(path_prefix = NULL,
                            mirna_exp = mirna_exp,
                            surv_data = surv_data){
   if (is.null(path_prefix)){
-    path_prefix <- fs::path_home()
+    path_prefix <- tempdir()
   }else{
     path_prefix <- path_prefix
   }

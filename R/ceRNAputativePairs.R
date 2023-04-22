@@ -28,7 +28,7 @@ ceRNAputativePairs <- function(path_prefix = NULL,
                                filtering = 'less'){
 
   if (is.null(path_prefix)){
-    path_prefix <- fs::path_home()
+    path_prefix <- tempdir()
   }else{
     path_prefix <- path_prefix
   }

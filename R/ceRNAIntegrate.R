@@ -27,20 +27,17 @@
 #' @examples
 #' library(SPONGE)
 #' ceRNAIntegrate(
-#' path_prefix = NULL,
 #' project_name = 'demo',
-#' disease_name = 'DLBC',
-#' num_workers = 1
+#' disease_name = 'DLBC'
 #' )
 #'
 
 ceRNAIntegrate <- function(path_prefix = NULL,
                            project_name = 'demo',
-                           disease_name = 'DLBC',
-                           num_workers = 1){
+                           disease_name = 'DLBC'){
 
   if (is.null(path_prefix)){
-    path_prefix <- fs::path_home()
+    path_prefix <- tempdir()
   }else{
     path_prefix <- path_prefix
   }
@@ -74,10 +71,6 @@ ceRNAIntegrate <- function(path_prefix = NULL,
     d[gene_pair,i] <- 1
   }
 
-  if (num_workers != 1){
-    doParallel::registerDoParallel(num_workers)
-  }
-
   mir_expr <- t(mirna)
   gene_expr <- t(mrna)
   genes_miRNA_candidates <- SPONGE::sponge_gene_miRNA_interaction_filter(
@@ -88,7 +81,7 @@ ceRNAIntegrate <- function(path_prefix = NULL,
   ceRNA_interactions <- SPONGE::sponge(gene_expr = gene_expr,
                                mir_expr = mir_expr,
                                mir_interactions = genes_miRNA_candidates)
-  precomputed_cov_matrices <- precomputed_cov_matrices
+  precomputed_cov_matrices <- SPONGE::precomputed_cov_matrices
   mscor_null_model <- SPONGE::sponge_build_null_model(number_of_datasets = 100,
                                               number_of_samples = dim(gene_expr)[1])
   sponge_result <- SPONGE::sponge_compute_p_values(sponge_result = ceRNA_interactions,
@@ -173,6 +166,6 @@ ceRNAIntegrate <- function(path_prefix = NULL,
   message(paste0('\u2605 Consuming time: ',round(as.numeric(diftime)), ' min.'))
   message('\u2605\u2605\u2605 All analyses has completed! \u2605\u2605\u2605')
 
-  return(our_result)
+  our_result
 }
 

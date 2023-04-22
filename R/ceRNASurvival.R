@@ -17,7 +17,6 @@
 #'
 #' @examples
 #' ceRNASurvival(
-#' path_prefix = NULL,
 #' project_name = 'demo',
 #' disease_name = 'DLBC',
 #' mirnas = 'hsa-miR-101-3p'
@@ -31,7 +30,7 @@ ceRNASurvival <- function(path_prefix = NULL,
                           mirnas = 'hsa-miR-101-3p'){
 
   if (is.null(path_prefix)){
-    path_prefix <- fs::path_home()
+    path_prefix <- tempdir()
   }else{
     path_prefix <- path_prefix
   }
