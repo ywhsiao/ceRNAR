@@ -115,7 +115,7 @@ ceRNAFunction <- function(path_prefix = NULL,
                                      OrgDb         = db,
                                      ont           = go_level,
                                      pAdjustMethod = "BH",
-                                     pvalueCutoff  = 0.01,
+                                     pvalueCutoff  = 0.05,
                                      qvalueCutoff  = 0.05,
                                      readable      = TRUE)
     clusterProfiler::simplify(ego, cutoff=0.7, by="p.adjust", select_fun=min)
